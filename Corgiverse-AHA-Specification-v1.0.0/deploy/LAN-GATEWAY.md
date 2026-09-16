@@ -1,0 +1,4 @@
+# LAN deployment contract
+Provide a separate gateway profile; do not change the workstation port binding to 0.0.0.0 and call that secure LAN mode. The gateway publishes TLS on the chosen LAN interface, authenticates with agency identity, strips user-supplied identity headers and supplies signed verified subject/case scopes to the backend. Backend has no published LAN port. Require configuration validation before startup, including trusted gateway secret/mTLS and explicit allowed origins/hosts.
+
+The build must implement a gateway test adapter for integration tests and document one tested deployment recipe. Case files stay on server-local storage; browsers never mount the case directory. No external identity provider is required for workstation mode. Offline release uses preloaded images and locally supplied certificates/identity services. Model hostnames must be reachable inside the chosen network; localhost inside a container is not the workstation host.

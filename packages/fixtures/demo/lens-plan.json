@@ -1,0 +1,17 @@
+{
+  "query": "likes eggs for breakfast",
+  "case_revision": 42,
+  "combine": "all",
+  "filters": [
+    {
+      "field": "text",
+      "op": "contains",
+      "value": "eggs"
+    }
+  ],
+  "hops": 0,
+  "relations": [],
+  "include_similarity": true,
+  "max_nodes": 100,
+  "max_edges": 100
+}

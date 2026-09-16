@@ -1,0 +1,291 @@
+{
+  "run": {
+    "id": "00000000-0000-4000-8000-000000000080",
+    "case_id": "00000000-0000-4000-8000-000000000001",
+    "revision": 1,
+    "introduced_case_revision": 42,
+    "created_at": "2026-09-15T12:00:00Z",
+    "created_by": "synthetic-fixture-author",
+    "kind": "ModelRun",
+    "task": "AHA",
+    "case_revision": 42,
+    "provider": "REPLAY",
+    "model": "synthetic-contract-fixture",
+    "model_digest": "fixture-v1",
+    "prompt_version": "aha-v1",
+    "input_sha256": "91478cc71031c16492049d2a83f2850016549a87248b57ad3cc52c8ada2f6426",
+    "output_sha256": null,
+    "temperature": 0,
+    "seed": 1,
+    "status": "PARTIAL",
+    "validation_errors": [],
+    "context_refs": [
+      {
+        "id": "00000000-0000-4000-8000-000000000040",
+        "revision": 1
+      },
+      {
+        "id": "00000000-0000-4000-8000-000000000041",
+        "revision": 1
+      },
+      {
+        "id": "00000000-0000-4000-8000-000000000044",
+        "revision": 1
+      },
+      {
+        "id": "00000000-0000-4000-8000-000000000045",
+        "revision": 1
+      },
+      {
+        "id": "00000000-0000-4000-8000-000000000050",
+        "revision": 1
+      },
+      {
+        "id": "00000000-0000-4000-8000-000000000070",
+        "revision": 1
+      }
+    ],
+    "omitted_count": 0
+  },
+  "scenarios": [
+    {
+      "id": "00000000-0000-4000-8000-000000000081",
+      "case_id": "00000000-0000-4000-8000-000000000001",
+      "revision": 1,
+      "introduced_case_revision": 42,
+      "created_at": "2026-09-15T12:00:00Z",
+      "created_by": "synthetic-fixture-author",
+      "kind": "Scenario",
+      "run_id": "00000000-0000-4000-8000-000000000080",
+      "tier": "SPECULATIVE",
+      "origin": "AI_SYNTHETIC",
+      "review": "PENDING",
+      "title": "Two different vehicles",
+      "summary": "The two references could concern different vehicles.",
+      "family": "INDEPENDENT_EVENTS",
+      "signature": {
+        "mechanism": "different-vehicles",
+        "ordering": [
+          "reported departure",
+          "recorded visibility"
+        ],
+        "actor_structure": "unknown operator(s)",
+        "relaxed_premise_ids": [],
+        "independence_assumptions": [
+          "Vehicle identity is unresolved."
+        ]
+      },
+      "anchor_refs": [
+        {
+          "id": "00000000-0000-4000-8000-000000000050",
+          "revision": 1
+        }
+      ],
+      "steps": [
+        {
+          "id": "00000000-0000-4000-8000-000000000181",
+          "origin": "AI_SYNTHETIC",
+          "description": "The two references could concern different vehicles.",
+          "occurrence": {
+            "raw": "unknown interval",
+            "start": "2026-09-11T02:50:00Z",
+            "end": "2026-09-11T03:28:00Z",
+            "start_inclusive": true,
+            "end_inclusive": true,
+            "timezone": "America/Chicago",
+            "precision": "RANGE",
+            "clock_source": "source assertion",
+            "tolerance_seconds": null,
+            "alternative_refs": []
+          },
+          "source_refs": [],
+          "assumptions": [
+            "Two vehicles shared a color."
+          ],
+          "actor_refs": [],
+          "unknown_actor_labels": [
+            "UNKNOWN_ACTOR_1"
+          ]
+        },
+        {
+          "id": "00000000-0000-4000-8000-000000000281",
+          "origin": "SOURCE_BOUND",
+          "description": "The missing-crate report was recorded at 23:00.",
+          "occurrence": {
+            "raw": "23:00 America/Chicago",
+            "start": "2026-09-11T04:00:00Z",
+            "end": "2026-09-11T04:00:00Z",
+            "start_inclusive": true,
+            "end_inclusive": true,
+            "timezone": "America/Chicago",
+            "precision": "EXACT",
+            "clock_source": "source assertion",
+            "tolerance_seconds": null,
+            "alternative_refs": []
+          },
+          "source_refs": [
+            {
+              "id": "00000000-0000-4000-8000-000000000050",
+              "revision": 1
+            }
+          ],
+          "assumptions": [],
+          "actor_refs": [],
+          "unknown_actor_labels": []
+        }
+      ],
+      "counter_refs": [
+        {
+          "id": "00000000-0000-4000-8000-000000000061",
+          "revision": 1
+        }
+      ],
+      "question_ids": [
+        "00000000-0000-4000-8000-000000000090"
+      ],
+      "validation": "PASSED"
+    },
+    {
+      "id": "00000000-0000-4000-8000-000000000082",
+      "case_id": "00000000-0000-4000-8000-000000000001",
+      "revision": 1,
+      "introduced_case_revision": 42,
+      "created_at": "2026-09-15T12:00:00Z",
+      "created_by": "synthetic-fixture-author",
+      "kind": "Scenario",
+      "run_id": "00000000-0000-4000-8000-000000000080",
+      "tier": "SPECULATIVE",
+      "origin": "AI_SYNTHETIC",
+      "review": "PENDING",
+      "title": "A vehicle may have returned",
+      "summary": "An unidentified vehicle could have departed and later returned.",
+      "family": "ALTERNATE_ORDER",
+      "signature": {
+        "mechanism": "departure-then-return",
+        "ordering": [
+          "reported departure",
+          "recorded visibility"
+        ],
+        "actor_structure": "unknown operator(s)",
+        "relaxed_premise_ids": [],
+        "independence_assumptions": []
+      },
+      "anchor_refs": [
+        {
+          "id": "00000000-0000-4000-8000-000000000050",
+          "revision": 1
+        }
+      ],
+      "steps": [
+        {
+          "id": "00000000-0000-4000-8000-000000000182",
+          "origin": "AI_SYNTHETIC",
+          "description": "An unidentified vehicle could have departed and later returned.",
+          "occurrence": {
+            "raw": "unknown interval",
+            "start": "2026-09-11T02:50:00Z",
+            "end": "2026-09-11T03:28:00Z",
+            "start_inclusive": true,
+            "end_inclusive": true,
+            "timezone": "America/Chicago",
+            "precision": "RANGE",
+            "clock_source": "source assertion",
+            "tolerance_seconds": null,
+            "alternative_refs": []
+          },
+          "source_refs": [],
+          "assumptions": [
+            "A return trip occurred; no direct source establishes it."
+          ],
+          "actor_refs": [],
+          "unknown_actor_labels": [
+            "UNKNOWN_ACTOR_1"
+          ]
+        },
+        {
+          "id": "00000000-0000-4000-8000-000000000282",
+          "origin": "SOURCE_BOUND",
+          "description": "The missing-crate report was recorded at 23:00.",
+          "occurrence": {
+            "raw": "23:00 America/Chicago",
+            "start": "2026-09-11T04:00:00Z",
+            "end": "2026-09-11T04:00:00Z",
+            "start_inclusive": true,
+            "end_inclusive": true,
+            "timezone": "America/Chicago",
+            "precision": "EXACT",
+            "clock_source": "source assertion",
+            "tolerance_seconds": null,
+            "alternative_refs": []
+          },
+          "source_refs": [
+            {
+              "id": "00000000-0000-4000-8000-000000000050",
+              "revision": 1
+            }
+          ],
+          "assumptions": [],
+          "actor_refs": [],
+          "unknown_actor_labels": []
+        }
+      ],
+      "counter_refs": [
+        {
+          "id": "00000000-0000-4000-8000-000000000061",
+          "revision": 1
+        }
+      ],
+      "question_ids": [
+        "00000000-0000-4000-8000-000000000090"
+      ],
+      "validation": "PASSED"
+    }
+  ],
+  "questions": [
+    {
+      "id": "00000000-0000-4000-8000-000000000090",
+      "case_id": "00000000-0000-4000-8000-000000000001",
+      "revision": 1,
+      "introduced_case_revision": 42,
+      "created_at": "2026-09-15T12:00:00Z",
+      "created_by": "synthetic-fixture-author",
+      "kind": "Question",
+      "text": "Do the two red-vehicle references identify the same vehicle?",
+      "scenario_ids": [
+        "00000000-0000-4000-8000-000000000081",
+        "00000000-0000-4000-8000-000000000082"
+      ],
+      "outcomes": [
+        {
+          "observation": "Distinct plates or distinctive features establish different vehicles.",
+          "supports_scenario_ids": [
+            "00000000-0000-4000-8000-000000000081"
+          ],
+          "weakens_scenario_ids": [
+            "00000000-0000-4000-8000-000000000082"
+          ]
+        },
+        {
+          "observation": "Reviewed source material establishes the same vehicle.",
+          "supports_scenario_ids": [
+            "00000000-0000-4000-8000-000000000082"
+          ],
+          "weakens_scenario_ids": [
+            "00000000-0000-4000-8000-000000000081"
+          ]
+        }
+      ],
+      "source_to_check": "Review original images and contemporaneous identification notes.",
+      "limitations": [
+        "Color alone cannot establish identity.",
+        "Same vehicle would not establish who operated it."
+      ],
+      "effort": "UNKNOWN",
+      "status": "OPEN",
+      "answer_refs": []
+    }
+  ],
+  "requested_count": 10,
+  "rejected_count": 0,
+  "partial_reason": "Replay fixture intentionally supplies two materially different alternatives, not ten filler narratives."
+}

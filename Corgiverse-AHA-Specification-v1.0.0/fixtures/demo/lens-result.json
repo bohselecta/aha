@@ -1,0 +1,70 @@
+{
+  "case_revision": 42,
+  "index_revision": 42,
+  "node_ids": [
+    "00000000-0000-4000-8000-000000000030",
+    "00000000-0000-4000-8000-000000000034",
+    "00000000-0000-4000-8000-000000000042",
+    "00000000-0000-4000-8000-000000000043"
+  ],
+  "edge_ids": [],
+  "matches": [
+    {
+      "category": "SIMILARITY",
+      "record_refs": [
+        {
+          "id": "00000000-0000-4000-8000-000000000042",
+          "revision": 1
+        },
+        {
+          "id": "00000000-0000-4000-8000-000000000043",
+          "revision": 1
+        }
+      ],
+      "edge_ref": null,
+      "why": "Both sources mention eggs. The receipt does not identify a customer; this shared detail is not evidence of contact or involvement.",
+      "citations": [
+        {
+          "evidence": {
+            "id": "00000000-0000-4000-8000-000000000010",
+            "revision": 1
+          },
+          "evidence_sha256": "d96be30b2a77b27f133711995dc464fa2ad24bd517511ece072686ff4f4025fb",
+          "derivative": {
+            "id": "00000000-0000-4000-8000-000000000020",
+            "revision": 1
+          },
+          "derivative_sha256": "d96be30b2a77b27f133711995dc464fa2ad24bd517511ece072686ff4f4025fb",
+          "locator": {
+            "type": "text",
+            "start": 0,
+            "end": 164
+          },
+          "quote": "SYNTHETIC TRAINING MATERIAL\nAttendant Mara Vale states: I saw a red van leave before 22:10 on 2026-09-10. I often eat eggs for breakfast. I did not read its plate.\n"
+        },
+        {
+          "evidence": {
+            "id": "00000000-0000-4000-8000-000000000013",
+            "revision": 1
+          },
+          "evidence_sha256": "00b34b124d1163c2738878b7f340291c3693cd4ee16aec2cdaf791a4221a7b31",
+          "derivative": {
+            "id": "00000000-0000-4000-8000-000000000023",
+            "revision": 1
+          },
+          "derivative_sha256": "00b34b124d1163c2738878b7f340291c3693cd4ee16aec2cdaf791a4221a7b31",
+          "locator": {
+            "type": "text",
+            "start": 0,
+            "end": 119
+          },
+          "quote": "SYNTHETIC TRAINING MATERIAL\nLantern Cafe receipt: eggs and toast, 2026-09-10 08:14. Customer identity is not recorded.\n"
+        }
+      ],
+      "method": "literal keyword match with provenance expansion"
+    }
+  ],
+  "truncated": false,
+  "omitted_count": 0,
+  "warnings": []
+}

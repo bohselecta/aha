@@ -1,0 +1,1185 @@
+{
+  "schema_version": "1.0.0",
+  "case": {
+    "id": "00000000-0000-4000-8000-000000000001",
+    "title": "SYNTHETIC — The Lantern Annex",
+    "timezone": "America/Chicago",
+    "schema_version": "1.0.0",
+    "case_revision": 42,
+    "synthetic": true,
+    "created_at": "2026-09-15T12:00:00Z"
+  },
+  "records": [
+    {
+      "id": "00000000-0000-4000-8000-000000000010",
+      "case_id": "00000000-0000-4000-8000-000000000999",
+      "revision": 1,
+      "introduced_case_revision": 1,
+      "created_at": "2026-09-15T12:00:00Z",
+      "created_by": "synthetic-fixture-author",
+      "kind": "Evidence",
+      "sha256": "d96be30b2a77b27f133711995dc464fa2ad24bd517511ece072686ff4f4025fb",
+      "bytes": 164,
+      "media_type": "text/plain",
+      "original_filename": "attendant.txt",
+      "received_at": "2026-09-15T12:00:00Z",
+      "source_channel": "IMPORT",
+      "integrity": "VERIFIED",
+      "scan_status": "UNSCANNED"
+    },
+    {
+      "id": "00000000-0000-4000-8000-000000000020",
+      "case_id": "00000000-0000-4000-8000-000000000001",
+      "revision": 1,
+      "introduced_case_revision": 1,
+      "created_at": "2026-09-15T12:00:00Z",
+      "created_by": "synthetic-fixture-author",
+      "kind": "Derivative",
+      "evidence": {
+        "id": "00000000-0000-4000-8000-000000000010",
+        "revision": 1
+      },
+      "sha256": "d96be30b2a77b27f133711995dc464fa2ad24bd517511ece072686ff4f4025fb",
+      "bytes": 164,
+      "derivative_type": "TEXT",
+      "tool": "identity-text-import",
+      "tool_version": "1.0.0",
+      "config_sha256": "689f6a627384c7dcb2dcc1487e540223e77bdf9dcd0d8be8a326eda65b0ce9a4",
+      "media_type": "text/plain"
+    },
+    {
+      "id": "00000000-0000-4000-8000-000000000011",
+      "case_id": "00000000-0000-4000-8000-000000000001",
+      "revision": 1,
+      "introduced_case_revision": 1,
+      "created_at": "2026-09-15T12:00:00Z",
+      "created_by": "synthetic-fixture-author",
+      "kind": "Evidence",
+      "sha256": "6bedc925a8d68dc7ba4643c85b62f886b08eef113b24852c649d3c2302bcb7f6",
+      "bytes": 186,
+      "media_type": "text/plain",
+      "original_filename": "camera.txt",
+      "received_at": "2026-09-15T12:00:00Z",
+      "source_channel": "IMPORT",
+      "integrity": "VERIFIED",
+      "scan_status": "UNSCANNED"
+    },
+    {
+      "id": "00000000-0000-4000-8000-000000000021",
+      "case_id": "00000000-0000-4000-8000-000000000001",
+      "revision": 1,
+      "introduced_case_revision": 1,
+      "created_at": "2026-09-15T12:00:00Z",
+      "created_by": "synthetic-fixture-author",
+      "kind": "Derivative",
+      "evidence": {
+        "id": "00000000-0000-4000-8000-000000000011",
+        "revision": 1
+      },
+      "sha256": "6bedc925a8d68dc7ba4643c85b62f886b08eef113b24852c649d3c2302bcb7f6",
+      "bytes": 186,
+      "derivative_type": "TEXT",
+      "tool": "identity-text-import",
+      "tool_version": "1.0.0",
+      "config_sha256": "689f6a627384c7dcb2dcc1487e540223e77bdf9dcd0d8be8a326eda65b0ce9a4",
+      "media_type": "text/plain"
+    },
+    {
+      "id": "00000000-0000-4000-8000-000000000012",
+      "case_id": "00000000-0000-4000-8000-000000000001",
+      "revision": 1,
+      "introduced_case_revision": 1,
+      "created_at": "2026-09-15T12:00:00Z",
+      "created_by": "synthetic-fixture-author",
+      "kind": "Evidence",
+      "sha256": "fbecbf8800df9f592fd4550e05dd064b7f3a70c8a31fcf7012a7f510972337f7",
+      "bytes": 158,
+      "media_type": "text/plain",
+      "original_filename": "maintenance.txt",
+      "received_at": "2026-09-15T12:00:00Z",
+      "source_channel": "IMPORT",
+      "integrity": "VERIFIED",
+      "scan_status": "UNSCANNED"
+    },
+    {
+      "id": "00000000-0000-4000-8000-000000000022",
+      "case_id": "00000000-0000-4000-8000-000000000001",
+      "revision": 1,
+      "introduced_case_revision": 1,
+      "created_at": "2026-09-15T12:00:00Z",
+      "created_by": "synthetic-fixture-author",
+      "kind": "Derivative",
+      "evidence": {
+        "id": "00000000-0000-4000-8000-000000000012",
+        "revision": 1
+      },
+      "sha256": "fbecbf8800df9f592fd4550e05dd064b7f3a70c8a31fcf7012a7f510972337f7",
+      "bytes": 158,
+      "derivative_type": "TEXT",
+      "tool": "identity-text-import",
+      "tool_version": "1.0.0",
+      "config_sha256": "689f6a627384c7dcb2dcc1487e540223e77bdf9dcd0d8be8a326eda65b0ce9a4",
+      "media_type": "text/plain"
+    },
+    {
+      "id": "00000000-0000-4000-8000-000000000013",
+      "case_id": "00000000-0000-4000-8000-000000000001",
+      "revision": 1,
+      "introduced_case_revision": 1,
+      "created_at": "2026-09-15T12:00:00Z",
+      "created_by": "synthetic-fixture-author",
+      "kind": "Evidence",
+      "sha256": "00b34b124d1163c2738878b7f340291c3693cd4ee16aec2cdaf791a4221a7b31",
+      "bytes": 119,
+      "media_type": "text/plain",
+      "original_filename": "receipt.txt",
+      "received_at": "2026-09-15T12:00:00Z",
+      "source_channel": "IMPORT",
+      "integrity": "VERIFIED",
+      "scan_status": "UNSCANNED"
+    },
+    {
+      "id": "00000000-0000-4000-8000-000000000023",
+      "case_id": "00000000-0000-4000-8000-000000000001",
+      "revision": 1,
+      "introduced_case_revision": 1,
+      "created_at": "2026-09-15T12:00:00Z",
+      "created_by": "synthetic-fixture-author",
+      "kind": "Derivative",
+      "evidence": {
+        "id": "00000000-0000-4000-8000-000000000013",
+        "revision": 1
+      },
+      "sha256": "00b34b124d1163c2738878b7f340291c3693cd4ee16aec2cdaf791a4221a7b31",
+      "bytes": 119,
+      "derivative_type": "TEXT",
+      "tool": "identity-text-import",
+      "tool_version": "1.0.0",
+      "config_sha256": "689f6a627384c7dcb2dcc1487e540223e77bdf9dcd0d8be8a326eda65b0ce9a4",
+      "media_type": "text/plain"
+    },
+    {
+      "id": "00000000-0000-4000-8000-000000000014",
+      "case_id": "00000000-0000-4000-8000-000000000001",
+      "revision": 1,
+      "introduced_case_revision": 1,
+      "created_at": "2026-09-15T12:00:00Z",
+      "created_by": "synthetic-fixture-author",
+      "kind": "Evidence",
+      "sha256": "c081a756ae17a33254d011b015a21256c6fe9aaf5f2e461c179ea7989e350a7d",
+      "bytes": 239,
+      "media_type": "text/plain",
+      "original_filename": "calibration.txt",
+      "received_at": "2026-09-15T12:00:00Z",
+      "source_channel": "IMPORT",
+      "integrity": "VERIFIED",
+      "scan_status": "UNSCANNED"
+    },
+    {
+      "id": "00000000-0000-4000-8000-000000000024",
+      "case_id": "00000000-0000-4000-8000-000000000001",
+      "revision": 1,
+      "introduced_case_revision": 1,
+      "created_at": "2026-09-15T12:00:00Z",
+      "created_by": "synthetic-fixture-author",
+      "kind": "Derivative",
+      "evidence": {
+        "id": "00000000-0000-4000-8000-000000000014",
+        "revision": 1
+      },
+      "sha256": "c081a756ae17a33254d011b015a21256c6fe9aaf5f2e461c179ea7989e350a7d",
+      "bytes": 239,
+      "derivative_type": "TEXT",
+      "tool": "identity-text-import",
+      "tool_version": "1.0.0",
+      "config_sha256": "689f6a627384c7dcb2dcc1487e540223e77bdf9dcd0d8be8a326eda65b0ce9a4",
+      "media_type": "text/plain"
+    },
+    {
+      "id": "00000000-0000-4000-8000-000000000015",
+      "case_id": "00000000-0000-4000-8000-000000000001",
+      "revision": 1,
+      "introduced_case_revision": 1,
+      "created_at": "2026-09-15T12:00:00Z",
+      "created_by": "synthetic-fixture-author",
+      "kind": "Evidence",
+      "sha256": "722dee227b98e71874e3e58811890e46eecf73a22e63e3988aa89ec02b7d0fce",
+      "bytes": 186,
+      "media_type": "text/plain",
+      "original_filename": "search-log.txt",
+      "received_at": "2026-09-15T12:00:00Z",
+      "source_channel": "IMPORT",
+      "integrity": "VERIFIED",
+      "scan_status": "UNSCANNED"
+    },
+    {
+      "id": "00000000-0000-4000-8000-000000000025",
+      "case_id": "00000000-0000-4000-8000-000000000001",
+      "revision": 1,
+      "introduced_case_revision": 1,
+      "created_at": "2026-09-15T12:00:00Z",
+      "created_by": "synthetic-fixture-author",
+      "kind": "Derivative",
+      "evidence": {
+        "id": "00000000-0000-4000-8000-000000000015",
+        "revision": 1
+      },
+      "sha256": "722dee227b98e71874e3e58811890e46eecf73a22e63e3988aa89ec02b7d0fce",
+      "bytes": 186,
+      "derivative_type": "TEXT",
+      "tool": "identity-text-import",
+      "tool_version": "1.0.0",
+      "config_sha256": "689f6a627384c7dcb2dcc1487e540223e77bdf9dcd0d8be8a326eda65b0ce9a4",
+      "media_type": "text/plain"
+    },
+    {
+      "id": "00000000-0000-4000-8000-000000000030",
+      "case_id": "00000000-0000-4000-8000-000000000001",
+      "revision": 1,
+      "introduced_case_revision": 1,
+      "created_at": "2026-09-15T12:00:00Z",
+      "created_by": "synthetic-fixture-author",
+      "kind": "Entity",
+      "label": "Mara Vale",
+      "entity_type": "PERSON",
+      "aliases": [],
+      "review": "ACCEPTED",
+      "source_refs": [
+        {
+          "id": "00000000-0000-4000-8000-000000000010",
+          "revision": 1
+        }
+      ]
+    },
+    {
+      "id": "00000000-0000-4000-8000-000000000031",
+      "case_id": "00000000-0000-4000-8000-000000000001",
+      "revision": 1,
+      "introduced_case_revision": 1,
+      "created_at": "2026-09-15T12:00:00Z",
+      "created_by": "synthetic-fixture-author",
+      "kind": "Entity",
+      "label": "Unidentified red van",
+      "entity_type": "VEHICLE",
+      "aliases": [],
+      "review": "ACCEPTED",
+      "source_refs": [
+        {
+          "id": "00000000-0000-4000-8000-000000000010",
+          "revision": 1
+        }
+      ]
+    },
+    {
+      "id": "00000000-0000-4000-8000-000000000032",
+      "case_id": "00000000-0000-4000-8000-000000000001",
+      "revision": 1,
+      "introduced_case_revision": 1,
+      "created_at": "2026-09-15T12:00:00Z",
+      "created_by": "synthetic-fixture-author",
+      "kind": "Entity",
+      "label": "Camera-recorded red vehicle",
+      "entity_type": "VEHICLE",
+      "aliases": [],
+      "review": "ACCEPTED",
+      "source_refs": [
+        {
+          "id": "00000000-0000-4000-8000-000000000011",
+          "revision": 1
+        }
+      ]
+    },
+    {
+      "id": "00000000-0000-4000-8000-000000000033",
+      "case_id": "00000000-0000-4000-8000-000000000001",
+      "revision": 1,
+      "introduced_case_revision": 1,
+      "created_at": "2026-09-15T12:00:00Z",
+      "created_by": "synthetic-fixture-author",
+      "kind": "Entity",
+      "label": "Lantern Annex",
+      "entity_type": "PLACE",
+      "aliases": [],
+      "review": "ACCEPTED",
+      "source_refs": [
+        {
+          "id": "00000000-0000-4000-8000-000000000015",
+          "revision": 1
+        }
+      ]
+    },
+    {
+      "id": "00000000-0000-4000-8000-000000000034",
+      "case_id": "00000000-0000-4000-8000-000000000001",
+      "revision": 1,
+      "introduced_case_revision": 1,
+      "created_at": "2026-09-15T12:00:00Z",
+      "created_by": "synthetic-fixture-author",
+      "kind": "Entity",
+      "label": "Unidentified cafe customer",
+      "entity_type": "UNKNOWN_ACTOR",
+      "aliases": [],
+      "review": "ACCEPTED",
+      "source_refs": [
+        {
+          "id": "00000000-0000-4000-8000-000000000013",
+          "revision": 1
+        }
+      ]
+    },
+    {
+      "id": "00000000-0000-4000-8000-000000000040",
+      "case_id": "00000000-0000-4000-8000-000000000001",
+      "revision": 1,
+      "introduced_case_revision": 1,
+      "created_at": "2026-09-15T12:00:00Z",
+      "created_by": "synthetic-fixture-author",
+      "kind": "Observation",
+      "tier": "OBSERVED",
+      "origin": "HUMAN",
+      "review": "ACCEPTED",
+      "citations": [
+        {
+          "evidence": {
+            "id": "00000000-0000-4000-8000-000000000010",
+            "revision": 1
+          },
+          "evidence_sha256": "d96be30b2a77b27f133711995dc464fa2ad24bd517511ece072686ff4f4025fb",
+          "derivative": {
+            "id": "00000000-0000-4000-8000-000000000020",
+            "revision": 1
+          },
+          "derivative_sha256": "d96be30b2a77b27f133711995dc464fa2ad24bd517511ece072686ff4f4025fb",
+          "locator": {
+            "type": "text",
+            "start": 0,
+            "end": 164
+          },
+          "quote": "SYNTHETIC TRAINING MATERIAL\nAttendant Mara Vale states: I saw a red van leave before 22:10 on 2026-09-10. I often eat eggs for breakfast. I did not read its plate.\n"
+        }
+      ],
+      "support_refs": [],
+      "counter_refs": [],
+      "rationale": "Source assertion, not independently established.",
+      "statement": "A red van left before 22:10; plate not observed.",
+      "subject_refs": [
+        {
+          "id": "00000000-0000-4000-8000-000000000030",
+          "revision": 1
+        }
+      ],
+      "predicate": "reports_departure",
+      "object_value": "A red van left before 22:10; plate not observed.",
+      "occurrence": {
+        "raw": "before 22:10",
+        "start": null,
+        "end": "2026-09-11T03:10:00Z",
+        "start_inclusive": true,
+        "end_inclusive": false,
+        "timezone": "America/Chicago",
+        "precision": "RANGE",
+        "clock_source": "source assertion",
+        "tolerance_seconds": null,
+        "alternative_refs": []
+      },
+      "discovered_at": null,
+      "recorded_at": null,
+      "provenance_group": "source-10",
+      "independence": "UNKNOWN"
+    },
+    {
+      "id": "00000000-0000-4000-8000-000000000041",
+      "case_id": "00000000-0000-4000-8000-000000000001",
+      "revision": 1,
+      "introduced_case_revision": 1,
+      "created_at": "2026-09-15T12:00:00Z",
+      "created_by": "synthetic-fixture-author",
+      "kind": "Observation",
+      "tier": "DOCUMENTED",
+      "origin": "HUMAN",
+      "review": "ACCEPTED",
+      "citations": [
+        {
+          "evidence": {
+            "id": "00000000-0000-4000-8000-000000000011",
+            "revision": 1
+          },
+          "evidence_sha256": "6bedc925a8d68dc7ba4643c85b62f886b08eef113b24852c649d3c2302bcb7f6",
+          "derivative": {
+            "id": "00000000-0000-4000-8000-000000000021",
+            "revision": 1
+          },
+          "derivative_sha256": "6bedc925a8d68dc7ba4643c85b62f886b08eef113b24852c649d3c2302bcb7f6",
+          "locator": {
+            "type": "text",
+            "start": 0,
+            "end": 186
+          },
+          "quote": "SYNTHETIC TRAINING MATERIAL\nCamera export: at device time 22:26 on 2026-09-10, a red vehicle is visible near the rear entrance. Identity and clock calibration have not been established.\n"
+        }
+      ],
+      "support_refs": [],
+      "counter_refs": [],
+      "rationale": "Source assertion, not independently established.",
+      "statement": "A red vehicle is visible at device time 22:26; identity unresolved.",
+      "subject_refs": [
+        {
+          "id": "00000000-0000-4000-8000-000000000032",
+          "revision": 1
+        }
+      ],
+      "predicate": "recorded_visible",
+      "object_value": "A red vehicle is visible at device time 22:26; identity unresolved.",
+      "occurrence": {
+        "raw": "22:26 device time; uncorrected",
+        "start": "2026-09-11T03:26:00Z",
+        "end": "2026-09-11T03:26:00Z",
+        "start_inclusive": true,
+        "end_inclusive": true,
+        "timezone": "America/Chicago",
+        "precision": "EXACT",
+        "clock_source": "source assertion",
+        "tolerance_seconds": null,
+        "alternative_refs": []
+      },
+      "discovered_at": null,
+      "recorded_at": null,
+      "provenance_group": "source-11",
+      "independence": "UNKNOWN"
+    },
+    {
+      "id": "00000000-0000-4000-8000-000000000042",
+      "case_id": "00000000-0000-4000-8000-000000000001",
+      "revision": 1,
+      "introduced_case_revision": 1,
+      "created_at": "2026-09-15T12:00:00Z",
+      "created_by": "synthetic-fixture-author",
+      "kind": "Observation",
+      "tier": "OBSERVED",
+      "origin": "HUMAN",
+      "review": "ACCEPTED",
+      "citations": [
+        {
+          "evidence": {
+            "id": "00000000-0000-4000-8000-000000000010",
+            "revision": 1
+          },
+          "evidence_sha256": "d96be30b2a77b27f133711995dc464fa2ad24bd517511ece072686ff4f4025fb",
+          "derivative": {
+            "id": "00000000-0000-4000-8000-000000000020",
+            "revision": 1
+          },
+          "derivative_sha256": "d96be30b2a77b27f133711995dc464fa2ad24bd517511ece072686ff4f4025fb",
+          "locator": {
+            "type": "text",
+            "start": 0,
+            "end": 164
+          },
+          "quote": "SYNTHETIC TRAINING MATERIAL\nAttendant Mara Vale states: I saw a red van leave before 22:10 on 2026-09-10. I often eat eggs for breakfast. I did not read its plate.\n"
+        }
+      ],
+      "support_refs": [],
+      "counter_refs": [],
+      "rationale": "Source assertion, not independently established.",
+      "statement": "I often eat eggs for breakfast.",
+      "subject_refs": [
+        {
+          "id": "00000000-0000-4000-8000-000000000030",
+          "revision": 1
+        }
+      ],
+      "predicate": "reports_routine",
+      "object_value": "I often eat eggs for breakfast.",
+      "occurrence": {
+        "raw": null,
+        "start": null,
+        "end": null,
+        "start_inclusive": true,
+        "end_inclusive": true,
+        "timezone": null,
+        "precision": "UNKNOWN",
+        "clock_source": "source assertion",
+        "tolerance_seconds": null,
+        "alternative_refs": []
+      },
+      "discovered_at": null,
+      "recorded_at": null,
+      "provenance_group": "source-10",
+      "independence": "UNKNOWN"
+    },
+    {
+      "id": "00000000-0000-4000-8000-000000000043",
+      "case_id": "00000000-0000-4000-8000-000000000001",
+      "revision": 1,
+      "introduced_case_revision": 1,
+      "created_at": "2026-09-15T12:00:00Z",
+      "created_by": "synthetic-fixture-author",
+      "kind": "Observation",
+      "tier": "DOCUMENTED",
+      "origin": "HUMAN",
+      "review": "ACCEPTED",
+      "citations": [
+        {
+          "evidence": {
+            "id": "00000000-0000-4000-8000-000000000013",
+            "revision": 1
+          },
+          "evidence_sha256": "00b34b124d1163c2738878b7f340291c3693cd4ee16aec2cdaf791a4221a7b31",
+          "derivative": {
+            "id": "00000000-0000-4000-8000-000000000023",
+            "revision": 1
+          },
+          "derivative_sha256": "00b34b124d1163c2738878b7f340291c3693cd4ee16aec2cdaf791a4221a7b31",
+          "locator": {
+            "type": "text",
+            "start": 0,
+            "end": 119
+          },
+          "quote": "SYNTHETIC TRAINING MATERIAL\nLantern Cafe receipt: eggs and toast, 2026-09-10 08:14. Customer identity is not recorded.\n"
+        }
+      ],
+      "support_refs": [],
+      "counter_refs": [],
+      "rationale": "Source assertion, not independently established.",
+      "statement": "Receipt includes eggs; customer not identified.",
+      "subject_refs": [
+        {
+          "id": "00000000-0000-4000-8000-000000000034",
+          "revision": 1
+        }
+      ],
+      "predicate": "receipt_contains",
+      "object_value": "Receipt includes eggs; customer not identified.",
+      "occurrence": {
+        "raw": null,
+        "start": null,
+        "end": null,
+        "start_inclusive": true,
+        "end_inclusive": true,
+        "timezone": null,
+        "precision": "UNKNOWN",
+        "clock_source": "source assertion",
+        "tolerance_seconds": null,
+        "alternative_refs": []
+      },
+      "discovered_at": null,
+      "recorded_at": null,
+      "provenance_group": "source-13",
+      "independence": "UNKNOWN"
+    },
+    {
+      "id": "00000000-0000-4000-8000-000000000044",
+      "case_id": "00000000-0000-4000-8000-000000000001",
+      "revision": 1,
+      "introduced_case_revision": 1,
+      "created_at": "2026-09-15T12:00:00Z",
+      "created_by": "synthetic-fixture-author",
+      "kind": "Observation",
+      "tier": "DOCUMENTED",
+      "origin": "HUMAN",
+      "review": "ACCEPTED",
+      "citations": [
+        {
+          "evidence": {
+            "id": "00000000-0000-4000-8000-000000000014",
+            "revision": 1
+          },
+          "evidence_sha256": "c081a756ae17a33254d011b015a21256c6fe9aaf5f2e461c179ea7989e350a7d",
+          "derivative": {
+            "id": "00000000-0000-4000-8000-000000000024",
+            "revision": 1
+          },
+          "derivative_sha256": "c081a756ae17a33254d011b015a21256c6fe9aaf5f2e461c179ea7989e350a7d",
+          "locator": {
+            "type": "text",
+            "start": 0,
+            "end": 239
+          },
+          "quote": "SYNTHETIC TRAINING MATERIAL\nCalibration record: archived synchronization measurements constrain the camera offset to between minus 2 and plus 2 minutes for the incident interval. A plus 47 minute offset is excluded under this measurement.\n"
+        }
+      ],
+      "support_refs": [],
+      "counter_refs": [],
+      "rationale": "Source assertion, not independently established.",
+      "statement": "Camera offset between minus 2 and plus 2 minutes for the interval.",
+      "subject_refs": [
+        {
+          "id": "00000000-0000-4000-8000-000000000032",
+          "revision": 1
+        }
+      ],
+      "predicate": "clock_offset_bounds",
+      "object_value": "Camera offset between minus 2 and plus 2 minutes for the interval.",
+      "occurrence": {
+        "raw": null,
+        "start": null,
+        "end": null,
+        "start_inclusive": true,
+        "end_inclusive": true,
+        "timezone": null,
+        "precision": "UNKNOWN",
+        "clock_source": "source assertion",
+        "tolerance_seconds": null,
+        "alternative_refs": []
+      },
+      "discovered_at": null,
+      "recorded_at": null,
+      "provenance_group": "source-14",
+      "independence": "UNKNOWN"
+    },
+    {
+      "id": "00000000-0000-4000-8000-000000000045",
+      "case_id": "00000000-0000-4000-8000-000000000001",
+      "revision": 1,
+      "introduced_case_revision": 1,
+      "created_at": "2026-09-15T12:00:00Z",
+      "created_by": "synthetic-fixture-author",
+      "kind": "Observation",
+      "tier": "OBSERVED",
+      "origin": "HUMAN",
+      "review": "ACCEPTED",
+      "citations": [
+        {
+          "evidence": {
+            "id": "00000000-0000-4000-8000-000000000015",
+            "revision": 1
+          },
+          "evidence_sha256": "722dee227b98e71874e3e58811890e46eecf73a22e63e3988aa89ec02b7d0fce",
+          "derivative": {
+            "id": "00000000-0000-4000-8000-000000000025",
+            "revision": 1
+          },
+          "derivative_sha256": "722dee227b98e71874e3e58811890e46eecf73a22e63e3988aa89ec02b7d0fce",
+          "locator": {
+            "type": "text",
+            "start": 0,
+            "end": 186
+          },
+          "quote": "SYNTHETIC TRAINING MATERIAL\nAt 23:00 on 2026-09-10 a records crate was reported missing from the annex. Searchers inspected the loading room shelves only. Other rooms were not searched.\n"
+        }
+      ],
+      "support_refs": [],
+      "counter_refs": [],
+      "rationale": "Source assertion, not independently established.",
+      "statement": "Records crate reported missing at 23:00; search limited to loading room shelves.",
+      "subject_refs": [
+        {
+          "id": "00000000-0000-4000-8000-000000000033",
+          "revision": 1
+        }
+      ],
+      "predicate": "reported_missing",
+      "object_value": "Records crate reported missing at 23:00; search limited to loading room shelves.",
+      "occurrence": {
+        "raw": "23:00 America/Chicago",
+        "start": "2026-09-11T04:00:00Z",
+        "end": "2026-09-11T04:00:00Z",
+        "start_inclusive": true,
+        "end_inclusive": true,
+        "timezone": "America/Chicago",
+        "precision": "EXACT",
+        "clock_source": "source assertion",
+        "tolerance_seconds": null,
+        "alternative_refs": []
+      },
+      "discovered_at": null,
+      "recorded_at": null,
+      "provenance_group": "source-15",
+      "independence": "UNKNOWN"
+    },
+    {
+      "id": "00000000-0000-4000-8000-000000000050",
+      "case_id": "00000000-0000-4000-8000-000000000001",
+      "revision": 1,
+      "introduced_case_revision": 1,
+      "created_at": "2026-09-15T12:00:00Z",
+      "created_by": "synthetic-fixture-author",
+      "kind": "Event",
+      "tier": "OBSERVED",
+      "origin": "HUMAN",
+      "review": "ACCEPTED",
+      "citations": [
+        {
+          "evidence": {
+            "id": "00000000-0000-4000-8000-000000000015",
+            "revision": 1
+          },
+          "evidence_sha256": "722dee227b98e71874e3e58811890e46eecf73a22e63e3988aa89ec02b7d0fce",
+          "derivative": {
+            "id": "00000000-0000-4000-8000-000000000025",
+            "revision": 1
+          },
+          "derivative_sha256": "722dee227b98e71874e3e58811890e46eecf73a22e63e3988aa89ec02b7d0fce",
+          "locator": {
+            "type": "text",
+            "start": 0,
+            "end": 186
+          },
+          "quote": "SYNTHETIC TRAINING MATERIAL\nAt 23:00 on 2026-09-10 a records crate was reported missing from the annex. Searchers inspected the loading room shelves only. Other rooms were not searched.\n"
+        }
+      ],
+      "support_refs": [
+        {
+          "id": "00000000-0000-4000-8000-000000000045",
+          "revision": 1
+        }
+      ],
+      "counter_refs": [],
+      "rationale": "Source assertion, not independently established.",
+      "label": "Missing crate report recorded",
+      "occurrence": {
+        "raw": "23:00 America/Chicago",
+        "start": "2026-09-11T04:00:00Z",
+        "end": "2026-09-11T04:00:00Z",
+        "start_inclusive": true,
+        "end_inclusive": true,
+        "timezone": "America/Chicago",
+        "precision": "EXACT",
+        "clock_source": "source assertion",
+        "tolerance_seconds": null,
+        "alternative_refs": []
+      },
+      "participant_refs": [
+        {
+          "id": "00000000-0000-4000-8000-000000000033",
+          "revision": 1
+        }
+      ],
+      "observation_refs": [
+        {
+          "id": "00000000-0000-4000-8000-000000000045",
+          "revision": 1
+        }
+      ]
+    },
+    {
+      "id": "00000000-0000-4000-8000-000000000051",
+      "case_id": "00000000-0000-4000-8000-000000000001",
+      "revision": 1,
+      "introduced_case_revision": 1,
+      "created_at": "2026-09-15T12:00:00Z",
+      "created_by": "synthetic-fixture-author",
+      "kind": "Anchor",
+      "proposition": {
+        "id": "00000000-0000-4000-8000-000000000050",
+        "revision": 1
+      },
+      "reason": "Fix the reported discovery time for this exploratory run.",
+      "active": true
+    },
+    {
+      "id": "00000000-0000-4000-8000-000000000060",
+      "case_id": "00000000-0000-4000-8000-000000000001",
+      "revision": 1,
+      "introduced_case_revision": 1,
+      "created_at": "2026-09-15T12:00:00Z",
+      "created_by": "synthetic-fixture-author",
+      "kind": "Edge",
+      "tier": "OBSERVED",
+      "origin": "HUMAN",
+      "review": "ACCEPTED",
+      "citations": [
+        {
+          "evidence": {
+            "id": "00000000-0000-4000-8000-000000000010",
+            "revision": 1
+          },
+          "evidence_sha256": "d96be30b2a77b27f133711995dc464fa2ad24bd517511ece072686ff4f4025fb",
+          "derivative": {
+            "id": "00000000-0000-4000-8000-000000000020",
+            "revision": 1
+          },
+          "derivative_sha256": "d96be30b2a77b27f133711995dc464fa2ad24bd517511ece072686ff4f4025fb",
+          "locator": {
+            "type": "text",
+            "start": 0,
+            "end": 164
+          },
+          "quote": "SYNTHETIC TRAINING MATERIAL\nAttendant Mara Vale states: I saw a red van leave before 22:10 on 2026-09-10. I often eat eggs for breakfast. I did not read its plate.\n"
+        }
+      ],
+      "support_refs": [
+        {
+          "id": "00000000-0000-4000-8000-000000000040",
+          "revision": 1
+        }
+      ],
+      "counter_refs": [],
+      "rationale": "Source assertion, not independently established.",
+      "from_ref": {
+        "id": "00000000-0000-4000-8000-000000000040",
+        "revision": 1
+      },
+      "to_ref": {
+        "id": "00000000-0000-4000-8000-000000000031",
+        "revision": 1
+      },
+      "relation": "MENTIONS",
+      "independence": "UNKNOWN"
+    },
+    {
+      "id": "00000000-0000-4000-8000-000000000061",
+      "case_id": "00000000-0000-4000-8000-000000000001",
+      "revision": 1,
+      "introduced_case_revision": 1,
+      "created_at": "2026-09-15T12:00:00Z",
+      "created_by": "synthetic-fixture-author",
+      "kind": "Contradiction",
+      "proposition_refs": [
+        {
+          "id": "00000000-0000-4000-8000-000000000040",
+          "revision": 1
+        },
+        {
+          "id": "00000000-0000-4000-8000-000000000041",
+          "revision": 1
+        }
+      ],
+      "rule": "POSSIBLE_DEPARTURE_VISIBILITY_CONFLICT",
+      "rule_version": "1.0.0",
+      "strength": "POTENTIAL",
+      "status": "UNRESOLVED",
+      "qualifications": [
+        "Same vehicle is unconfirmed.",
+        "Camera time uses uncorrected device clock."
+      ],
+      "resolution_targets": [
+        "Establish vehicle identity.",
+        "Review incident-time clock calibration."
+      ],
+      "resolution_refs": [],
+      "decision_reason": "Keep open pending identity and calibration review.",
+      "predecessor_id": null
+    },
+    {
+      "id": "00000000-0000-4000-8000-000000000070",
+      "case_id": "00000000-0000-4000-8000-000000000001",
+      "revision": 1,
+      "introduced_case_revision": 1,
+      "created_at": "2026-09-15T12:00:00Z",
+      "created_by": "synthetic-fixture-author",
+      "kind": "Hypothesis",
+      "tier": "SPECULATIVE",
+      "origin": "HUMAN",
+      "review": "ACCEPTED",
+      "citations": [],
+      "support_refs": [
+        {
+          "id": "00000000-0000-4000-8000-000000000040",
+          "revision": 1
+        },
+        {
+          "id": "00000000-0000-4000-8000-000000000041",
+          "revision": 1
+        }
+      ],
+      "counter_refs": [
+        {
+          "id": "00000000-0000-4000-8000-000000000044",
+          "revision": 1
+        }
+      ],
+      "rationale": "Source assertion, not independently established.",
+      "claim": "The camera clock was 47 minutes fast.",
+      "state": "RETIRED",
+      "family_key": "camera-offset-plus-47",
+      "strengthen_if": [
+        "New calibration data establishes +47 minutes."
+      ],
+      "weaken_if": [
+        "Synchronization records constrain offset near zero."
+      ],
+      "retire_if": [
+        "Reviewed calibration excludes +47 minutes."
+      ],
+      "falsifiability": "TESTABLE",
+      "retirement_reason": "Reviewed calibration record excludes this offset.",
+      "retired_at_case_revision": 40,
+      "predecessor_id": null,
+      "reopening_evidence": []
+    },
+    {
+      "id": "00000000-0000-4000-8000-000000000080",
+      "case_id": "00000000-0000-4000-8000-000000000001",
+      "revision": 1,
+      "introduced_case_revision": 42,
+      "created_at": "2026-09-15T12:00:00Z",
+      "created_by": "synthetic-fixture-author",
+      "kind": "ModelRun",
+      "task": "AHA",
+      "case_revision": 42,
+      "provider": "REPLAY",
+      "model": "synthetic-contract-fixture",
+      "model_digest": "fixture-v1",
+      "prompt_version": "aha-v1",
+      "input_sha256": "91478cc71031c16492049d2a83f2850016549a87248b57ad3cc52c8ada2f6426",
+      "output_sha256": null,
+      "temperature": 0,
+      "seed": 1,
+      "status": "PARTIAL",
+      "validation_errors": [],
+      "context_refs": [
+        {
+          "id": "00000000-0000-4000-8000-000000000040",
+          "revision": 1
+        },
+        {
+          "id": "00000000-0000-4000-8000-000000000041",
+          "revision": 1
+        },
+        {
+          "id": "00000000-0000-4000-8000-000000000044",
+          "revision": 1
+        },
+        {
+          "id": "00000000-0000-4000-8000-000000000045",
+          "revision": 1
+        },
+        {
+          "id": "00000000-0000-4000-8000-000000000050",
+          "revision": 1
+        },
+        {
+          "id": "00000000-0000-4000-8000-000000000070",
+          "revision": 1
+        }
+      ],
+      "omitted_count": 0
+    },
+    {
+      "id": "00000000-0000-4000-8000-000000000090",
+      "case_id": "00000000-0000-4000-8000-000000000001",
+      "revision": 1,
+      "introduced_case_revision": 42,
+      "created_at": "2026-09-15T12:00:00Z",
+      "created_by": "synthetic-fixture-author",
+      "kind": "Question",
+      "text": "Do the two red-vehicle references identify the same vehicle?",
+      "scenario_ids": [
+        "00000000-0000-4000-8000-000000000081",
+        "00000000-0000-4000-8000-000000000082"
+      ],
+      "outcomes": [
+        {
+          "observation": "Distinct plates or distinctive features establish different vehicles.",
+          "supports_scenario_ids": [
+            "00000000-0000-4000-8000-000000000081"
+          ],
+          "weakens_scenario_ids": [
+            "00000000-0000-4000-8000-000000000082"
+          ]
+        },
+        {
+          "observation": "Reviewed source material establishes the same vehicle.",
+          "supports_scenario_ids": [
+            "00000000-0000-4000-8000-000000000082"
+          ],
+          "weakens_scenario_ids": [
+            "00000000-0000-4000-8000-000000000081"
+          ]
+        }
+      ],
+      "source_to_check": "Review original images and contemporaneous identification notes.",
+      "limitations": [
+        "Color alone cannot establish identity.",
+        "Same vehicle would not establish who operated it."
+      ],
+      "effort": "UNKNOWN",
+      "status": "OPEN",
+      "answer_refs": []
+    },
+    {
+      "id": "00000000-0000-4000-8000-000000000081",
+      "case_id": "00000000-0000-4000-8000-000000000001",
+      "revision": 1,
+      "introduced_case_revision": 42,
+      "created_at": "2026-09-15T12:00:00Z",
+      "created_by": "synthetic-fixture-author",
+      "kind": "Scenario",
+      "run_id": "00000000-0000-4000-8000-000000000080",
+      "tier": "SPECULATIVE",
+      "origin": "AI_SYNTHETIC",
+      "review": "PENDING",
+      "title": "Two different vehicles",
+      "summary": "The two references could concern different vehicles.",
+      "family": "INDEPENDENT_EVENTS",
+      "signature": {
+        "mechanism": "different-vehicles",
+        "ordering": [
+          "reported departure",
+          "recorded visibility"
+        ],
+        "actor_structure": "unknown operator(s)",
+        "relaxed_premise_ids": [],
+        "independence_assumptions": [
+          "Vehicle identity is unresolved."
+        ]
+      },
+      "anchor_refs": [
+        {
+          "id": "00000000-0000-4000-8000-000000000050",
+          "revision": 1
+        }
+      ],
+      "steps": [
+        {
+          "id": "00000000-0000-4000-8000-000000000181",
+          "origin": "AI_SYNTHETIC",
+          "description": "The two references could concern different vehicles.",
+          "occurrence": {
+            "raw": "unknown interval",
+            "start": "2026-09-11T02:50:00Z",
+            "end": "2026-09-11T03:28:00Z",
+            "start_inclusive": true,
+            "end_inclusive": true,
+            "timezone": "America/Chicago",
+            "precision": "RANGE",
+            "clock_source": "source assertion",
+            "tolerance_seconds": null,
+            "alternative_refs": []
+          },
+          "source_refs": [],
+          "assumptions": [
+            "Two vehicles shared a color."
+          ],
+          "actor_refs": [],
+          "unknown_actor_labels": [
+            "UNKNOWN_ACTOR_1"
+          ]
+        },
+        {
+          "id": "00000000-0000-4000-8000-000000000281",
+          "origin": "SOURCE_BOUND",
+          "description": "The missing-crate report was recorded at 23:00.",
+          "occurrence": {
+            "raw": "23:00 America/Chicago",
+            "start": "2026-09-11T04:00:00Z",
+            "end": "2026-09-11T04:00:00Z",
+            "start_inclusive": true,
+            "end_inclusive": true,
+            "timezone": "America/Chicago",
+            "precision": "EXACT",
+            "clock_source": "source assertion",
+            "tolerance_seconds": null,
+            "alternative_refs": []
+          },
+          "source_refs": [
+            {
+              "id": "00000000-0000-4000-8000-000000000050",
+              "revision": 1
+            }
+          ],
+          "assumptions": [],
+          "actor_refs": [],
+          "unknown_actor_labels": []
+        }
+      ],
+      "counter_refs": [
+        {
+          "id": "00000000-0000-4000-8000-000000000061",
+          "revision": 1
+        }
+      ],
+      "question_ids": [
+        "00000000-0000-4000-8000-000000000090"
+      ],
+      "validation": "PASSED"
+    },
+    {
+      "id": "00000000-0000-4000-8000-000000000082",
+      "case_id": "00000000-0000-4000-8000-000000000001",
+      "revision": 1,
+      "introduced_case_revision": 42,
+      "created_at": "2026-09-15T12:00:00Z",
+      "created_by": "synthetic-fixture-author",
+      "kind": "Scenario",
+      "run_id": "00000000-0000-4000-8000-000000000080",
+      "tier": "SPECULATIVE",
+      "origin": "AI_SYNTHETIC",
+      "review": "PENDING",
+      "title": "A vehicle may have returned",
+      "summary": "An unidentified vehicle could have departed and later returned.",
+      "family": "ALTERNATE_ORDER",
+      "signature": {
+        "mechanism": "departure-then-return",
+        "ordering": [
+          "reported departure",
+          "recorded visibility"
+        ],
+        "actor_structure": "unknown operator(s)",
+        "relaxed_premise_ids": [],
+        "independence_assumptions": []
+      },
+      "anchor_refs": [
+        {
+          "id": "00000000-0000-4000-8000-000000000050",
+          "revision": 1
+        }
+      ],
+      "steps": [
+        {
+          "id": "00000000-0000-4000-8000-000000000182",
+          "origin": "AI_SYNTHETIC",
+          "description": "An unidentified vehicle could have departed and later returned.",
+          "occurrence": {
+            "raw": "unknown interval",
+            "start": "2026-09-11T02:50:00Z",
+            "end": "2026-09-11T03:28:00Z",
+            "start_inclusive": true,
+            "end_inclusive": true,
+            "timezone": "America/Chicago",
+            "precision": "RANGE",
+            "clock_source": "source assertion",
+            "tolerance_seconds": null,
+            "alternative_refs": []
+          },
+          "source_refs": [],
+          "assumptions": [
+            "A return trip occurred; no direct source establishes it."
+          ],
+          "actor_refs": [],
+          "unknown_actor_labels": [
+            "UNKNOWN_ACTOR_1"
+          ]
+        },
+        {
+          "id": "00000000-0000-4000-8000-000000000282",
+          "origin": "SOURCE_BOUND",
+          "description": "The missing-crate report was recorded at 23:00.",
+          "occurrence": {
+            "raw": "23:00 America/Chicago",
+            "start": "2026-09-11T04:00:00Z",
+            "end": "2026-09-11T04:00:00Z",
+            "start_inclusive": true,
+            "end_inclusive": true,
+            "timezone": "America/Chicago",
+            "precision": "EXACT",
+            "clock_source": "source assertion",
+            "tolerance_seconds": null,
+            "alternative_refs": []
+          },
+          "source_refs": [
+            {
+              "id": "00000000-0000-4000-8000-000000000050",
+              "revision": 1
+            }
+          ],
+          "assumptions": [],
+          "actor_refs": [],
+          "unknown_actor_labels": []
+        }
+      ],
+      "counter_refs": [
+        {
+          "id": "00000000-0000-4000-8000-000000000061",
+          "revision": 1
+        }
+      ],
+      "question_ids": [
+        "00000000-0000-4000-8000-000000000090"
+      ],
+      "validation": "PASSED"
+    }
+  ],
+  "audit": []
+}

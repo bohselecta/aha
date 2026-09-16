@@ -1,0 +1,12 @@
+{
+  "image_id": "sha256:a79446a80418cc9292c332a66d59786d925f6bd8f6208a7f0b27043f8396b697",
+  "architecture": "arm64",
+  "health": "healthy",
+  "non_root": true,
+  "read_only_root": true,
+  "capabilities_dropped": true,
+  "pairing_and_case_read": "PASS",
+  "unauthenticated_and_foreign_host": "PASS",
+  "synthetic_record_count": 32,
+  "note": "Development stack verification; not signed release or packet-capture certification."
+}

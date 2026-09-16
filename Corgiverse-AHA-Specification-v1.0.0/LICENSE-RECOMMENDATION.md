@@ -1,0 +1,4 @@
+# License recommendation
+Recommend Apache-2.0 for application code, schemas, documentation and wholly original synthetic fixtures. Its permissive terms and explicit patent grant suit agency integration and redistribution ([official text](https://www.apache.org/licenses/LICENSE-2.0.html)). Preserve upstream notices and audit transitive dependencies, fonts, OCR tools and models independently. Model weights are not included under the application license.
+
+This package recommends licensing; it does not assert ownership of legacy PATTERNLINE/Evidence Graph materials or grant rights the publisher does not hold. Before public release, the rights holder adopts the license, inserts the official unmodified LICENSE text, accurate copyright/NOTICE entries and CONTRIBUTING/DCO policy. Product behavior restrictions remain engineering requirements; do not add use restrictions to Apache-2.0 while calling the result the standard license. Trademark policy is separate.

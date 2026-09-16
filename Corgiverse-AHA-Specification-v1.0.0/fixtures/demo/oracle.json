@@ -1,0 +1,18 @@
+{
+  "schema_version": "1.0.0",
+  "expected_egg_observations": [
+    "00000000-0000-4000-8000-000000000042",
+    "00000000-0000-4000-8000-000000000043"
+  ],
+  "persistent_edges_created_by_lens": 0,
+  "identity_merge_allowed": false,
+  "retired_family_blocked": "camera-offset-plus-47",
+  "conflict_id": "00000000-0000-4000-8000-000000000061",
+  "conflict_strength": "POTENTIAL",
+  "unknowns": [
+    "vehicle identity",
+    "crate location",
+    "any involvement by a named person"
+  ],
+  "scenario_count": 2
+}

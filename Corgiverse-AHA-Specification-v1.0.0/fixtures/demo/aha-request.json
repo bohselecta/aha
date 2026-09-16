@@ -1,0 +1,38 @@
+{
+  "case_revision": 42,
+  "interval": {
+    "raw": "21:50–23:00 America/Chicago",
+    "start": "2026-09-11T02:50:00Z",
+    "end": "2026-09-11T04:00:00Z",
+    "start_inclusive": true,
+    "end_inclusive": true,
+    "timezone": "America/Chicago",
+    "precision": "RANGE",
+    "clock_source": "source assertion",
+    "tolerance_seconds": null,
+    "alternative_refs": []
+  },
+  "anchor_refs": [
+    {
+      "id": "00000000-0000-4000-8000-000000000050",
+      "revision": 1
+    }
+  ],
+  "constraint_refs": [],
+  "soft_refs": [
+    {
+      "id": "00000000-0000-4000-8000-000000000040",
+      "revision": 1
+    },
+    {
+      "id": "00000000-0000-4000-8000-000000000041",
+      "revision": 1
+    }
+  ],
+  "exclude_refs": [],
+  "requested_count": 10,
+  "families": [
+    "INDEPENDENT_EVENTS",
+    "ALTERNATE_ORDER"
+  ]
+}

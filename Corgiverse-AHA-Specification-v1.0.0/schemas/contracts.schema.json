@@ -1,0 +1,7029 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://corgiverse.example/schemas/contracts-1.0.0.json",
+  "title": "AHA build contract 1.0.0",
+  "$ref": "#/$defs/CaseExchange",
+  "$defs": {
+    "Ref": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "revision": {
+          "type": "integer",
+          "minimum": 1
+        }
+      },
+      "required": [
+        "id",
+        "revision"
+      ],
+      "additionalProperties": false
+    },
+    "Tier": {
+      "type": "string",
+      "enum": [
+        "DOCUMENTED",
+        "OBSERVED",
+        "INFERRED",
+        "SPECULATIVE"
+      ]
+    },
+    "Origin": {
+      "type": "string",
+      "enum": [
+        "HUMAN",
+        "EXTRACTED",
+        "AI_SYNTHETIC"
+      ]
+    },
+    "Review": {
+      "type": "string",
+      "enum": [
+        "PENDING",
+        "ACCEPTED",
+        "REJECTED"
+      ]
+    },
+    "Time": {
+      "type": "object",
+      "properties": {
+        "raw": {
+          "anyOf": [
+            {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 20000
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "start": {
+          "anyOf": [
+            {
+              "type": "string",
+              "format": "date-time"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "end": {
+          "anyOf": [
+            {
+              "type": "string",
+              "format": "date-time"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "start_inclusive": {
+          "type": "boolean"
+        },
+        "end_inclusive": {
+          "type": "boolean"
+        },
+        "timezone": {
+          "anyOf": [
+            {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 200
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "precision": {
+          "type": "string",
+          "enum": [
+            "EXACT",
+            "RANGE",
+            "APPROXIMATE",
+            "DATE_ONLY",
+            "UNKNOWN",
+            "DISPUTED"
+          ]
+        },
+        "clock_source": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 200
+        },
+        "tolerance_seconds": {
+          "anyOf": [
+            {
+              "type": "integer",
+              "minimum": 0
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "alternative_refs": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/Ref"
+          },
+          "minItems": 0,
+          "maxItems": 10000
+        }
+      },
+      "required": [
+        "raw",
+        "start",
+        "end",
+        "start_inclusive",
+        "end_inclusive",
+        "timezone",
+        "precision",
+        "clock_source",
+        "tolerance_seconds",
+        "alternative_refs"
+      ],
+      "additionalProperties": false,
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "precision": {
+                "enum": [
+                  "EXACT",
+                  "APPROXIMATE",
+                  "DATE_ONLY"
+                ]
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "start": {
+                "type": "string",
+                "format": "date-time"
+              },
+              "end": {
+                "type": "string",
+                "format": "date-time"
+              },
+              "timezone": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 200
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "precision": {
+                "const": "RANGE"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "timezone": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 200
+              }
+            },
+            "anyOf": [
+              {
+                "properties": {
+                  "start": {
+                    "type": "string",
+                    "format": "date-time"
+                  }
+                }
+              },
+              {
+                "properties": {
+                  "end": {
+                    "type": "string",
+                    "format": "date-time"
+                  }
+                }
+              }
+            ]
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "precision": {
+                "const": "APPROXIMATE"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "tolerance_seconds": {
+                "type": "integer",
+                "minimum": 0
+              }
+            }
+          }
+        }
+      ]
+    },
+    "Locator": {
+      "oneOf": [
+        {
+          "type": "object",
+          "properties": {
+            "type": {
+              "const": "text"
+            },
+            "start": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "end": {
+              "type": "integer",
+              "minimum": 0
+            }
+          },
+          "required": [
+            "type",
+            "start",
+            "end"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "type": {
+              "const": "page"
+            },
+            "page": {
+              "type": "integer",
+              "minimum": 1
+            },
+            "bbox": {
+              "anyOf": [
+                {
+                  "type": "array",
+                  "items": {
+                    "type": "number",
+                    "minimum": 0,
+                    "maximum": 1
+                  },
+                  "minItems": 4,
+                  "maxItems": 4
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            }
+          },
+          "required": [
+            "type",
+            "page",
+            "bbox"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "type": {
+              "const": "row"
+            },
+            "sheet": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 200
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "row": {
+              "type": "integer",
+              "minimum": 1
+            },
+            "column": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 200
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            }
+          },
+          "required": [
+            "type",
+            "sheet",
+            "row",
+            "column"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "type": {
+              "const": "media"
+            },
+            "start_ms": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "end_ms": {
+              "type": "integer",
+              "minimum": 0
+            }
+          },
+          "required": [
+            "type",
+            "start_ms",
+            "end_ms"
+          ],
+          "additionalProperties": false
+        }
+      ]
+    },
+    "Citation": {
+      "type": "object",
+      "properties": {
+        "evidence": {
+          "$ref": "#/$defs/Ref"
+        },
+        "evidence_sha256": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$"
+        },
+        "derivative": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Ref"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "derivative_sha256": {
+          "anyOf": [
+            {
+              "type": "string",
+              "pattern": "^[0-9a-f]{64}$"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "locator": {
+          "$ref": "#/$defs/Locator"
+        },
+        "quote": {
+          "anyOf": [
+            {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 20000
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "required": [
+        "evidence",
+        "evidence_sha256",
+        "derivative",
+        "derivative_sha256",
+        "locator",
+        "quote"
+      ],
+      "additionalProperties": false
+    },
+    "Case": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "title": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 200
+        },
+        "timezone": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 200
+        },
+        "schema_version": {
+          "const": "1.0.0"
+        },
+        "case_revision": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "synthetic": {
+          "type": "boolean"
+        },
+        "created_at": {
+          "type": "string",
+          "format": "date-time"
+        }
+      },
+      "required": [
+        "id",
+        "title",
+        "timezone",
+        "schema_version",
+        "case_revision",
+        "synthetic",
+        "created_at"
+      ],
+      "additionalProperties": false
+    },
+    "Evidence": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "case_id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "revision": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "introduced_case_revision": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "created_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "created_by": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 200
+        },
+        "kind": {
+          "const": "Evidence"
+        },
+        "sha256": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$"
+        },
+        "bytes": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "media_type": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 200
+        },
+        "original_filename": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 200
+        },
+        "received_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "source_channel": {
+          "type": "string",
+          "enum": [
+            "UPLOAD",
+            "MANUAL",
+            "CASEMAIL",
+            "IMPORT"
+          ]
+        },
+        "integrity": {
+          "type": "string",
+          "enum": [
+            "PENDING",
+            "VERIFIED",
+            "FAILED"
+          ]
+        },
+        "scan_status": {
+          "type": "string",
+          "enum": [
+            "UNSCANNED",
+            "CLEAN",
+            "QUARANTINED"
+          ]
+        }
+      },
+      "required": [
+        "id",
+        "case_id",
+        "revision",
+        "introduced_case_revision",
+        "created_at",
+        "created_by",
+        "kind",
+        "sha256",
+        "bytes",
+        "media_type",
+        "original_filename",
+        "received_at",
+        "source_channel",
+        "integrity",
+        "scan_status"
+      ],
+      "additionalProperties": false
+    },
+    "Derivative": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "case_id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "revision": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "introduced_case_revision": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "created_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "created_by": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 200
+        },
+        "kind": {
+          "const": "Derivative"
+        },
+        "evidence": {
+          "$ref": "#/$defs/Ref"
+        },
+        "sha256": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$"
+        },
+        "bytes": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "derivative_type": {
+          "type": "string",
+          "enum": [
+            "TEXT",
+            "OCR",
+            "PREVIEW",
+            "REDACTED",
+            "TRANSCRIPT",
+            "LOCATOR_MAP"
+          ]
+        },
+        "tool": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 200
+        },
+        "tool_version": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 200
+        },
+        "config_sha256": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$"
+        },
+        "media_type": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 200
+        }
+      },
+      "required": [
+        "id",
+        "case_id",
+        "revision",
+        "introduced_case_revision",
+        "created_at",
+        "created_by",
+        "kind",
+        "evidence",
+        "sha256",
+        "bytes",
+        "derivative_type",
+        "tool",
+        "tool_version",
+        "config_sha256",
+        "media_type"
+      ],
+      "additionalProperties": false
+    },
+    "Entity": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "case_id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "revision": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "introduced_case_revision": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "created_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "created_by": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 200
+        },
+        "kind": {
+          "const": "Entity"
+        },
+        "label": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 200
+        },
+        "entity_type": {
+          "type": "string",
+          "enum": [
+            "PERSON",
+            "ORGANIZATION",
+            "PLACE",
+            "OBJECT",
+            "VEHICLE",
+            "DEVICE",
+            "UNKNOWN_ACTOR"
+          ]
+        },
+        "aliases": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 200
+          },
+          "minItems": 0,
+          "maxItems": 10000
+        },
+        "review": {
+          "$ref": "#/$defs/Review"
+        },
+        "source_refs": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/Ref"
+          },
+          "minItems": 0,
+          "maxItems": 10000
+        }
+      },
+      "required": [
+        "id",
+        "case_id",
+        "revision",
+        "introduced_case_revision",
+        "created_at",
+        "created_by",
+        "kind",
+        "label",
+        "entity_type",
+        "aliases",
+        "review",
+        "source_refs"
+      ],
+      "additionalProperties": false
+    },
+    "Observation": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "case_id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "revision": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "introduced_case_revision": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "created_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "created_by": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 200
+        },
+        "kind": {
+          "const": "Observation"
+        },
+        "tier": {
+          "$ref": "#/$defs/Tier"
+        },
+        "origin": {
+          "type": "string",
+          "enum": [
+            "HUMAN",
+            "EXTRACTED"
+          ]
+        },
+        "review": {
+          "$ref": "#/$defs/Review"
+        },
+        "citations": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/Citation"
+          },
+          "minItems": 1,
+          "maxItems": 10000
+        },
+        "support_refs": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/Ref"
+          },
+          "minItems": 0,
+          "maxItems": 10000
+        },
+        "counter_refs": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/Ref"
+          },
+          "minItems": 0,
+          "maxItems": 10000
+        },
+        "rationale": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 20000
+        },
+        "statement": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 20000
+        },
+        "subject_refs": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/Ref"
+          },
+          "minItems": 1,
+          "maxItems": 10000
+        },
+        "predicate": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 200
+        },
+        "object_value": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 20000
+        },
+        "occurrence": {
+          "$ref": "#/$defs/Time"
+        },
+        "discovered_at": {
+          "anyOf": [
+            {
+              "type": "string",
+              "format": "date-time"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "recorded_at": {
+          "anyOf": [
+            {
+              "type": "string",
+              "format": "date-time"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "provenance_group": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 200
+        },
+        "independence": {
+          "type": "string",
+          "enum": [
+            "UNKNOWN",
+            "SHARED",
+            "REVIEWED_INDEPENDENT"
+          ]
+        }
+      },
+      "required": [
+        "id",
+        "case_id",
+        "revision",
+        "introduced_case_revision",
+        "created_at",
+        "created_by",
+        "kind",
+        "tier",
+        "origin",
+        "review",
+        "citations",
+        "support_refs",
+        "counter_refs",
+        "rationale",
+        "statement",
+        "subject_refs",
+        "predicate",
+        "object_value",
+        "occurrence",
+        "discovered_at",
+        "recorded_at",
+        "provenance_group",
+        "independence"
+      ],
+      "additionalProperties": false,
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "origin": {
+                "const": "AI_SYNTHETIC"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "tier": {
+                "const": "SPECULATIVE"
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "tier": {
+                "enum": [
+                  "DOCUMENTED",
+                  "OBSERVED"
+                ]
+              }
+            }
+          },
+          "then": {
+            "anyOf": [
+              {
+                "properties": {
+                  "citations": {
+                    "minItems": 1
+                  }
+                }
+              },
+              {
+                "properties": {
+                  "support_refs": {
+                    "minItems": 1
+                  }
+                }
+              }
+            ]
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "tier": {
+                "const": "INFERRED"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "support_refs": {
+                "minItems": 1
+              }
+            }
+          }
+        }
+      ]
+    },
+    "Interpretation": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "case_id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "revision": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "introduced_case_revision": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "created_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "created_by": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 200
+        },
+        "kind": {
+          "const": "Interpretation"
+        },
+        "tier": {
+          "$ref": "#/$defs/Tier"
+        },
+        "origin": {
+          "$ref": "#/$defs/Origin"
+        },
+        "review": {
+          "$ref": "#/$defs/Review"
+        },
+        "citations": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/Citation"
+          },
+          "minItems": 0,
+          "maxItems": 10000
+        },
+        "support_refs": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/Ref"
+          },
+          "minItems": 0,
+          "maxItems": 10000
+        },
+        "counter_refs": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/Ref"
+          },
+          "minItems": 0,
+          "maxItems": 10000
+        },
+        "rationale": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 20000
+        },
+        "statement": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 20000
+        },
+        "assumptions": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 20000
+          },
+          "minItems": 0,
+          "maxItems": 10000
+        },
+        "premise_refs": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/Ref"
+          },
+          "minItems": 1,
+          "maxItems": 10000
+        }
+      },
+      "required": [
+        "id",
+        "case_id",
+        "revision",
+        "introduced_case_revision",
+        "created_at",
+        "created_by",
+        "kind",
+        "tier",
+        "origin",
+        "review",
+        "citations",
+        "support_refs",
+        "counter_refs",
+        "rationale",
+        "statement",
+        "assumptions",
+        "premise_refs"
+      ],
+      "additionalProperties": false,
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "origin": {
+                "const": "AI_SYNTHETIC"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "tier": {
+                "const": "SPECULATIVE"
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "tier": {
+                "enum": [
+                  "DOCUMENTED",
+                  "OBSERVED"
+                ]
+              }
+            }
+          },
+          "then": {
+            "anyOf": [
+              {
+                "properties": {
+                  "citations": {
+                    "minItems": 1
+                  }
+                }
+              },
+              {
+                "properties": {
+                  "support_refs": {
+                    "minItems": 1
+                  }
+                }
+              }
+            ]
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "tier": {
+                "const": "INFERRED"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "support_refs": {
+                "minItems": 1
+              }
+            }
+          }
+        }
+      ]
+    },
+    "Event": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "case_id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "revision": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "introduced_case_revision": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "created_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "created_by": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 200
+        },
+        "kind": {
+          "const": "Event"
+        },
+        "tier": {
+          "$ref": "#/$defs/Tier"
+        },
+        "origin": {
+          "$ref": "#/$defs/Origin"
+        },
+        "review": {
+          "$ref": "#/$defs/Review"
+        },
+        "citations": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/Citation"
+          },
+          "minItems": 0,
+          "maxItems": 10000
+        },
+        "support_refs": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/Ref"
+          },
+          "minItems": 0,
+          "maxItems": 10000
+        },
+        "counter_refs": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/Ref"
+          },
+          "minItems": 0,
+          "maxItems": 10000
+        },
+        "rationale": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 20000
+        },
+        "label": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 200
+        },
+        "occurrence": {
+          "$ref": "#/$defs/Time"
+        },
+        "participant_refs": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/Ref"
+          },
+          "minItems": 0,
+          "maxItems": 10000
+        },
+        "observation_refs": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/Ref"
+          },
+          "minItems": 1,
+          "maxItems": 10000
+        }
+      },
+      "required": [
+        "id",
+        "case_id",
+        "revision",
+        "introduced_case_revision",
+        "created_at",
+        "created_by",
+        "kind",
+        "tier",
+        "origin",
+        "review",
+        "citations",
+        "support_refs",
+        "counter_refs",
+        "rationale",
+        "label",
+        "occurrence",
+        "participant_refs",
+        "observation_refs"
+      ],
+      "additionalProperties": false,
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "origin": {
+                "const": "AI_SYNTHETIC"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "tier": {
+                "const": "SPECULATIVE"
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "tier": {
+                "enum": [
+                  "DOCUMENTED",
+                  "OBSERVED"
+                ]
+              }
+            }
+          },
+          "then": {
+            "anyOf": [
+              {
+                "properties": {
+                  "citations": {
+                    "minItems": 1
+                  }
+                }
+              },
+              {
+                "properties": {
+                  "support_refs": {
+                    "minItems": 1
+                  }
+                }
+              }
+            ]
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "tier": {
+                "const": "INFERRED"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "support_refs": {
+                "minItems": 1
+              }
+            }
+          }
+        }
+      ]
+    },
+    "Edge": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "case_id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "revision": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "introduced_case_revision": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "created_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "created_by": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 200
+        },
+        "kind": {
+          "const": "Edge"
+        },
+        "tier": {
+          "$ref": "#/$defs/Tier"
+        },
+        "origin": {
+          "$ref": "#/$defs/Origin"
+        },
+        "review": {
+          "$ref": "#/$defs/Review"
+        },
+        "citations": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/Citation"
+          },
+          "minItems": 0,
+          "maxItems": 10000
+        },
+        "support_refs": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/Ref"
+          },
+          "minItems": 0,
+          "maxItems": 10000
+        },
+        "counter_refs": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/Ref"
+          },
+          "minItems": 0,
+          "maxItems": 10000
+        },
+        "rationale": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 20000
+        },
+        "from_ref": {
+          "$ref": "#/$defs/Ref"
+        },
+        "to_ref": {
+          "$ref": "#/$defs/Ref"
+        },
+        "relation": {
+          "type": "string",
+          "enum": [
+            "MENTIONS",
+            "LOCATED_AT",
+            "PARTICIPATED_IN",
+            "SUPPORTS",
+            "CONTRADICTS",
+            "PRECEDES",
+            "REFERS_TO",
+            "SAME_IDENTIFIER"
+          ]
+        },
+        "independence": {
+          "type": "string",
+          "enum": [
+            "UNKNOWN",
+            "SHARED",
+            "REVIEWED_INDEPENDENT"
+          ]
+        }
+      },
+      "required": [
+        "id",
+        "case_id",
+        "revision",
+        "introduced_case_revision",
+        "created_at",
+        "created_by",
+        "kind",
+        "tier",
+        "origin",
+        "review",
+        "citations",
+        "support_refs",
+        "counter_refs",
+        "rationale",
+        "from_ref",
+        "to_ref",
+        "relation",
+        "independence"
+      ],
+      "additionalProperties": false,
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "origin": {
+                "const": "AI_SYNTHETIC"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "tier": {
+                "const": "SPECULATIVE"
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "tier": {
+                "enum": [
+                  "DOCUMENTED",
+                  "OBSERVED"
+                ]
+              }
+            }
+          },
+          "then": {
+            "anyOf": [
+              {
+                "properties": {
+                  "citations": {
+                    "minItems": 1
+                  }
+                }
+              },
+              {
+                "properties": {
+                  "support_refs": {
+                    "minItems": 1
+                  }
+                }
+              }
+            ]
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "tier": {
+                "const": "INFERRED"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "support_refs": {
+                "minItems": 1
+              }
+            }
+          }
+        }
+      ]
+    },
+    "Contradiction": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "case_id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "revision": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "introduced_case_revision": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "created_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "created_by": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 200
+        },
+        "kind": {
+          "const": "Contradiction"
+        },
+        "proposition_refs": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/Ref"
+          },
+          "minItems": 2,
+          "maxItems": 20
+        },
+        "rule": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 200
+        },
+        "rule_version": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 200
+        },
+        "strength": {
+          "type": "string",
+          "enum": [
+            "POTENTIAL",
+            "LOGICAL"
+          ]
+        },
+        "status": {
+          "type": "string",
+          "enum": [
+            "CANDIDATE",
+            "UNRESOLVED",
+            "RESOLVED",
+            "DISMISSED"
+          ]
+        },
+        "qualifications": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 20000
+          },
+          "minItems": 0,
+          "maxItems": 10000
+        },
+        "resolution_targets": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 20000
+          },
+          "minItems": 1,
+          "maxItems": 10000
+        },
+        "resolution_refs": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/Ref"
+          },
+          "minItems": 0,
+          "maxItems": 10000
+        },
+        "decision_reason": {
+          "anyOf": [
+            {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 20000
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "predecessor_id": {
+          "anyOf": [
+            {
+              "type": "string",
+              "format": "uuid"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "required": [
+        "id",
+        "case_id",
+        "revision",
+        "introduced_case_revision",
+        "created_at",
+        "created_by",
+        "kind",
+        "proposition_refs",
+        "rule",
+        "rule_version",
+        "strength",
+        "status",
+        "qualifications",
+        "resolution_targets",
+        "resolution_refs",
+        "decision_reason",
+        "predecessor_id"
+      ],
+      "additionalProperties": false
+    },
+    "Hypothesis": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "case_id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "revision": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "introduced_case_revision": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "created_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "created_by": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 200
+        },
+        "kind": {
+          "const": "Hypothesis"
+        },
+        "tier": {
+          "$ref": "#/$defs/Tier"
+        },
+        "origin": {
+          "$ref": "#/$defs/Origin"
+        },
+        "review": {
+          "$ref": "#/$defs/Review"
+        },
+        "citations": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/Citation"
+          },
+          "minItems": 0,
+          "maxItems": 10000
+        },
+        "support_refs": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/Ref"
+          },
+          "minItems": 0,
+          "maxItems": 10000
+        },
+        "counter_refs": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/Ref"
+          },
+          "minItems": 0,
+          "maxItems": 10000
+        },
+        "rationale": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 20000
+        },
+        "claim": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 20000
+        },
+        "state": {
+          "type": "string",
+          "enum": [
+            "PROPOSED",
+            "TESTING",
+            "SUPPORTED",
+            "WEAKENED",
+            "RETIRED"
+          ]
+        },
+        "family_key": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 200
+        },
+        "strengthen_if": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 20000
+          },
+          "minItems": 0,
+          "maxItems": 10000
+        },
+        "weaken_if": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 20000
+          },
+          "minItems": 0,
+          "maxItems": 10000
+        },
+        "retire_if": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 20000
+          },
+          "minItems": 0,
+          "maxItems": 10000
+        },
+        "falsifiability": {
+          "type": "string",
+          "enum": [
+            "TESTABLE",
+            "NOT_CURRENTLY_FALSIFIABLE"
+          ]
+        },
+        "retirement_reason": {
+          "anyOf": [
+            {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 20000
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "retired_at_case_revision": {
+          "anyOf": [
+            {
+              "type": "integer",
+              "minimum": 0
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "predecessor_id": {
+          "anyOf": [
+            {
+              "type": "string",
+              "format": "uuid"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "reopening_evidence": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/Ref"
+          },
+          "minItems": 0,
+          "maxItems": 10000
+        }
+      },
+      "required": [
+        "id",
+        "case_id",
+        "revision",
+        "introduced_case_revision",
+        "created_at",
+        "created_by",
+        "kind",
+        "tier",
+        "origin",
+        "review",
+        "citations",
+        "support_refs",
+        "counter_refs",
+        "rationale",
+        "claim",
+        "state",
+        "family_key",
+        "strengthen_if",
+        "weaken_if",
+        "retire_if",
+        "falsifiability",
+        "retirement_reason",
+        "retired_at_case_revision",
+        "predecessor_id",
+        "reopening_evidence"
+      ],
+      "additionalProperties": false,
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "origin": {
+                "const": "AI_SYNTHETIC"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "tier": {
+                "const": "SPECULATIVE"
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "tier": {
+                "enum": [
+                  "DOCUMENTED",
+                  "OBSERVED"
+                ]
+              }
+            }
+          },
+          "then": {
+            "anyOf": [
+              {
+                "properties": {
+                  "citations": {
+                    "minItems": 1
+                  }
+                }
+              },
+              {
+                "properties": {
+                  "support_refs": {
+                    "minItems": 1
+                  }
+                }
+              }
+            ]
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "tier": {
+                "const": "INFERRED"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "support_refs": {
+                "minItems": 1
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "state": {
+                "const": "RETIRED"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "retirement_reason": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 20000
+              },
+              "retired_at_case_revision": {
+                "type": "integer",
+                "minimum": 0
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "state": {
+                "const": "SUPPORTED"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "falsifiability": {
+                "const": "TESTABLE"
+              },
+              "weaken_if": {
+                "minItems": 1
+              },
+              "support_refs": {
+                "minItems": 1
+              }
+            }
+          }
+        }
+      ]
+    },
+    "Question": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "case_id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "revision": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "introduced_case_revision": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "created_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "created_by": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 200
+        },
+        "kind": {
+          "const": "Question"
+        },
+        "text": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 20000
+        },
+        "scenario_ids": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "minItems": 1,
+          "maxItems": 10
+        },
+        "outcomes": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "observation": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 20000
+              },
+              "supports_scenario_ids": {
+                "type": "array",
+                "items": {
+                  "type": "string",
+                  "format": "uuid"
+                },
+                "minItems": 0,
+                "maxItems": 10000
+              },
+              "weakens_scenario_ids": {
+                "type": "array",
+                "items": {
+                  "type": "string",
+                  "format": "uuid"
+                },
+                "minItems": 0,
+                "maxItems": 10000
+              }
+            },
+            "required": [
+              "observation",
+              "supports_scenario_ids",
+              "weakens_scenario_ids"
+            ],
+            "additionalProperties": false
+          },
+          "minItems": 2,
+          "maxItems": 10
+        },
+        "source_to_check": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 20000
+        },
+        "limitations": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 20000
+          },
+          "minItems": 0,
+          "maxItems": 10000
+        },
+        "effort": {
+          "type": "string",
+          "enum": [
+            "UNKNOWN",
+            "LOW",
+            "MEDIUM",
+            "HIGH"
+          ]
+        },
+        "status": {
+          "type": "string",
+          "enum": [
+            "OPEN",
+            "IN_PROGRESS",
+            "ANSWERED",
+            "CLOSED"
+          ]
+        },
+        "answer_refs": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/Ref"
+          },
+          "minItems": 0,
+          "maxItems": 10000
+        }
+      },
+      "required": [
+        "id",
+        "case_id",
+        "revision",
+        "introduced_case_revision",
+        "created_at",
+        "created_by",
+        "kind",
+        "text",
+        "scenario_ids",
+        "outcomes",
+        "source_to_check",
+        "limitations",
+        "effort",
+        "status",
+        "answer_refs"
+      ],
+      "additionalProperties": false
+    },
+    "ScenarioStep": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "origin": {
+          "type": "string",
+          "enum": [
+            "SOURCE_BOUND",
+            "AI_SYNTHETIC"
+          ]
+        },
+        "description": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 20000
+        },
+        "occurrence": {
+          "$ref": "#/$defs/Time"
+        },
+        "source_refs": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/Ref"
+          },
+          "minItems": 0,
+          "maxItems": 10000
+        },
+        "assumptions": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 20000
+          },
+          "minItems": 0,
+          "maxItems": 10000
+        },
+        "actor_refs": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/Ref"
+          },
+          "minItems": 0,
+          "maxItems": 10000
+        },
+        "unknown_actor_labels": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 200
+          },
+          "minItems": 0,
+          "maxItems": 10000
+        }
+      },
+      "required": [
+        "id",
+        "origin",
+        "description",
+        "occurrence",
+        "source_refs",
+        "assumptions",
+        "actor_refs",
+        "unknown_actor_labels"
+      ],
+      "additionalProperties": false,
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "origin": {
+                "const": "SOURCE_BOUND"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "source_refs": {
+                "minItems": 1
+              }
+            }
+          },
+          "else": {
+            "properties": {
+              "assumptions": {
+                "minItems": 1
+              }
+            }
+          }
+        }
+      ]
+    },
+    "Signature": {
+      "type": "object",
+      "properties": {
+        "mechanism": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 200
+        },
+        "ordering": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 200
+          },
+          "minItems": 0,
+          "maxItems": 10000
+        },
+        "actor_structure": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 200
+        },
+        "relaxed_premise_ids": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "minItems": 0,
+          "maxItems": 10000
+        },
+        "independence_assumptions": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 20000
+          },
+          "minItems": 0,
+          "maxItems": 10000
+        }
+      },
+      "required": [
+        "mechanism",
+        "ordering",
+        "actor_structure",
+        "relaxed_premise_ids",
+        "independence_assumptions"
+      ],
+      "additionalProperties": false
+    },
+    "Scenario": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "case_id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "revision": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "introduced_case_revision": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "created_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "created_by": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 200
+        },
+        "kind": {
+          "const": "Scenario"
+        },
+        "run_id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "tier": {
+          "const": "SPECULATIVE"
+        },
+        "origin": {
+          "const": "AI_SYNTHETIC"
+        },
+        "review": {
+          "$ref": "#/$defs/Review"
+        },
+        "title": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 200
+        },
+        "summary": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 20000
+        },
+        "family": {
+          "type": "string",
+          "enum": [
+            "MINIMAL_ASSUMPTIONS",
+            "SOFT_TIME_ERROR",
+            "INTERPRETATION_ERROR",
+            "UNKNOWN_ACTOR",
+            "INDEPENDENT_EVENTS",
+            "OPPORTUNISTIC",
+            "ALTERNATE_ORDER",
+            "CONVENTIONAL",
+            "ADVERSARIAL",
+            "WILDCARD"
+          ]
+        },
+        "signature": {
+          "$ref": "#/$defs/Signature"
+        },
+        "anchor_refs": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/Ref"
+          },
+          "minItems": 1,
+          "maxItems": 10000
+        },
+        "steps": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/ScenarioStep"
+          },
+          "minItems": 1,
+          "maxItems": 100
+        },
+        "counter_refs": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/Ref"
+          },
+          "minItems": 0,
+          "maxItems": 10000
+        },
+        "question_ids": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "minItems": 1,
+          "maxItems": 10000
+        },
+        "validation": {
+          "type": "string",
+          "enum": [
+            "PENDING",
+            "PASSED",
+            "HELD",
+            "REJECTED"
+          ]
+        }
+      },
+      "required": [
+        "id",
+        "case_id",
+        "revision",
+        "introduced_case_revision",
+        "created_at",
+        "created_by",
+        "kind",
+        "run_id",
+        "tier",
+        "origin",
+        "review",
+        "title",
+        "summary",
+        "family",
+        "signature",
+        "anchor_refs",
+        "steps",
+        "counter_refs",
+        "question_ids",
+        "validation"
+      ],
+      "additionalProperties": false
+    },
+    "ModelRun": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "case_id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "revision": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "introduced_case_revision": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "created_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "created_by": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 200
+        },
+        "kind": {
+          "const": "ModelRun"
+        },
+        "task": {
+          "type": "string",
+          "enum": [
+            "EXTRACT",
+            "LENS",
+            "AHA",
+            "CONTRADICTION",
+            "SURPRISE"
+          ]
+        },
+        "case_revision": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "provider": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 200
+        },
+        "model": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 200
+        },
+        "model_digest": {
+          "anyOf": [
+            {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 200
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "prompt_version": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 200
+        },
+        "input_sha256": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$"
+        },
+        "output_sha256": {
+          "anyOf": [
+            {
+              "type": "string",
+              "pattern": "^[0-9a-f]{64}$"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "temperature": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 2
+        },
+        "seed": {
+          "anyOf": [
+            {
+              "type": "integer",
+              "minimum": 0
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "status": {
+          "type": "string",
+          "enum": [
+            "QUEUED",
+            "RUNNING",
+            "SUCCEEDED",
+            "PARTIAL",
+            "FAILED",
+            "CANCELLED"
+          ]
+        },
+        "validation_errors": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 20000
+          },
+          "minItems": 0,
+          "maxItems": 10000
+        },
+        "context_refs": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/Ref"
+          },
+          "minItems": 0,
+          "maxItems": 10000
+        },
+        "omitted_count": {
+          "type": "integer",
+          "minimum": 0
+        }
+      },
+      "required": [
+        "id",
+        "case_id",
+        "revision",
+        "introduced_case_revision",
+        "created_at",
+        "created_by",
+        "kind",
+        "task",
+        "case_revision",
+        "provider",
+        "model",
+        "model_digest",
+        "prompt_version",
+        "input_sha256",
+        "output_sha256",
+        "temperature",
+        "seed",
+        "status",
+        "validation_errors",
+        "context_refs",
+        "omitted_count"
+      ],
+      "additionalProperties": false
+    },
+    "ReviewAction": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "case_id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "revision": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "introduced_case_revision": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "created_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "created_by": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 200
+        },
+        "kind": {
+          "const": "ReviewAction"
+        },
+        "action": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 200
+        },
+        "target_refs": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/Ref"
+          },
+          "minItems": 1,
+          "maxItems": 10000
+        },
+        "reason": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 20000
+        },
+        "actor_subject": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 200
+        }
+      },
+      "required": [
+        "id",
+        "case_id",
+        "revision",
+        "introduced_case_revision",
+        "created_at",
+        "created_by",
+        "kind",
+        "action",
+        "target_refs",
+        "reason",
+        "actor_subject"
+      ],
+      "additionalProperties": false
+    },
+    "CustodyEvent": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "case_id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "revision": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "introduced_case_revision": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "created_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "created_by": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 200
+        },
+        "kind": {
+          "const": "CustodyEvent"
+        },
+        "evidence": {
+          "$ref": "#/$defs/Ref"
+        },
+        "action": {
+          "type": "string",
+          "enum": [
+            "RECEIVED",
+            "VERIFIED",
+            "EXPORTED",
+            "TRANSFER_RECORDED"
+          ]
+        },
+        "sha256": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$"
+        },
+        "actor_subject": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 200
+        },
+        "details": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 20000
+        }
+      },
+      "required": [
+        "id",
+        "case_id",
+        "revision",
+        "introduced_case_revision",
+        "created_at",
+        "created_by",
+        "kind",
+        "evidence",
+        "action",
+        "sha256",
+        "actor_subject",
+        "details"
+      ],
+      "additionalProperties": false
+    },
+    "AuditEvent": {
+      "type": "object",
+      "properties": {
+        "case_id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "sequence": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "actor": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 200
+        },
+        "action": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 200
+        },
+        "target_refs": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/Ref"
+          },
+          "minItems": 0,
+          "maxItems": 10000
+        },
+        "reason": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 20000
+        },
+        "previous_sha256": {
+          "anyOf": [
+            {
+              "type": "string",
+              "pattern": "^[0-9a-f]{64}$"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "payload_sha256": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$"
+        }
+      },
+      "required": [
+        "case_id",
+        "sequence",
+        "at",
+        "actor",
+        "action",
+        "target_refs",
+        "reason",
+        "previous_sha256",
+        "payload_sha256"
+      ],
+      "additionalProperties": false
+    },
+    "SceneObject": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "case_id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "revision": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "introduced_case_revision": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "created_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "created_by": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 200
+        },
+        "kind": {
+          "const": "SceneObject"
+        },
+        "tier": {
+          "$ref": "#/$defs/Tier"
+        },
+        "origin": {
+          "$ref": "#/$defs/Origin"
+        },
+        "review": {
+          "$ref": "#/$defs/Review"
+        },
+        "citations": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/Citation"
+          },
+          "minItems": 0,
+          "maxItems": 10000
+        },
+        "support_refs": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/Ref"
+          },
+          "minItems": 0,
+          "maxItems": 10000
+        },
+        "counter_refs": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/Ref"
+          },
+          "minItems": 0,
+          "maxItems": 10000
+        },
+        "rationale": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 20000
+        },
+        "label": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 200
+        },
+        "frame_id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "units": {
+          "const": "METERS"
+        },
+        "schematic": {
+          "type": "boolean"
+        },
+        "geometry_sha256": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$"
+        },
+        "position": {
+          "type": "array",
+          "items": {
+            "type": "number"
+          },
+          "minItems": 3,
+          "maxItems": 3
+        },
+        "rotation_quaternion": {
+          "type": "array",
+          "items": {
+            "type": "number"
+          },
+          "minItems": 4,
+          "maxItems": 4
+        },
+        "uncertainty_radius_m": {
+          "type": "number",
+          "minimum": 0
+        }
+      },
+      "required": [
+        "id",
+        "case_id",
+        "revision",
+        "introduced_case_revision",
+        "created_at",
+        "created_by",
+        "kind",
+        "tier",
+        "origin",
+        "review",
+        "citations",
+        "support_refs",
+        "counter_refs",
+        "rationale",
+        "label",
+        "frame_id",
+        "units",
+        "schematic",
+        "geometry_sha256",
+        "position",
+        "rotation_quaternion",
+        "uncertainty_radius_m"
+      ],
+      "additionalProperties": false,
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "origin": {
+                "const": "AI_SYNTHETIC"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "tier": {
+                "const": "SPECULATIVE"
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "tier": {
+                "enum": [
+                  "DOCUMENTED",
+                  "OBSERVED"
+                ]
+              }
+            }
+          },
+          "then": {
+            "anyOf": [
+              {
+                "properties": {
+                  "citations": {
+                    "minItems": 1
+                  }
+                }
+              },
+              {
+                "properties": {
+                  "support_refs": {
+                    "minItems": 1
+                  }
+                }
+              }
+            ]
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "tier": {
+                "const": "INFERRED"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "support_refs": {
+                "minItems": 1
+              }
+            }
+          }
+        }
+      ]
+    },
+    "Anchor": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "case_id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "revision": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "introduced_case_revision": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "created_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "created_by": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 200
+        },
+        "kind": {
+          "const": "Anchor"
+        },
+        "proposition": {
+          "$ref": "#/$defs/Ref"
+        },
+        "reason": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 20000
+        },
+        "active": {
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "id",
+        "case_id",
+        "revision",
+        "introduced_case_revision",
+        "created_at",
+        "created_by",
+        "kind",
+        "proposition",
+        "reason",
+        "active"
+      ],
+      "additionalProperties": false
+    },
+    "EntityMerge": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "case_id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "revision": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "introduced_case_revision": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "created_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "created_by": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 200
+        },
+        "kind": {
+          "const": "EntityMerge"
+        },
+        "entity_refs": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/Ref"
+          },
+          "minItems": 2,
+          "maxItems": 10000
+        },
+        "canonical_ref": {
+          "$ref": "#/$defs/Ref"
+        },
+        "reason": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 20000
+        },
+        "active": {
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "id",
+        "case_id",
+        "revision",
+        "introduced_case_revision",
+        "created_at",
+        "created_by",
+        "kind",
+        "entity_refs",
+        "canonical_ref",
+        "reason",
+        "active"
+      ],
+      "additionalProperties": false
+    },
+    "Record": {
+      "oneOf": [
+        {
+          "$ref": "#/$defs/Evidence"
+        },
+        {
+          "$ref": "#/$defs/Derivative"
+        },
+        {
+          "$ref": "#/$defs/Entity"
+        },
+        {
+          "$ref": "#/$defs/Observation"
+        },
+        {
+          "$ref": "#/$defs/Interpretation"
+        },
+        {
+          "$ref": "#/$defs/Event"
+        },
+        {
+          "$ref": "#/$defs/Edge"
+        },
+        {
+          "$ref": "#/$defs/Contradiction"
+        },
+        {
+          "$ref": "#/$defs/Hypothesis"
+        },
+        {
+          "$ref": "#/$defs/Question"
+        },
+        {
+          "$ref": "#/$defs/Scenario"
+        },
+        {
+          "$ref": "#/$defs/ModelRun"
+        },
+        {
+          "$ref": "#/$defs/ReviewAction"
+        },
+        {
+          "$ref": "#/$defs/CustodyEvent"
+        },
+        {
+          "$ref": "#/$defs/SceneObject"
+        },
+        {
+          "$ref": "#/$defs/Anchor"
+        },
+        {
+          "$ref": "#/$defs/EntityMerge"
+        },
+        {
+          "$ref": "#/$defs/TemporalConstraint"
+        },
+        {
+          "$ref": "#/$defs/ClockCorrection"
+        },
+        {
+          "$ref": "#/$defs/Note"
+        }
+      ]
+    },
+    "CaseExchange": {
+      "type": "object",
+      "properties": {
+        "schema_version": {
+          "const": "1.0.0"
+        },
+        "case": {
+          "$ref": "#/$defs/Case"
+        },
+        "records": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/Record"
+          },
+          "minItems": 0,
+          "maxItems": 10000
+        },
+        "audit": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/AuditEvent"
+          },
+          "minItems": 0,
+          "maxItems": 10000
+        }
+      },
+      "required": [
+        "schema_version",
+        "case",
+        "records",
+        "audit"
+      ],
+      "additionalProperties": false
+    },
+    "Filter": {
+      "oneOf": [
+        {
+          "type": "object",
+          "properties": {
+            "field": {
+              "const": "text"
+            },
+            "op": {
+              "const": "contains"
+            },
+            "value": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 20000
+            }
+          },
+          "required": [
+            "field",
+            "op",
+            "value"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "field": {
+              "const": "tier"
+            },
+            "op": {
+              "const": "in"
+            },
+            "value": {
+              "type": "array",
+              "items": {
+                "$ref": "#/$defs/Tier"
+              },
+              "minItems": 1,
+              "maxItems": 4
+            }
+          },
+          "required": [
+            "field",
+            "op",
+            "value"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "field": {
+              "const": "entity_type"
+            },
+            "op": {
+              "const": "in"
+            },
+            "value": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "enum": [
+                  "PERSON",
+                  "ORGANIZATION",
+                  "PLACE",
+                  "OBJECT",
+                  "VEHICLE",
+                  "DEVICE",
+                  "UNKNOWN_ACTOR"
+                ]
+              },
+              "minItems": 1,
+              "maxItems": 7
+            }
+          },
+          "required": [
+            "field",
+            "op",
+            "value"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "field": {
+              "const": "occurrence"
+            },
+            "op": {
+              "const": "overlaps"
+            },
+            "start": {
+              "type": "string",
+              "format": "date-time"
+            },
+            "end": {
+              "type": "string",
+              "format": "date-time"
+            }
+          },
+          "required": [
+            "field",
+            "op",
+            "start",
+            "end"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "field": {
+              "type": "string",
+              "enum": [
+                "cited_source",
+                "depends_on",
+                "exclude_source"
+              ]
+            },
+            "op": {
+              "const": "eq"
+            },
+            "value": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          "required": [
+            "field",
+            "op",
+            "value"
+          ],
+          "additionalProperties": false
+        }
+      ]
+    },
+    "LensPlan": {
+      "type": "object",
+      "properties": {
+        "query": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 2000
+        },
+        "case_revision": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "combine": {
+          "type": "string",
+          "enum": [
+            "all",
+            "any"
+          ]
+        },
+        "filters": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/Filter"
+          },
+          "minItems": 0,
+          "maxItems": 20
+        },
+        "hops": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 2
+        },
+        "relations": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "enum": [
+              "MENTIONS",
+              "LOCATED_AT",
+              "PARTICIPATED_IN",
+              "SUPPORTS",
+              "CONTRADICTS",
+              "PRECEDES",
+              "REFERS_TO",
+              "SAME_IDENTIFIER"
+            ]
+          },
+          "minItems": 0,
+          "maxItems": 8
+        },
+        "include_similarity": {
+          "type": "boolean"
+        },
+        "max_nodes": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 500
+        },
+        "max_edges": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 1500
+        }
+      },
+      "required": [
+        "query",
+        "case_revision",
+        "combine",
+        "filters",
+        "hops",
+        "relations",
+        "include_similarity",
+        "max_nodes",
+        "max_edges"
+      ],
+      "additionalProperties": false
+    },
+    "LensMatch": {
+      "type": "object",
+      "properties": {
+        "category": {
+          "type": "string",
+          "enum": [
+            "EVIDENTIARY",
+            "CONTEXTUAL",
+            "SIMILARITY"
+          ]
+        },
+        "record_refs": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/Ref"
+          },
+          "minItems": 1,
+          "maxItems": 10000
+        },
+        "edge_ref": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Ref"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "why": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 20000
+        },
+        "citations": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/Citation"
+          },
+          "minItems": 1,
+          "maxItems": 10000
+        },
+        "method": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 200
+        }
+      },
+      "required": [
+        "category",
+        "record_refs",
+        "edge_ref",
+        "why",
+        "citations",
+        "method"
+      ],
+      "additionalProperties": false,
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "category": {
+                "const": "EVIDENTIARY"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "edge_ref": {
+                "$ref": "#/$defs/Ref"
+              }
+            }
+          },
+          "else": {
+            "properties": {
+              "edge_ref": {
+                "type": "null"
+              }
+            }
+          }
+        }
+      ]
+    },
+    "LensResult": {
+      "type": "object",
+      "properties": {
+        "case_revision": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "index_revision": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "node_ids": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "minItems": 0,
+          "maxItems": 10000
+        },
+        "edge_ids": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "minItems": 0,
+          "maxItems": 10000
+        },
+        "matches": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/LensMatch"
+          },
+          "minItems": 0,
+          "maxItems": 10000
+        },
+        "truncated": {
+          "type": "boolean"
+        },
+        "omitted_count": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "warnings": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 20000
+          },
+          "minItems": 0,
+          "maxItems": 10000
+        }
+      },
+      "required": [
+        "case_revision",
+        "index_revision",
+        "node_ids",
+        "edge_ids",
+        "matches",
+        "truncated",
+        "omitted_count",
+        "warnings"
+      ],
+      "additionalProperties": false
+    },
+    "AhaRequest": {
+      "type": "object",
+      "properties": {
+        "case_revision": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "interval": {
+          "$ref": "#/$defs/Time"
+        },
+        "anchor_refs": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/Ref"
+          },
+          "minItems": 1,
+          "maxItems": 1000
+        },
+        "soft_refs": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/Ref"
+          },
+          "minItems": 0,
+          "maxItems": 10000
+        },
+        "exclude_refs": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/Ref"
+          },
+          "minItems": 0,
+          "maxItems": 10000
+        },
+        "requested_count": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 10
+        },
+        "families": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "enum": [
+              "MINIMAL_ASSUMPTIONS",
+              "SOFT_TIME_ERROR",
+              "INTERPRETATION_ERROR",
+              "UNKNOWN_ACTOR",
+              "INDEPENDENT_EVENTS",
+              "OPPORTUNISTIC",
+              "ALTERNATE_ORDER",
+              "CONVENTIONAL",
+              "ADVERSARIAL",
+              "WILDCARD"
+            ]
+          },
+          "minItems": 1,
+          "maxItems": 10
+        },
+        "constraint_refs": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/Ref"
+          },
+          "minItems": 0,
+          "maxItems": 1000
+        }
+      },
+      "required": [
+        "case_revision",
+        "interval",
+        "anchor_refs",
+        "soft_refs",
+        "exclude_refs",
+        "requested_count",
+        "families",
+        "constraint_refs"
+      ],
+      "additionalProperties": false
+    },
+    "AhaResult": {
+      "type": "object",
+      "properties": {
+        "run": {
+          "$ref": "#/$defs/ModelRun"
+        },
+        "scenarios": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/Scenario"
+          },
+          "minItems": 0,
+          "maxItems": 10
+        },
+        "questions": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/Question"
+          },
+          "minItems": 0,
+          "maxItems": 10000
+        },
+        "requested_count": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 10
+        },
+        "rejected_count": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "partial_reason": {
+          "anyOf": [
+            {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 20000
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "required": [
+        "run",
+        "scenarios",
+        "questions",
+        "requested_count",
+        "rejected_count",
+        "partial_reason"
+      ],
+      "additionalProperties": false
+    },
+    "ExtractionResult": {
+      "type": "object",
+      "properties": {
+        "proposals": {
+          "type": "array",
+          "items": {
+            "oneOf": [
+              {
+                "$ref": "#/$defs/Entity"
+              },
+              {
+                "$ref": "#/$defs/Observation"
+              },
+              {
+                "$ref": "#/$defs/Event"
+              },
+              {
+                "$ref": "#/$defs/Interpretation"
+              },
+              {
+                "$ref": "#/$defs/Edge"
+              },
+              {
+                "$ref": "#/$defs/Contradiction"
+              }
+            ]
+          },
+          "minItems": 0,
+          "maxItems": 10000
+        },
+        "warnings": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 20000
+          },
+          "minItems": 0,
+          "maxItems": 10000
+        }
+      },
+      "required": [
+        "proposals",
+        "warnings"
+      ],
+      "additionalProperties": false
+    },
+    "Proposal": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "case_revision": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "record": {
+          "$ref": "#/$defs/Record"
+        },
+        "status": {
+          "$ref": "#/$defs/Review"
+        },
+        "run_id": {
+          "anyOf": [
+            {
+              "type": "string",
+              "format": "uuid"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "required": [
+        "id",
+        "case_revision",
+        "record",
+        "status",
+        "run_id"
+      ],
+      "additionalProperties": false
+    },
+    "Command": {
+      "oneOf": [
+        {
+          "type": "object",
+          "properties": {
+            "type": {
+              "const": "proposeRecord"
+            },
+            "record": {
+              "$ref": "#/$defs/HumanRecordDraft"
+            },
+            "reason": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 20000
+            }
+          },
+          "required": [
+            "type",
+            "record",
+            "reason"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "type": {
+              "const": "reviewProposal"
+            },
+            "proposal_id": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "decision": {
+              "type": "string",
+              "enum": [
+                "ACCEPT",
+                "REJECT"
+              ]
+            },
+            "reason": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 20000
+            }
+          },
+          "required": [
+            "type",
+            "proposal_id",
+            "decision",
+            "reason"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "type": {
+              "const": "transitionHypothesis"
+            },
+            "hypothesis": {
+              "$ref": "#/$defs/Ref"
+            },
+            "target_state": {
+              "type": "string",
+              "enum": [
+                "PROPOSED",
+                "TESTING",
+                "SUPPORTED",
+                "WEAKENED",
+                "RETIRED"
+              ]
+            },
+            "reason": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 20000
+            },
+            "evidence_refs": {
+              "type": "array",
+              "items": {
+                "$ref": "#/$defs/Ref"
+              },
+              "minItems": 0,
+              "maxItems": 10000
+            }
+          },
+          "required": [
+            "type",
+            "hypothesis",
+            "target_state",
+            "reason",
+            "evidence_refs"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "type": {
+              "const": "reopenHypothesis"
+            },
+            "hypothesis": {
+              "$ref": "#/$defs/Ref"
+            },
+            "new_evidence_refs": {
+              "type": "array",
+              "items": {
+                "$ref": "#/$defs/Ref"
+              },
+              "minItems": 1,
+              "maxItems": 10000
+            },
+            "reason": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 20000
+            }
+          },
+          "required": [
+            "type",
+            "hypothesis",
+            "new_evidence_refs",
+            "reason"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "type": {
+              "const": "decideContradiction"
+            },
+            "contradiction": {
+              "$ref": "#/$defs/Ref"
+            },
+            "decision": {
+              "type": "string",
+              "enum": [
+                "UNRESOLVED",
+                "RESOLVED",
+                "DISMISSED"
+              ]
+            },
+            "evidence_refs": {
+              "type": "array",
+              "items": {
+                "$ref": "#/$defs/Ref"
+              },
+              "minItems": 0,
+              "maxItems": 10000
+            },
+            "reason": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 20000
+            }
+          },
+          "required": [
+            "type",
+            "contradiction",
+            "decision",
+            "evidence_refs",
+            "reason"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "type": {
+              "const": "setAnchor"
+            },
+            "proposition": {
+              "$ref": "#/$defs/Ref"
+            },
+            "active": {
+              "type": "boolean"
+            },
+            "reason": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 20000
+            }
+          },
+          "required": [
+            "type",
+            "proposition",
+            "active",
+            "reason"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "type": {
+              "const": "excludeSource"
+            },
+            "source": {
+              "$ref": "#/$defs/Ref"
+            },
+            "excluded": {
+              "type": "boolean"
+            },
+            "reason": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 20000
+            }
+          },
+          "required": [
+            "type",
+            "source",
+            "excluded",
+            "reason"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "type": {
+              "const": "reviseRecord"
+            },
+            "target": {
+              "$ref": "#/$defs/Ref"
+            },
+            "record": {
+              "$ref": "#/$defs/HumanRecordDraft"
+            },
+            "reason": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 20000
+            }
+          },
+          "required": [
+            "type",
+            "target",
+            "record",
+            "reason"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "type": {
+              "const": "proposeContradiction"
+            },
+            "proposal": {
+              "$ref": "#/$defs/ModelContradictionProposal"
+            },
+            "reason": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 20000
+            }
+          },
+          "required": [
+            "type",
+            "proposal",
+            "reason"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "type": {
+              "const": "answerQuestion"
+            },
+            "question": {
+              "$ref": "#/$defs/Ref"
+            },
+            "status": {
+              "enum": [
+                "OPEN",
+                "IN_PROGRESS",
+                "ANSWERED",
+                "CLOSED"
+              ]
+            },
+            "answer_refs": {
+              "type": "array",
+              "items": {
+                "$ref": "#/$defs/Ref"
+              }
+            },
+            "reason": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 20000
+            }
+          },
+          "required": [
+            "type",
+            "question",
+            "status",
+            "answer_refs",
+            "reason"
+          ],
+          "additionalProperties": false
+        }
+      ]
+    },
+    "CommandResult": {
+      "type": "object",
+      "properties": {
+        "case_revision": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "changed_refs": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/Ref"
+          },
+          "minItems": 0,
+          "maxItems": 10000
+        },
+        "proposal_id": {
+          "anyOf": [
+            {
+              "type": "string",
+              "format": "uuid"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "audit_sequence": {
+          "type": "integer",
+          "minimum": 1
+        }
+      },
+      "required": [
+        "case_revision",
+        "changed_refs",
+        "proposal_id",
+        "audit_sequence"
+      ],
+      "additionalProperties": false
+    },
+    "Job": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "case_id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "type": {
+          "type": "string",
+          "enum": [
+            "INGEST",
+            "EXTRACT",
+            "LENS",
+            "AHA",
+            "EXPORT",
+            "BACKUP",
+            "IMPORT",
+            "VERIFY",
+            "REINDEX",
+            "SURPRISE"
+          ]
+        },
+        "state": {
+          "type": "string",
+          "enum": [
+            "QUEUED",
+            "RUNNING",
+            "SUCCEEDED",
+            "FAILED",
+            "CANCELLED"
+          ]
+        },
+        "phase": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 200
+        },
+        "fraction": {
+          "anyOf": [
+            {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 1
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "result_path": {
+          "anyOf": [
+            {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 200
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "error": {
+          "anyOf": [
+            {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 20000
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "snapshot_revision": {
+          "type": "integer",
+          "minimum": 0
+        }
+      },
+      "required": [
+        "id",
+        "case_id",
+        "type",
+        "state",
+        "phase",
+        "fraction",
+        "result_path",
+        "error",
+        "snapshot_revision"
+      ],
+      "additionalProperties": false
+    },
+    "ExportRequest": {
+      "type": "object",
+      "properties": {
+        "format": {
+          "type": "string",
+          "enum": [
+            "PDF",
+            "HTML",
+            "JSON",
+            "CSV",
+            "CASE_ZIP"
+          ]
+        },
+        "sections": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "enum": [
+              "CHRONOLOGY",
+              "CONTRADICTIONS",
+              "QUESTIONS",
+              "NOTES",
+              "SCENARIOS",
+              "SOURCES",
+              "HISTORY"
+            ]
+          },
+          "minItems": 1,
+          "maxItems": 7
+        },
+        "case_revision": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "include_synthetic": {
+          "type": "boolean"
+        },
+        "redaction_plan_id": {
+          "anyOf": [
+            {
+              "type": "string",
+              "format": "uuid"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "required": [
+        "format",
+        "sections",
+        "case_revision",
+        "include_synthetic",
+        "redaction_plan_id"
+      ],
+      "additionalProperties": false
+    },
+    "Manifest": {
+      "type": "object",
+      "properties": {
+        "schema_version": {
+          "const": "1.0.0"
+        },
+        "case_id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "case_revision": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "synthetic": {
+          "type": "boolean"
+        },
+        "files": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "path": {
+                "type": "string",
+                "pattern": "^(?!/)(?!.*\\.\\.)[^\\\\]+$"
+              },
+              "bytes": {
+                "type": "integer",
+                "minimum": 0
+              },
+              "sha256": {
+                "type": "string",
+                "pattern": "^[0-9a-f]{64}$"
+              }
+            },
+            "required": [
+              "path",
+              "bytes",
+              "sha256"
+            ],
+            "additionalProperties": false
+          },
+          "minItems": 1,
+          "maxItems": 10000
+        }
+      },
+      "required": [
+        "schema_version",
+        "case_id",
+        "case_revision",
+        "synthetic",
+        "files"
+      ],
+      "additionalProperties": false
+    },
+    "ImportEnvelope": {
+      "type": "object",
+      "properties": {
+        "case_id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "authenticated_sender": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 200
+        },
+        "mailbox_id": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 200
+        },
+        "message_id": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 200
+        },
+        "message_sha256": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$"
+        },
+        "attachment_evidence_ids": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "minItems": 0,
+          "maxItems": 10000
+        },
+        "received_at": {
+          "type": "string",
+          "format": "date-time"
+        }
+      },
+      "required": [
+        "case_id",
+        "authenticated_sender",
+        "mailbox_id",
+        "message_id",
+        "message_sha256",
+        "attachment_evidence_ids",
+        "received_at"
+      ],
+      "additionalProperties": false
+    },
+    "Error": {
+      "type": "object",
+      "properties": {
+        "code": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 200
+        },
+        "message": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 20000
+        },
+        "request_id": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 200
+        },
+        "field_errors": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "path": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 200
+              },
+              "code": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 200
+              },
+              "message": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 20000
+              }
+            },
+            "required": [
+              "path",
+              "code",
+              "message"
+            ],
+            "additionalProperties": false
+          },
+          "minItems": 0,
+          "maxItems": 10000
+        },
+        "retryable": {
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "code",
+        "message",
+        "request_id",
+        "field_errors",
+        "retryable"
+      ],
+      "additionalProperties": false
+    },
+    "CreateCase": {
+      "type": "object",
+      "properties": {
+        "title": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 200
+        },
+        "timezone": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 200
+        },
+        "synthetic": {
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "title",
+        "timezone",
+        "synthetic"
+      ],
+      "additionalProperties": false
+    },
+    "QueryRequest": {
+      "type": "object",
+      "properties": {
+        "query": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 2000
+        },
+        "case_revision": {
+          "type": "integer",
+          "minimum": 0
+        }
+      },
+      "required": [
+        "query",
+        "case_revision"
+      ],
+      "additionalProperties": false
+    },
+    "Page": {
+      "type": "object",
+      "properties": {
+        "case_revision": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "index_revision": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "items": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/Record"
+          },
+          "minItems": 0,
+          "maxItems": 200
+        },
+        "next_cursor": {
+          "anyOf": [
+            {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 20000
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "required": [
+        "case_revision",
+        "index_revision",
+        "items",
+        "next_cursor"
+      ],
+      "additionalProperties": false
+    },
+    "CasePage": {
+      "type": "object",
+      "properties": {
+        "items": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/Case"
+          },
+          "minItems": 0,
+          "maxItems": 200
+        },
+        "next_cursor": {
+          "anyOf": [
+            {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 20000
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "required": [
+        "items",
+        "next_cursor"
+      ],
+      "additionalProperties": false
+    },
+    "GraphResult": {
+      "type": "object",
+      "properties": {
+        "case_revision": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "nodes": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/Record"
+          },
+          "minItems": 0,
+          "maxItems": 500
+        },
+        "edges": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/Edge"
+          },
+          "minItems": 0,
+          "maxItems": 1500
+        },
+        "truncated": {
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "case_revision",
+        "nodes",
+        "edges",
+        "truncated"
+      ],
+      "additionalProperties": false
+    },
+    "SavedView": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "view_revision": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "title": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 200
+        },
+        "plan": {
+          "$ref": "#/$defs/LensPlan"
+        },
+        "mode": {
+          "type": "string",
+          "enum": [
+            "2D",
+            "3D",
+            "TABLE"
+          ]
+        },
+        "pins": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "string",
+                "format": "uuid"
+              },
+              "x": {
+                "type": "number"
+              },
+              "y": {
+                "type": "number"
+              },
+              "z": {
+                "type": "number"
+              }
+            },
+            "required": [
+              "id",
+              "x",
+              "y",
+              "z"
+            ],
+            "additionalProperties": false
+          },
+          "minItems": 0,
+          "maxItems": 10000
+        }
+      },
+      "required": [
+        "id",
+        "view_revision",
+        "title",
+        "plan",
+        "mode",
+        "pins"
+      ],
+      "additionalProperties": false
+    },
+    "RedactionPlan": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "case_revision": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "reason": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 20000
+        },
+        "remove_record_ids": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "minItems": 0,
+          "maxItems": 10000
+        },
+        "regions": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "evidence_id": {
+                "type": "string",
+                "format": "uuid"
+              },
+              "locator": {
+                "$ref": "#/$defs/Locator"
+              }
+            },
+            "required": [
+              "evidence_id",
+              "locator"
+            ],
+            "additionalProperties": false
+          },
+          "minItems": 0,
+          "maxItems": 10000
+        },
+        "reviewed": {
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "id",
+        "case_revision",
+        "reason",
+        "remove_record_ids",
+        "regions",
+        "reviewed"
+      ],
+      "additionalProperties": false
+    },
+    "Health": {
+      "type": "object",
+      "properties": {
+        "status": {
+          "type": "string",
+          "enum": [
+            "OK",
+            "DEGRADED"
+          ]
+        },
+        "schema_version": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 200
+        },
+        "offline_mode": {
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "status",
+        "schema_version",
+        "offline_mode"
+      ],
+      "additionalProperties": false
+    },
+    "SessionRequest": {
+      "type": "object",
+      "properties": {
+        "pairing_secret": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 200
+        },
+        "operator_label": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 200
+        }
+      },
+      "required": [
+        "pairing_secret",
+        "operator_label"
+      ],
+      "additionalProperties": false
+    },
+    "Session": {
+      "type": "object",
+      "properties": {
+        "actor": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 200
+        },
+        "csrf_token": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 200
+        },
+        "expires_at": {
+          "type": "string",
+          "format": "date-time"
+        }
+      },
+      "required": [
+        "actor",
+        "csrf_token",
+        "expires_at"
+      ],
+      "additionalProperties": false
+    },
+    "TemporalConstraint": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "case_id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "revision": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "introduced_case_revision": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "created_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "created_by": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 200
+        },
+        "kind": {
+          "const": "TemporalConstraint"
+        },
+        "constraint_type": {
+          "type": "string",
+          "enum": [
+            "INTERVAL",
+            "BEFORE"
+          ]
+        },
+        "left": {
+          "$ref": "#/$defs/Ref"
+        },
+        "right": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Ref"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "window": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Time"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "min_lag_seconds": {
+          "anyOf": [
+            {
+              "type": "number",
+              "minimum": 0
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "max_lag_seconds": {
+          "anyOf": [
+            {
+              "type": "number",
+              "minimum": 0
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "strict": {
+          "type": "boolean"
+        },
+        "basis_refs": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/Ref"
+          },
+          "minItems": 1,
+          "maxItems": 10000
+        },
+        "review": {
+          "$ref": "#/$defs/Review"
+        },
+        "rationale": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 20000
+        }
+      },
+      "required": [
+        "id",
+        "case_id",
+        "revision",
+        "introduced_case_revision",
+        "created_at",
+        "created_by",
+        "kind",
+        "constraint_type",
+        "left",
+        "right",
+        "window",
+        "min_lag_seconds",
+        "max_lag_seconds",
+        "strict",
+        "basis_refs",
+        "review",
+        "rationale"
+      ],
+      "additionalProperties": false,
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "constraint_type": {
+                "const": "BEFORE"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "right": {
+                "$ref": "#/$defs/Ref"
+              },
+              "window": {
+                "type": "null"
+              }
+            }
+          },
+          "else": {
+            "properties": {
+              "right": {
+                "type": "null"
+              },
+              "window": {
+                "$ref": "#/$defs/Time"
+              }
+            }
+          }
+        }
+      ]
+    },
+    "ClockCorrection": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "case_id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "revision": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "introduced_case_revision": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "created_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "created_by": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 200
+        },
+        "kind": {
+          "const": "ClockCorrection"
+        },
+        "clock_id": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 200
+        },
+        "raw_time_refs": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/Ref"
+          },
+          "minItems": 1,
+          "maxItems": 10000
+        },
+        "offset_min_seconds": {
+          "type": "number"
+        },
+        "offset_max_seconds": {
+          "type": "number"
+        },
+        "basis_refs": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/Ref"
+          },
+          "minItems": 1,
+          "maxItems": 10000
+        },
+        "review": {
+          "$ref": "#/$defs/Review"
+        },
+        "rationale": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 20000
+        }
+      },
+      "required": [
+        "id",
+        "case_id",
+        "revision",
+        "introduced_case_revision",
+        "created_at",
+        "created_by",
+        "kind",
+        "clock_id",
+        "raw_time_refs",
+        "offset_min_seconds",
+        "offset_max_seconds",
+        "basis_refs",
+        "review",
+        "rationale"
+      ],
+      "additionalProperties": false
+    },
+    "Note": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "case_id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "revision": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "introduced_case_revision": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "created_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "created_by": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 200
+        },
+        "kind": {
+          "const": "Note"
+        },
+        "text": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 20000
+        },
+        "target_refs": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/Ref"
+          },
+          "minItems": 0,
+          "maxItems": 10000
+        },
+        "review": {
+          "$ref": "#/$defs/Review"
+        },
+        "note_type": {
+          "type": "string",
+          "enum": [
+            "INVESTIGATOR_NOTE",
+            "SCOPE_LIMIT",
+            "DECISION_NOTE"
+          ]
+        }
+      },
+      "required": [
+        "id",
+        "case_id",
+        "revision",
+        "introduced_case_revision",
+        "created_at",
+        "created_by",
+        "kind",
+        "text",
+        "target_refs",
+        "review",
+        "note_type"
+      ],
+      "additionalProperties": false
+    },
+    "Snapshot": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "case_id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "case_revision": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "record_refs": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/Ref"
+          },
+          "minItems": 0,
+          "maxItems": 10000
+        },
+        "anchor_refs": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/Ref"
+          },
+          "minItems": 0,
+          "maxItems": 10000
+        },
+        "constraint_refs": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/Ref"
+          },
+          "minItems": 0,
+          "maxItems": 10000
+        },
+        "retired_hypothesis_refs": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/Ref"
+          },
+          "minItems": 0,
+          "maxItems": 10000
+        },
+        "source_manifest_sha256": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$"
+        },
+        "created_at": {
+          "type": "string",
+          "format": "date-time"
+        }
+      },
+      "required": [
+        "id",
+        "case_id",
+        "case_revision",
+        "record_refs",
+        "anchor_refs",
+        "constraint_refs",
+        "retired_hypothesis_refs",
+        "source_manifest_sha256",
+        "created_at"
+      ],
+      "additionalProperties": false
+    },
+    "ProviderConfig": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "label": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 200
+        },
+        "adapter": {
+          "type": "string",
+          "enum": [
+            "REPLAY",
+            "OLLAMA",
+            "OPENAI_COMPATIBLE_LOCAL",
+            "REMOTE_OPTIONAL"
+          ]
+        },
+        "base_url": {
+          "type": "string",
+          "format": "uri"
+        },
+        "model": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 200
+        },
+        "remote": {
+          "type": "boolean"
+        },
+        "enabled": {
+          "type": "boolean"
+        },
+        "secret_ref": {
+          "anyOf": [
+            {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 200
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "context_tokens": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "max_output_tokens": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "timeout_seconds": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 600
+        }
+      },
+      "required": [
+        "id",
+        "label",
+        "adapter",
+        "base_url",
+        "model",
+        "remote",
+        "enabled",
+        "secret_ref",
+        "context_tokens",
+        "max_output_tokens",
+        "timeout_seconds"
+      ],
+      "additionalProperties": false
+    },
+    "ProviderStatus": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "available": {
+          "type": "boolean"
+        },
+        "structured_output": {
+          "type": "boolean"
+        },
+        "embeddings": {
+          "type": "boolean"
+        },
+        "model_digest": {
+          "anyOf": [
+            {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 200
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "message": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 20000
+        }
+      },
+      "required": [
+        "id",
+        "available",
+        "structured_output",
+        "embeddings",
+        "model_digest",
+        "message"
+      ],
+      "additionalProperties": false
+    },
+    "CasePolicy": {
+      "type": "object",
+      "properties": {
+        "remote_models_enabled": {
+          "type": "boolean"
+        },
+        "approved_provider_ids": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "minItems": 0,
+          "maxItems": 10000
+        },
+        "export_names_in_filenames": {
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "remote_models_enabled",
+        "approved_provider_ids",
+        "export_names_in_filenames"
+      ],
+      "additionalProperties": false
+    },
+    "IngestSummary": {
+      "type": "object",
+      "properties": {
+        "result_type": {
+          "const": "INGEST"
+        },
+        "evidence_refs": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/Ref"
+          },
+          "minItems": 0,
+          "maxItems": 10000
+        },
+        "derivative_refs": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/Ref"
+          },
+          "minItems": 0,
+          "maxItems": 10000
+        },
+        "proposal_ids": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "minItems": 0,
+          "maxItems": 10000
+        },
+        "warnings": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 20000
+          },
+          "minItems": 0,
+          "maxItems": 10000
+        }
+      },
+      "required": [
+        "result_type",
+        "evidence_refs",
+        "derivative_refs",
+        "proposal_ids",
+        "warnings"
+      ],
+      "additionalProperties": false
+    },
+    "ExportArtifact": {
+      "type": "object",
+      "properties": {
+        "result_type": {
+          "const": "EXPORT"
+        },
+        "export_id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "sha256": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$"
+        },
+        "bytes": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "case_revision": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "expires_at": {
+          "type": "string",
+          "format": "date-time"
+        }
+      },
+      "required": [
+        "result_type",
+        "export_id",
+        "sha256",
+        "bytes",
+        "case_revision",
+        "expires_at"
+      ],
+      "additionalProperties": false
+    },
+    "VerificationResult": {
+      "type": "object",
+      "properties": {
+        "result_type": {
+          "type": "string",
+          "enum": [
+            "VERIFY",
+            "REINDEX",
+            "IMPORT"
+          ]
+        },
+        "case_revision": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "checked_count": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "failures": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 20000
+          },
+          "minItems": 0,
+          "maxItems": 10000
+        },
+        "warnings": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 20000
+          },
+          "minItems": 0,
+          "maxItems": 10000
+        }
+      },
+      "required": [
+        "result_type",
+        "case_revision",
+        "checked_count",
+        "failures",
+        "warnings"
+      ],
+      "additionalProperties": false
+    },
+    "JobEvent": {
+      "type": "object",
+      "properties": {
+        "event_id": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "job_id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "state": {
+          "type": "string",
+          "enum": [
+            "QUEUED",
+            "RUNNING",
+            "SUCCEEDED",
+            "FAILED",
+            "CANCELLED"
+          ]
+        },
+        "phase": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 200
+        },
+        "fraction": {
+          "anyOf": [
+            {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 1
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "required": [
+        "event_id",
+        "job_id",
+        "at",
+        "state",
+        "phase",
+        "fraction"
+      ],
+      "additionalProperties": false
+    },
+    "RunResult": {
+      "oneOf": [
+        {
+          "$ref": "#/$defs/AhaResult"
+        },
+        {
+          "$ref": "#/$defs/ExtractionResult"
+        },
+        {
+          "$ref": "#/$defs/LensPlan"
+        },
+        {
+          "$ref": "#/$defs/IngestSummary"
+        },
+        {
+          "$ref": "#/$defs/ExportArtifact"
+        },
+        {
+          "$ref": "#/$defs/VerificationResult"
+        }
+      ]
+    },
+    "ModelScenarioProposal": {
+      "type": "object",
+      "properties": {
+        "title": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 200
+        },
+        "summary": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 20000
+        },
+        "family": {
+          "type": "string",
+          "enum": [
+            "MINIMAL_ASSUMPTIONS",
+            "SOFT_TIME_ERROR",
+            "INTERPRETATION_ERROR",
+            "UNKNOWN_ACTOR",
+            "INDEPENDENT_EVENTS",
+            "OPPORTUNISTIC",
+            "ALTERNATE_ORDER",
+            "CONVENTIONAL",
+            "ADVERSARIAL",
+            "WILDCARD"
+          ]
+        },
+        "signature": {
+          "$ref": "#/$defs/Signature"
+        },
+        "anchor_refs": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/Ref"
+          },
+          "minItems": 1,
+          "maxItems": 10000
+        },
+        "steps": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/ScenarioStep"
+          },
+          "minItems": 1,
+          "maxItems": 100
+        },
+        "counter_refs": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/Ref"
+          },
+          "minItems": 0,
+          "maxItems": 10000
+        },
+        "candidate_key": {
+          "type": "string",
+          "pattern": "^[A-Za-z][A-Za-z0-9_-]{0,39}$"
+        },
+        "question_keys": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "pattern": "^[A-Za-z][A-Za-z0-9_-]{0,39}$"
+          },
+          "minItems": 1,
+          "maxItems": 30
+        }
+      },
+      "required": [
+        "title",
+        "summary",
+        "family",
+        "signature",
+        "anchor_refs",
+        "steps",
+        "counter_refs",
+        "candidate_key",
+        "question_keys"
+      ],
+      "additionalProperties": false
+    },
+    "ModelQuestionProposal": {
+      "type": "object",
+      "properties": {
+        "text": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 20000
+        },
+        "outcomes": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "observation": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 20000
+              },
+              "supports_scenario_keys": {
+                "type": "array",
+                "items": {
+                  "type": "string",
+                  "pattern": "^[A-Za-z][A-Za-z0-9_-]{0,39}$"
+                },
+                "minItems": 0,
+                "maxItems": 100
+              },
+              "weakens_scenario_keys": {
+                "type": "array",
+                "items": {
+                  "type": "string",
+                  "pattern": "^[A-Za-z][A-Za-z0-9_-]{0,39}$"
+                },
+                "minItems": 0,
+                "maxItems": 100
+              }
+            },
+            "required": [
+              "observation",
+              "supports_scenario_keys",
+              "weakens_scenario_keys"
+            ],
+            "additionalProperties": false
+          },
+          "minItems": 2,
+          "maxItems": 10
+        },
+        "source_to_check": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 20000
+        },
+        "limitations": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 20000
+          },
+          "minItems": 0,
+          "maxItems": 10000
+        },
+        "effort": {
+          "type": "string",
+          "enum": [
+            "UNKNOWN",
+            "LOW",
+            "MEDIUM",
+            "HIGH"
+          ]
+        },
+        "question_key": {
+          "type": "string",
+          "pattern": "^[A-Za-z][A-Za-z0-9_-]{0,39}$"
+        },
+        "scenario_keys": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "pattern": "^[A-Za-z][A-Za-z0-9_-]{0,39}$"
+          },
+          "minItems": 1,
+          "maxItems": 10
+        }
+      },
+      "required": [
+        "text",
+        "outcomes",
+        "source_to_check",
+        "limitations",
+        "effort",
+        "question_key",
+        "scenario_keys"
+      ],
+      "additionalProperties": false
+    },
+    "ModelAhaOutput": {
+      "type": "object",
+      "properties": {
+        "scenarios": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/ModelScenarioProposal"
+          },
+          "minItems": 0,
+          "maxItems": 10
+        },
+        "questions": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/ModelQuestionProposal"
+          },
+          "minItems": 0,
+          "maxItems": 100
+        },
+        "partial_reason": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "maxLength": 20000
+        }
+      },
+      "required": [
+        "scenarios",
+        "questions",
+        "partial_reason"
+      ],
+      "additionalProperties": false
+    },
+    "ModelEntityProposal": {
+      "type": "object",
+      "properties": {
+        "kind": {
+          "const": "Entity"
+        },
+        "label": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 200
+        },
+        "entity_type": {
+          "type": "string",
+          "enum": [
+            "PERSON",
+            "ORGANIZATION",
+            "PLACE",
+            "OBJECT",
+            "VEHICLE",
+            "DEVICE",
+            "UNKNOWN_ACTOR"
+          ]
+        },
+        "aliases": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 200
+          },
+          "minItems": 0,
+          "maxItems": 10000
+        },
+        "source_refs": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/Ref"
+          },
+          "minItems": 0,
+          "maxItems": 10000
+        },
+        "proposed_id": {
+          "type": "string",
+          "format": "uuid"
+        }
+      },
+      "required": [
+        "kind",
+        "label",
+        "entity_type",
+        "aliases",
+        "source_refs",
+        "proposed_id"
+      ],
+      "additionalProperties": false
+    },
+    "ModelObservationProposal": {
+      "type": "object",
+      "properties": {
+        "kind": {
+          "const": "Observation"
+        },
+        "citations": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/Citation"
+          },
+          "minItems": 1,
+          "maxItems": 10000
+        },
+        "support_refs": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/Ref"
+          },
+          "minItems": 0,
+          "maxItems": 10000
+        },
+        "counter_refs": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/Ref"
+          },
+          "minItems": 0,
+          "maxItems": 10000
+        },
+        "rationale": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 20000
+        },
+        "statement": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 20000
+        },
+        "subject_refs": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/Ref"
+          },
+          "minItems": 1,
+          "maxItems": 10000
+        },
+        "predicate": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 200
+        },
+        "object_value": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 20000
+        },
+        "occurrence": {
+          "$ref": "#/$defs/Time"
+        },
+        "discovered_at": {
+          "anyOf": [
+            {
+              "type": "string",
+              "format": "date-time"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "recorded_at": {
+          "anyOf": [
+            {
+              "type": "string",
+              "format": "date-time"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "provenance_group": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 200
+        },
+        "independence": {
+          "type": "string",
+          "enum": [
+            "UNKNOWN",
+            "SHARED",
+            "REVIEWED_INDEPENDENT"
+          ]
+        },
+        "suggested_tier": {
+          "$ref": "#/$defs/Tier"
+        },
+        "proposed_id": {
+          "type": "string",
+          "format": "uuid"
+        }
+      },
+      "required": [
+        "kind",
+        "citations",
+        "support_refs",
+        "counter_refs",
+        "rationale",
+        "statement",
+        "subject_refs",
+        "predicate",
+        "object_value",
+        "occurrence",
+        "discovered_at",
+        "recorded_at",
+        "provenance_group",
+        "independence",
+        "suggested_tier",
+        "proposed_id"
+      ],
+      "additionalProperties": false
+    },
+    "ModelEventProposal": {
+      "type": "object",
+      "properties": {
+        "kind": {
+          "const": "Event"
+        },
+        "citations": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/Citation"
+          },
+          "minItems": 0,
+          "maxItems": 10000
+        },
+        "support_refs": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/Ref"
+          },
+          "minItems": 0,
+          "maxItems": 10000
+        },
+        "counter_refs": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/Ref"
+          },
+          "minItems": 0,
+          "maxItems": 10000
+        },
+        "rationale": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 20000
+        },
+        "label": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 200
+        },
+        "occurrence": {
+          "$ref": "#/$defs/Time"
+        },
+        "participant_refs": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/Ref"
+          },
+          "minItems": 0,
+          "maxItems": 10000
+        },
+        "observation_refs": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/Ref"
+          },
+          "minItems": 1,
+          "maxItems": 10000
+        },
+        "suggested_tier": {
+          "$ref": "#/$defs/Tier"
+        },
+        "proposed_id": {
+          "type": "string",
+          "format": "uuid"
+        }
+      },
+      "required": [
+        "kind",
+        "citations",
+        "support_refs",
+        "counter_refs",
+        "rationale",
+        "label",
+        "occurrence",
+        "participant_refs",
+        "observation_refs",
+        "suggested_tier",
+        "proposed_id"
+      ],
+      "additionalProperties": false
+    },
+    "ModelInterpretationProposal": {
+      "type": "object",
+      "properties": {
+        "kind": {
+          "const": "Interpretation"
+        },
+        "citations": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/Citation"
+          },
+          "minItems": 0,
+          "maxItems": 10000
+        },
+        "support_refs": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/Ref"
+          },
+          "minItems": 0,
+          "maxItems": 10000
+        },
+        "counter_refs": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/Ref"
+          },
+          "minItems": 0,
+          "maxItems": 10000
+        },
+        "rationale": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 20000
+        },
+        "statement": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 20000
+        },
+        "assumptions": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 20000
+          },
+          "minItems": 0,
+          "maxItems": 10000
+        },
+        "premise_refs": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/Ref"
+          },
+          "minItems": 1,
+          "maxItems": 10000
+        },
+        "suggested_tier": {
+          "$ref": "#/$defs/Tier"
+        },
+        "proposed_id": {
+          "type": "string",
+          "format": "uuid"
+        }
+      },
+      "required": [
+        "kind",
+        "citations",
+        "support_refs",
+        "counter_refs",
+        "rationale",
+        "statement",
+        "assumptions",
+        "premise_refs",
+        "suggested_tier",
+        "proposed_id"
+      ],
+      "additionalProperties": false
+    },
+    "ModelEdgeProposal": {
+      "type": "object",
+      "properties": {
+        "kind": {
+          "const": "Edge"
+        },
+        "citations": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/Citation"
+          },
+          "minItems": 0,
+          "maxItems": 10000
+        },
+        "support_refs": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/Ref"
+          },
+          "minItems": 0,
+          "maxItems": 10000
+        },
+        "counter_refs": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/Ref"
+          },
+          "minItems": 0,
+          "maxItems": 10000
+        },
+        "rationale": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 20000
+        },
+        "from_ref": {
+          "$ref": "#/$defs/Ref"
+        },
+        "to_ref": {
+          "$ref": "#/$defs/Ref"
+        },
+        "relation": {
+          "type": "string",
+          "enum": [
+            "MENTIONS",
+            "LOCATED_AT",
+            "PARTICIPATED_IN",
+            "SUPPORTS",
+            "CONTRADICTS",
+            "PRECEDES",
+            "REFERS_TO",
+            "SAME_IDENTIFIER"
+          ]
+        },
+        "independence": {
+          "type": "string",
+          "enum": [
+            "UNKNOWN",
+            "SHARED",
+            "REVIEWED_INDEPENDENT"
+          ]
+        },
+        "suggested_tier": {
+          "$ref": "#/$defs/Tier"
+        },
+        "proposed_id": {
+          "type": "string",
+          "format": "uuid"
+        }
+      },
+      "required": [
+        "kind",
+        "citations",
+        "support_refs",
+        "counter_refs",
+        "rationale",
+        "from_ref",
+        "to_ref",
+        "relation",
+        "independence",
+        "suggested_tier",
+        "proposed_id"
+      ],
+      "additionalProperties": false
+    },
+    "ModelExtractionOutput": {
+      "type": "object",
+      "properties": {
+        "proposals": {
+          "type": "array",
+          "items": {
+            "oneOf": [
+              {
+                "$ref": "#/$defs/ModelEntityProposal"
+              },
+              {
+                "$ref": "#/$defs/ModelObservationProposal"
+              },
+              {
+                "$ref": "#/$defs/ModelEventProposal"
+              },
+              {
+                "$ref": "#/$defs/ModelInterpretationProposal"
+              },
+              {
+                "$ref": "#/$defs/ModelEdgeProposal"
+              }
+            ]
+          },
+          "maxItems": 1000
+        },
+        "warnings": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "maxLength": 20000
+          },
+          "maxItems": 100
+        }
+      },
+      "required": [
+        "proposals",
+        "warnings"
+      ],
+      "additionalProperties": false
+    },
+    "ModelContradictionProposal": {
+      "type": "object",
+      "properties": {
+        "proposition_refs": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/Ref"
+          },
+          "minItems": 2,
+          "maxItems": 20
+        },
+        "rule": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 200
+        },
+        "rule_version": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 200
+        },
+        "strength": {
+          "type": "string",
+          "enum": [
+            "POTENTIAL",
+            "LOGICAL"
+          ]
+        },
+        "qualifications": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 20000
+          },
+          "minItems": 0,
+          "maxItems": 10000
+        },
+        "resolution_targets": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 20000
+          },
+          "minItems": 1,
+          "maxItems": 10000
+        }
+      },
+      "required": [
+        "proposition_refs",
+        "rule",
+        "rule_version",
+        "strength",
+        "qualifications",
+        "resolution_targets"
+      ],
+      "additionalProperties": false
+    },
+    "ModelContradictionOutput": {
+      "type": "object",
+      "properties": {
+        "proposals": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/ModelContradictionProposal"
+          },
+          "maxItems": 1000
+        },
+        "warnings": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "maxLength": 20000
+          },
+          "maxItems": 100
+        }
+      },
+      "required": [
+        "proposals",
+        "warnings"
+      ],
+      "additionalProperties": false
+    },
+    "HumanEntityDraft": {
+      "type": "object",
+      "properties": {
+        "kind": {
+          "const": "Entity"
+        },
+        "label": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 200
+        },
+        "entity_type": {
+          "type": "string",
+          "enum": [
+            "PERSON",
+            "ORGANIZATION",
+            "PLACE",
+            "OBJECT",
+            "VEHICLE",
+            "DEVICE",
+            "UNKNOWN_ACTOR"
+          ]
+        },
+        "aliases": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 200
+          },
+          "minItems": 0,
+          "maxItems": 10000
+        },
+        "source_refs": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/Ref"
+          },
+          "minItems": 0,
+          "maxItems": 10000
+        }
+      },
+      "required": [
+        "kind",
+        "label",
+        "entity_type",
+        "aliases",
+        "source_refs"
+      ],
+      "additionalProperties": false
+    },
+    "HumanObservationDraft": {
+      "type": "object",
+      "properties": {
+        "kind": {
+          "const": "Observation"
+        },
+        "tier": {
+          "$ref": "#/$defs/Tier"
+        },
+        "citations": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/Citation"
+          },
+          "minItems": 1,
+          "maxItems": 10000
+        },
+        "support_refs": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/Ref"
+          },
+          "minItems": 0,
+          "maxItems": 10000
+        },
+        "counter_refs": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/Ref"
+          },
+          "minItems": 0,
+          "maxItems": 10000
+        },
+        "rationale": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 20000
+        },
+        "statement": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 20000
+        },
+        "subject_refs": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/Ref"
+          },
+          "minItems": 1,
+          "maxItems": 10000
+        },
+        "predicate": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 200
+        },
+        "object_value": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 20000
+        },
+        "occurrence": {
+          "$ref": "#/$defs/Time"
+        },
+        "discovered_at": {
+          "anyOf": [
+            {
+              "type": "string",
+              "format": "date-time"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "recorded_at": {
+          "anyOf": [
+            {
+              "type": "string",
+              "format": "date-time"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "provenance_group": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 200
+        },
+        "independence": {
+          "type": "string",
+          "enum": [
+            "UNKNOWN",
+            "SHARED",
+            "REVIEWED_INDEPENDENT"
+          ]
+        }
+      },
+      "required": [
+        "kind",
+        "tier",
+        "citations",
+        "support_refs",
+        "counter_refs",
+        "rationale",
+        "statement",
+        "subject_refs",
+        "predicate",
+        "object_value",
+        "occurrence",
+        "discovered_at",
+        "recorded_at",
+        "provenance_group",
+        "independence"
+      ],
+      "additionalProperties": false
+    },
+    "HumanInterpretationDraft": {
+      "type": "object",
+      "properties": {
+        "kind": {
+          "const": "Interpretation"
+        },
+        "tier": {
+          "$ref": "#/$defs/Tier"
+        },
+        "citations": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/Citation"
+          },
+          "minItems": 0,
+          "maxItems": 10000
+        },
+        "support_refs": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/Ref"
+          },
+          "minItems": 0,
+          "maxItems": 10000
+        },
+        "counter_refs": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/Ref"
+          },
+          "minItems": 0,
+          "maxItems": 10000
+        },
+        "rationale": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 20000
+        },
+        "statement": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 20000
+        },
+        "assumptions": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 20000
+          },
+          "minItems": 0,
+          "maxItems": 10000
+        },
+        "premise_refs": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/Ref"
+          },
+          "minItems": 1,
+          "maxItems": 10000
+        }
+      },
+      "required": [
+        "kind",
+        "tier",
+        "citations",
+        "support_refs",
+        "counter_refs",
+        "rationale",
+        "statement",
+        "assumptions",
+        "premise_refs"
+      ],
+      "additionalProperties": false
+    },
+    "HumanEventDraft": {
+      "type": "object",
+      "properties": {
+        "kind": {
+          "const": "Event"
+        },
+        "tier": {
+          "$ref": "#/$defs/Tier"
+        },
+        "citations": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/Citation"
+          },
+          "minItems": 0,
+          "maxItems": 10000
+        },
+        "support_refs": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/Ref"
+          },
+          "minItems": 0,
+          "maxItems": 10000
+        },
+        "counter_refs": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/Ref"
+          },
+          "minItems": 0,
+          "maxItems": 10000
+        },
+        "rationale": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 20000
+        },
+        "label": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 200
+        },
+        "occurrence": {
+          "$ref": "#/$defs/Time"
+        },
+        "participant_refs": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/Ref"
+          },
+          "minItems": 0,
+          "maxItems": 10000
+        },
+        "observation_refs": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/Ref"
+          },
+          "minItems": 1,
+          "maxItems": 10000
+        }
+      },
+      "required": [
+        "kind",
+        "tier",
+        "citations",
+        "support_refs",
+        "counter_refs",
+        "rationale",
+        "label",
+        "occurrence",
+        "participant_refs",
+        "observation_refs"
+      ],
+      "additionalProperties": false
+    },
+    "HumanEdgeDraft": {
+      "type": "object",
+      "properties": {
+        "kind": {
+          "const": "Edge"
+        },
+        "tier": {
+          "$ref": "#/$defs/Tier"
+        },
+        "citations": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/Citation"
+          },
+          "minItems": 0,
+          "maxItems": 10000
+        },
+        "support_refs": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/Ref"
+          },
+          "minItems": 0,
+          "maxItems": 10000
+        },
+        "counter_refs": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/Ref"
+          },
+          "minItems": 0,
+          "maxItems": 10000
+        },
+        "rationale": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 20000
+        },
+        "from_ref": {
+          "$ref": "#/$defs/Ref"
+        },
+        "to_ref": {
+          "$ref": "#/$defs/Ref"
+        },
+        "relation": {
+          "type": "string",
+          "enum": [
+            "MENTIONS",
+            "LOCATED_AT",
+            "PARTICIPATED_IN",
+            "SUPPORTS",
+            "CONTRADICTS",
+            "PRECEDES",
+            "REFERS_TO",
+            "SAME_IDENTIFIER"
+          ]
+        },
+        "independence": {
+          "type": "string",
+          "enum": [
+            "UNKNOWN",
+            "SHARED",
+            "REVIEWED_INDEPENDENT"
+          ]
+        }
+      },
+      "required": [
+        "kind",
+        "tier",
+        "citations",
+        "support_refs",
+        "counter_refs",
+        "rationale",
+        "from_ref",
+        "to_ref",
+        "relation",
+        "independence"
+      ],
+      "additionalProperties": false
+    },
+    "HumanHypothesisDraft": {
+      "type": "object",
+      "properties": {
+        "kind": {
+          "const": "Hypothesis"
+        },
+        "tier": {
+          "$ref": "#/$defs/Tier"
+        },
+        "citations": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/Citation"
+          },
+          "minItems": 0,
+          "maxItems": 10000
+        },
+        "support_refs": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/Ref"
+          },
+          "minItems": 0,
+          "maxItems": 10000
+        },
+        "counter_refs": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/Ref"
+          },
+          "minItems": 0,
+          "maxItems": 10000
+        },
+        "rationale": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 20000
+        },
+        "claim": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 20000
+        },
+        "family_key": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 200
+        },
+        "strengthen_if": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 20000
+          },
+          "minItems": 0,
+          "maxItems": 10000
+        },
+        "weaken_if": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 20000
+          },
+          "minItems": 0,
+          "maxItems": 10000
+        },
+        "retire_if": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 20000
+          },
+          "minItems": 0,
+          "maxItems": 10000
+        },
+        "falsifiability": {
+          "type": "string",
+          "enum": [
+            "TESTABLE",
+            "NOT_CURRENTLY_FALSIFIABLE"
+          ]
+        }
+      },
+      "required": [
+        "kind",
+        "tier",
+        "citations",
+        "support_refs",
+        "counter_refs",
+        "rationale",
+        "claim",
+        "family_key",
+        "strengthen_if",
+        "weaken_if",
+        "retire_if",
+        "falsifiability"
+      ],
+      "additionalProperties": false
+    },
+    "HumanNoteDraft": {
+      "type": "object",
+      "properties": {
+        "kind": {
+          "const": "Note"
+        },
+        "text": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 20000
+        },
+        "target_refs": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/Ref"
+          },
+          "minItems": 0,
+          "maxItems": 10000
+        },
+        "note_type": {
+          "type": "string",
+          "enum": [
+            "INVESTIGATOR_NOTE",
+            "SCOPE_LIMIT",
+            "DECISION_NOTE"
+          ]
+        }
+      },
+      "required": [
+        "kind",
+        "text",
+        "target_refs",
+        "note_type"
+      ],
+      "additionalProperties": false
+    },
+    "HumanTemporalConstraintDraft": {
+      "type": "object",
+      "properties": {
+        "kind": {
+          "const": "TemporalConstraint"
+        },
+        "constraint_type": {
+          "type": "string",
+          "enum": [
+            "INTERVAL",
+            "BEFORE"
+          ]
+        },
+        "left": {
+          "$ref": "#/$defs/Ref"
+        },
+        "right": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Ref"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "window": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Time"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "min_lag_seconds": {
+          "anyOf": [
+            {
+              "type": "number",
+              "minimum": 0
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "max_lag_seconds": {
+          "anyOf": [
+            {
+              "type": "number",
+              "minimum": 0
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "strict": {
+          "type": "boolean"
+        },
+        "basis_refs": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/Ref"
+          },
+          "minItems": 1,
+          "maxItems": 10000
+        },
+        "rationale": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 20000
+        }
+      },
+      "required": [
+        "kind",
+        "constraint_type",
+        "left",
+        "right",
+        "window",
+        "min_lag_seconds",
+        "max_lag_seconds",
+        "strict",
+        "basis_refs",
+        "rationale"
+      ],
+      "additionalProperties": false
+    },
+    "HumanClockCorrectionDraft": {
+      "type": "object",
+      "properties": {
+        "kind": {
+          "const": "ClockCorrection"
+        },
+        "clock_id": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 200
+        },
+        "raw_time_refs": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/Ref"
+          },
+          "minItems": 1,
+          "maxItems": 10000
+        },
+        "offset_min_seconds": {
+          "type": "number"
+        },
+        "offset_max_seconds": {
+          "type": "number"
+        },
+        "basis_refs": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/Ref"
+          },
+          "minItems": 1,
+          "maxItems": 10000
+        },
+        "rationale": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 20000
+        }
+      },
+      "required": [
+        "kind",
+        "clock_id",
+        "raw_time_refs",
+        "offset_min_seconds",
+        "offset_max_seconds",
+        "basis_refs",
+        "rationale"
+      ],
+      "additionalProperties": false
+    },
+    "HumanEntityMergeDraft": {
+      "type": "object",
+      "properties": {
+        "kind": {
+          "const": "EntityMerge"
+        },
+        "entity_refs": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/Ref"
+          },
+          "minItems": 2,
+          "maxItems": 10000
+        },
+        "canonical_ref": {
+          "$ref": "#/$defs/Ref"
+        },
+        "reason": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 20000
+        },
+        "active": {
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "kind",
+        "entity_refs",
+        "canonical_ref",
+        "reason",
+        "active"
+      ],
+      "additionalProperties": false
+    },
+    "HumanRecordDraft": {
+      "oneOf": [
+        {
+          "$ref": "#/$defs/HumanEntityDraft"
+        },
+        {
+          "$ref": "#/$defs/HumanObservationDraft"
+        },
+        {
+          "$ref": "#/$defs/HumanInterpretationDraft"
+        },
+        {
+          "$ref": "#/$defs/HumanEventDraft"
+        },
+        {
+          "$ref": "#/$defs/HumanEdgeDraft"
+        },
+        {
+          "$ref": "#/$defs/HumanHypothesisDraft"
+        },
+        {
+          "$ref": "#/$defs/HumanNoteDraft"
+        },
+        {
+          "$ref": "#/$defs/HumanTemporalConstraintDraft"
+        },
+        {
+          "$ref": "#/$defs/HumanClockCorrectionDraft"
+        },
+        {
+          "$ref": "#/$defs/HumanEntityMergeDraft"
+        }
+      ]
+    }
+  }
+}

@@ -1,0 +1,57 @@
+# Dependency metadata inventory
+
+Generated from installed Python distributions. This is not a complete redistribution notice bundle or a legal license audit. See the npm CycloneDX inventory for JavaScript dependencies.
+
+- annotated-doc 0.0.5: MIT; upstream see distribution metadata.
+- annotated-types 0.8.0: MIT; upstream see distribution metadata.
+- anyio 4.15.1: MIT; upstream see distribution metadata.
+- argcomplete 3.7.2: NOASSERTION; upstream see distribution metadata.
+- attrs 26.1.0: MIT; upstream see distribution metadata.
+- black 26.5.1: MIT; upstream see distribution metadata.
+- certifi 2026.7.22: NOASSERTION; upstream https://github.com/certifi/python-certifi.
+- click 8.5.0: BSD-3-Clause; upstream see distribution metadata.
+- datamodel-code-generator 0.81.0: MIT; upstream see distribution metadata.
+- fastapi 0.141.1: MIT; upstream see distribution metadata.
+- genson 1.4.0: NOASSERTION; upstream https://github.com/wolverdude/genson/.
+- h11 0.16.0: NOASSERTION; upstream https://github.com/python-hyper/h11.
+- httpcore 1.0.9: BSD-3-Clause; upstream see distribution metadata.
+- httpx 0.28.1: NOASSERTION; upstream see distribution metadata.
+- idna 3.19: BSD-3-Clause; upstream see distribution metadata.
+- inflect 7.5.0: NOASSERTION; upstream see distribution metadata.
+- iniconfig 2.3.0: MIT; upstream see distribution metadata.
+- isort 8.0.1: MIT; upstream see distribution metadata.
+- Jinja2 3.1.6: NOASSERTION; upstream see distribution metadata.
+- jsonschema 4.26.0: MIT; upstream see distribution metadata.
+- jsonschema-path 0.5.0: NOASSERTION; upstream see distribution metadata.
+- jsonschema-specifications 2025.9.1: MIT; upstream see distribution metadata.
+- lazy-object-proxy 1.12.0: BSD-2-Clause; upstream see distribution metadata.
+- MarkupSafe 3.0.3: BSD-3-Clause; upstream see distribution metadata.
+- more-itertools 11.1.0: MIT; upstream see distribution metadata.
+- mypy_extensions 1.1.0: MIT; upstream see distribution metadata.
+- openapi-schema-validator 0.9.0: NOASSERTION; upstream see distribution metadata.
+- openapi-spec-validator 0.9.0: Apache-2.0; upstream see distribution metadata.
+- packaging 26.3: Apache-2.0 OR BSD-2-Clause; upstream see distribution metadata.
+- pathable 0.6.0: NOASSERTION; upstream see distribution metadata.
+- pathspec 1.1.1: NOASSERTION; upstream see distribution metadata.
+- pip 25.2: MIT; upstream see distribution metadata.
+- platformdirs 4.11.8: MIT; upstream see distribution metadata.
+- pluggy 1.6.0: NOASSERTION; upstream see distribution metadata.
+- pydantic 2.13.5: MIT; upstream see distribution metadata.
+- pydantic-settings 2.15.0: MIT; upstream see distribution metadata.
+- pydantic_core 2.46.5: MIT; upstream https://github.com/pydantic/pydantic.
+- Pygments 2.21.0: BSD-2-Clause; upstream see distribution metadata.
+- pytest 9.1.1: MIT; upstream see distribution metadata.
+- python-dotenv 1.2.3: NOASSERTION; upstream see distribution metadata.
+- python-multipart 0.0.32: Apache-2.0; upstream see distribution metadata.
+- pytokens 0.4.1: NOASSERTION; upstream see distribution metadata.
+- PyYAML 6.0.3: NOASSERTION; upstream https://pyyaml.org/.
+- referencing 0.37.0: MIT; upstream see distribution metadata.
+- rfc3339-validator 0.1.4: NOASSERTION; upstream https://github.com/naimetti/rfc3339-validator.
+- rfc8785 0.1.4: NOASSERTION; upstream see distribution metadata.
+- rpds-py 2026.6.3: MIT; upstream see distribution metadata.
+- six 1.17.0: NOASSERTION; upstream https://github.com/benjaminp/six.
+- starlette 1.6.0: BSD-3-Clause; upstream see distribution metadata.
+- typeguard 4.6.0: MIT; upstream see distribution metadata.
+- typing-inspection 0.4.4: MIT; upstream see distribution metadata.
+- typing_extensions 4.16.0: PSF-2.0; upstream see distribution metadata.
+- uvicorn 0.53.0: BSD-3-Clause; upstream see distribution metadata.

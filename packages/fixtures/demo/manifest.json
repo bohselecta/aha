@@ -1,0 +1,38 @@
+{
+  "schema_version": "1.0.0",
+  "case_id": "00000000-0000-4000-8000-000000000001",
+  "case_revision": 42,
+  "synthetic": true,
+  "files": [
+    {
+      "path": "originals/attendant.txt",
+      "bytes": 164,
+      "sha256": "d96be30b2a77b27f133711995dc464fa2ad24bd517511ece072686ff4f4025fb"
+    },
+    {
+      "path": "originals/camera.txt",
+      "bytes": 186,
+      "sha256": "6bedc925a8d68dc7ba4643c85b62f886b08eef113b24852c649d3c2302bcb7f6"
+    },
+    {
+      "path": "originals/maintenance.txt",
+      "bytes": 158,
+      "sha256": "fbecbf8800df9f592fd4550e05dd064b7f3a70c8a31fcf7012a7f510972337f7"
+    },
+    {
+      "path": "originals/receipt.txt",
+      "bytes": 119,
+      "sha256": "00b34b124d1163c2738878b7f340291c3693cd4ee16aec2cdaf791a4221a7b31"
+    },
+    {
+      "path": "originals/calibration.txt",
+      "bytes": 239,
+      "sha256": "c081a756ae17a33254d011b015a21256c6fe9aaf5f2e461c179ea7989e350a7d"
+    },
+    {
+      "path": "originals/search-log.txt",
+      "bytes": 186,
+      "sha256": "722dee227b98e71874e3e58811890e46eecf73a22e63e3988aa89ec02b7d0fce"
+    }
+  ]
+}

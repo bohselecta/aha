@@ -1,0 +1,26 @@
+{
+  "id": "00000000-0000-4000-8000-000000000060",
+  "case_id": "00000000-0000-4000-8000-000000000001",
+  "revision": 1,
+  "introduced_case_revision": 1,
+  "created_at": "2026-09-15T12:00:00Z",
+  "created_by": "synthetic-fixture-author",
+  "kind": "Edge",
+  "tier": "OBSERVED",
+  "origin": "HUMAN",
+  "review": "ACCEPTED",
+  "citations": [],
+  "support_refs": [],
+  "counter_refs": [],
+  "rationale": "Source assertion, not independently established.",
+  "from_ref": {
+    "id": "00000000-0000-4000-8000-000000000040",
+    "revision": 1
+  },
+  "to_ref": {
+    "id": "00000000-0000-4000-8000-000000000031",
+    "revision": 1
+  },
+  "relation": "MENTIONS",
+  "independence": "UNKNOWN"
+}

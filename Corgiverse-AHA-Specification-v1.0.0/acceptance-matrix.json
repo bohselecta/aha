@@ -1,0 +1,458 @@
+[
+  {
+    "id": "CORE-01",
+    "milestone": "M0",
+    "invariant": "INV-01",
+    "condition": "Contracts validate and generated clients agree with API",
+    "evidence_required": "Schema/OpenAPI validation report.",
+    "status": "NOT_RUN"
+  },
+  {
+    "id": "CORE-02",
+    "milestone": "M1",
+    "invariant": "INV-03",
+    "condition": "Original bytes survive import, correction and restore unchanged",
+    "evidence_required": "SHA-256 equality at all three stages.",
+    "status": "NOT_RUN"
+  },
+  {
+    "id": "CORE-03",
+    "milestone": "M1",
+    "invariant": "INV-14",
+    "condition": "Retrying a command creates exactly one write/audit event",
+    "evidence_required": "Idempotency replay + changed-body conflict test.",
+    "status": "NOT_RUN"
+  },
+  {
+    "id": "CORE-04",
+    "milestone": "M1",
+    "invariant": "INV-14",
+    "condition": "Stale If-Match never overwrites accepted state",
+    "evidence_required": "Two-client conflict integration test.",
+    "status": "NOT_RUN"
+  },
+  {
+    "id": "CORE-05",
+    "milestone": "M1",
+    "invariant": "INV-14",
+    "condition": "Crash at each file/DB commit boundary recovers correctly",
+    "evidence_required": "Fault-injection matrix and orphan reconciliation.",
+    "status": "NOT_RUN"
+  },
+  {
+    "id": "CORE-06",
+    "milestone": "M1",
+    "invariant": "INV-03",
+    "condition": "Tampered original is detected and quarantined visibly",
+    "evidence_required": "Byte mutation + UI + blocked export test.",
+    "status": "NOT_RUN"
+  },
+  {
+    "id": "CORE-07",
+    "milestone": "M1",
+    "invariant": "INV-14",
+    "condition": "Append-only revisions and audit stay resolvable",
+    "evidence_required": "Old-reference read and update/delete denial.",
+    "status": "NOT_RUN"
+  },
+  {
+    "id": "ING-01",
+    "milestone": "M2",
+    "invariant": "INV-03",
+    "condition": "Every required file format preserves original and yields usable derivatives",
+    "evidence_required": "PDF/OCR/image/DOCX/TXT/CSV/XLSX integration fixtures.",
+    "status": "NOT_RUN"
+  },
+  {
+    "id": "ING-02",
+    "milestone": "M2",
+    "invariant": "INV-01",
+    "condition": "AI extraction remains pending until source-side review",
+    "evidence_required": "E2E reject/edit/accept with audit.",
+    "status": "NOT_RUN"
+  },
+  {
+    "id": "ING-03",
+    "milestone": "M2",
+    "invariant": "INV-04",
+    "condition": "Statement and interpretation are separate records",
+    "evidence_required": "Source statement versus inferred event test.",
+    "status": "NOT_RUN"
+  },
+  {
+    "id": "ING-04",
+    "milestone": "M2",
+    "invariant": "INV-12",
+    "condition": "Citations resolve exact immutable derivative location",
+    "evidence_required": "Unicode, page, row and quote boundary tests.",
+    "status": "NOT_RUN"
+  },
+  {
+    "id": "ING-05",
+    "milestone": "M2",
+    "invariant": "INV-11",
+    "condition": "Hostile parser inputs cannot fetch URLs or exceed resource limits",
+    "evidence_required": "Sandbox/timeout/zip-bomb network tests.",
+    "status": "NOT_RUN"
+  },
+  {
+    "id": "ING-06",
+    "milestone": "M2",
+    "invariant": "INV-03",
+    "condition": "Duplicate bytes preserve independent receipt history",
+    "evidence_required": "Two names/same bytes + two receipt events.",
+    "status": "NOT_RUN"
+  },
+  {
+    "id": "TIME-01",
+    "milestone": "M3",
+    "invariant": "INV-13",
+    "condition": "Exact, approximate, range, undated, disputed and DST times display honestly",
+    "evidence_required": "Temporal unit and UI cases.",
+    "status": "NOT_RUN"
+  },
+  {
+    "id": "TIME-02",
+    "milestone": "M3",
+    "invariant": "INV-09",
+    "condition": "Conflicting anchors block AHA before generation",
+    "evidence_required": "Unsatisfiable-set test with model call count zero.",
+    "status": "NOT_RUN"
+  },
+  {
+    "id": "EDGE-01",
+    "milestone": "M3",
+    "invariant": "INV-05",
+    "condition": "Documented endpoints never promote an unsupported edge",
+    "evidence_required": "Independent edge rejection test.",
+    "status": "NOT_RUN"
+  },
+  {
+    "id": "EDGE-02",
+    "milestone": "M3",
+    "invariant": "INV-05",
+    "condition": "Shared source lineage never counts as independent corroboration",
+    "evidence_required": "Copied-report fixture.",
+    "status": "NOT_RUN"
+  },
+  {
+    "id": "CON-01",
+    "milestone": "M3",
+    "invariant": "INV-06",
+    "condition": "Contradictions retain competing claims and resolution history",
+    "evidence_required": "Candidate→unresolved→resolved + source correction.",
+    "status": "NOT_RUN"
+  },
+  {
+    "id": "CON-02",
+    "milestone": "M3",
+    "invariant": "INV-13",
+    "condition": "Uncertain identity/time creates potential, not logical conflict",
+    "evidence_required": "Red-vehicle demo assertion.",
+    "status": "NOT_RUN"
+  },
+  {
+    "id": "HYP-01",
+    "milestone": "M3",
+    "invariant": "INV-07",
+    "condition": "All transitions enforce human reason and testability",
+    "evidence_required": "Full transition table tests.",
+    "status": "NOT_RUN"
+  },
+  {
+    "id": "HYP-02",
+    "milestone": "M3",
+    "invariant": "INV-07",
+    "condition": "Retired exact and paraphrased ideas are blocked or held",
+    "evidence_required": "Retirement model evaluation + human collision review.",
+    "status": "NOT_RUN"
+  },
+  {
+    "id": "HYP-03",
+    "milestone": "M3",
+    "invariant": "INV-07",
+    "condition": "Relevant new evidence plus review creates successor, never un-retires old record",
+    "evidence_required": "Positive/negative reopening E2E.",
+    "status": "NOT_RUN"
+  },
+  {
+    "id": "LENS-01",
+    "milestone": "M4",
+    "invariant": "INV-08",
+    "condition": "Eggs query shows similarity without invented evidence edge",
+    "evidence_required": "Oracle IDs and persistent graph hash unchanged.",
+    "status": "NOT_RUN"
+  },
+  {
+    "id": "LENS-02",
+    "milestone": "M4",
+    "invariant": "INV-12",
+    "condition": "Every highlight has supported why/source explanation",
+    "evidence_required": "Source click-through automated + human audit.",
+    "status": "NOT_RUN"
+  },
+  {
+    "id": "LENS-03",
+    "milestone": "M4",
+    "invariant": "INV-08",
+    "condition": "Plan rejects code, excessive hops and invalid fields",
+    "evidence_required": "Allowlist fuzz tests.",
+    "status": "NOT_RUN"
+  },
+  {
+    "id": "LENS-04",
+    "milestone": "M4",
+    "invariant": "INV-08",
+    "condition": "Clear lens restores previous view and case state",
+    "evidence_required": "View/state snapshot comparison.",
+    "status": "NOT_RUN"
+  },
+  {
+    "id": "LENS-05",
+    "milestone": "M4",
+    "invariant": "INV-13",
+    "condition": "Index staleness and no-match scope are visible",
+    "evidence_required": "Delayed/rebuilding index E2E.",
+    "status": "NOT_RUN"
+  },
+  {
+    "id": "LENS-06",
+    "milestone": "M4",
+    "invariant": "INV-13",
+    "condition": "Counterfactual excludes dependencies without asserting surviving truth",
+    "evidence_required": "Dependency fixture and unchanged evidence.",
+    "status": "NOT_RUN"
+  },
+  {
+    "id": "UI-01",
+    "milestone": "M4",
+    "invariant": "INV-10",
+    "condition": "Atlas 3D encodes labeled time/group/basis dimensions",
+    "evidence_required": "Visual review and stable layout tests.",
+    "status": "NOT_RUN"
+  },
+  {
+    "id": "UI-02",
+    "milestone": "M4",
+    "invariant": "INV-10",
+    "condition": "All graph actions/insights work in 2D/table with keyboard",
+    "evidence_required": "Forced WebGL failure + accessibility journey.",
+    "status": "NOT_RUN"
+  },
+  {
+    "id": "UI-03",
+    "milestone": "M4",
+    "invariant": "INV-10",
+    "condition": "Tier remains legible without color and at 200% zoom",
+    "evidence_required": "Contrast, monochrome and reflow review.",
+    "status": "NOT_RUN"
+  },
+  {
+    "id": "AHA-01",
+    "milestone": "M5",
+    "invariant": "INV-09",
+    "condition": "All published scenarios preserve selected anchor versions",
+    "evidence_required": "Temporal/source constraint evaluation.",
+    "status": "NOT_RUN"
+  },
+  {
+    "id": "AHA-02",
+    "milestone": "M5",
+    "invariant": "INV-09",
+    "condition": "Alternatives differ materially and yield discriminating questions",
+    "evidence_required": "Structural duplicate + human review.",
+    "status": "NOT_RUN"
+  },
+  {
+    "id": "AHA-03",
+    "milestone": "M5",
+    "invariant": "INV-02",
+    "condition": "No guilt fields, ranked suspects or unsupported named offender roles",
+    "evidence_required": "100-case adversarial suite + reviewed outputs.",
+    "status": "NOT_RUN"
+  },
+  {
+    "id": "AHA-04",
+    "milestone": "M5",
+    "invariant": "INV-12",
+    "condition": "Fabricated references and quoted text are rejected",
+    "evidence_required": "Invalid citation/reference fixture suite.",
+    "status": "NOT_RUN"
+  },
+  {
+    "id": "AHA-05",
+    "milestone": "M5",
+    "invariant": "INV-09",
+    "condition": "Insufficient diversity returns honest partial set",
+    "evidence_required": "Requested ten/result two fixture.",
+    "status": "NOT_RUN"
+  },
+  {
+    "id": "AHA-06",
+    "milestone": "M5",
+    "invariant": "INV-01",
+    "condition": "Scenario saved as hypothesis remains proposed/speculative",
+    "evidence_required": "Save-to-hypothesis E2E.",
+    "status": "NOT_RUN"
+  },
+  {
+    "id": "MODEL-01",
+    "milestone": "M5",
+    "invariant": "INV-11",
+    "condition": "Real local model completes supported workflows with internet disabled",
+    "evidence_required": "Recorded model/digest/hardware and packet capture.",
+    "status": "NOT_RUN"
+  },
+  {
+    "id": "MODEL-02",
+    "milestone": "M5",
+    "invariant": "INV-11",
+    "condition": "Missing model preserves manual workflows; no cloud fallback",
+    "evidence_required": "Provider-down E2E.",
+    "status": "NOT_RUN"
+  },
+  {
+    "id": "MODEL-03",
+    "milestone": "M5",
+    "invariant": "INV-12",
+    "condition": "Run provenance and stale snapshot warnings are complete",
+    "evidence_required": "Revision change mid-run test.",
+    "status": "NOT_RUN"
+  },
+  {
+    "id": "MODEL-04",
+    "milestone": "M5",
+    "invariant": "INV-01",
+    "condition": "Injection cannot create writes, fetch URLs or change tiers",
+    "evidence_required": "Adversarial source/tool-output suite.",
+    "status": "NOT_RUN"
+  },
+  {
+    "id": "EXP-01",
+    "milestone": "M6",
+    "invariant": "INV-12",
+    "condition": "PDF/HTML/JSON/CSV retain labels, provenance and counter-evidence",
+    "evidence_required": "Round-trip and report review.",
+    "status": "NOT_RUN"
+  },
+  {
+    "id": "EXP-02",
+    "milestone": "M6",
+    "invariant": "INV-03",
+    "condition": "Portable backup restores on a fresh volume with matching hashes",
+    "evidence_required": "Independent restore drill.",
+    "status": "NOT_RUN"
+  },
+  {
+    "id": "EXP-03",
+    "milestone": "M6",
+    "invariant": "INV-11",
+    "condition": "Redacted export leaks no removed visible or hidden content",
+    "evidence_required": "Text, metadata, attachment and OCR leak tests.",
+    "status": "NOT_RUN"
+  },
+  {
+    "id": "EXP-04",
+    "milestone": "M6",
+    "invariant": "INV-09",
+    "condition": "Synthetic export is explicit and labeled on each relevant page",
+    "evidence_required": "Default exclusion and opted-in print test.",
+    "status": "NOT_RUN"
+  },
+  {
+    "id": "SEC-01",
+    "milestone": "M6",
+    "invariant": "INV-11",
+    "condition": "Fresh workstation starts without external network attempts",
+    "evidence_required": "Offline install/runtime traffic evidence.",
+    "status": "NOT_RUN"
+  },
+  {
+    "id": "SEC-02",
+    "milestone": "M6",
+    "invariant": "INV-14",
+    "condition": "CSRF, foreign Host/Origin and unauthenticated access fail",
+    "evidence_required": "Browser/API negative test suite.",
+    "status": "NOT_RUN"
+  },
+  {
+    "id": "SEC-03",
+    "milestone": "M6",
+    "invariant": "INV-14",
+    "condition": "LAN identity spoofing and cross-case access fail",
+    "evidence_required": "Gateway integration tests.",
+    "status": "NOT_RUN"
+  },
+  {
+    "id": "SEC-04",
+    "milestone": "M6",
+    "invariant": "INV-11",
+    "condition": "Secrets/case text absent from default logs and diagnostic exports",
+    "evidence_required": "Sensitive sentinel scan.",
+    "status": "NOT_RUN"
+  },
+  {
+    "id": "SEC-05",
+    "milestone": "M6",
+    "invariant": "INV-14",
+    "condition": "Disk-full, interrupted worker and migration failure recover safely",
+    "evidence_required": "Failure injection and rollback drill.",
+    "status": "NOT_RUN"
+  },
+  {
+    "id": "REL-01",
+    "milestone": "M7",
+    "invariant": "INV-10",
+    "condition": "Performance budgets pass on documented reference machine",
+    "evidence_required": "p50/p95 report, five-client stress test.",
+    "status": "NOT_RUN"
+  },
+  {
+    "id": "REL-02",
+    "milestone": "M7",
+    "invariant": "INV-01",
+    "condition": "Nontechnical reviewers complete core workflow and distinguish basis",
+    "evidence_required": "Usability study with findings/resolutions.",
+    "status": "NOT_RUN"
+  },
+  {
+    "id": "REL-03",
+    "milestone": "M7",
+    "invariant": "INV-10",
+    "condition": "WCAG AA workflows verified beyond automated scanning",
+    "evidence_required": "Keyboard/NVDA/VoiceOver evidence.",
+    "status": "NOT_RUN"
+  },
+  {
+    "id": "REL-04",
+    "milestone": "M7",
+    "invariant": "INV-11",
+    "condition": "Signed images, SBOM, licenses and offline assets are complete",
+    "evidence_required": "Release manifest and signature verification.",
+    "status": "NOT_RUN"
+  },
+  {
+    "id": "REL-05",
+    "milestone": "M7",
+    "invariant": "INV-01",
+    "condition": "Required screens contain no stubs or unlabeled replay behavior",
+    "evidence_required": "End-to-end production configuration walkthrough.",
+    "status": "NOT_RUN"
+  },
+  {
+    "id": "EXT-01",
+    "milestone": "M6",
+    "invariant": "INV-11",
+    "condition": "CASEMAIL absent/disabled cannot send mail or bypass review",
+    "evidence_required": "Disabled endpoint + envelope fixture test.",
+    "status": "NOT_RUN"
+  },
+  {
+    "id": "EXT-02",
+    "milestone": "M6",
+    "invariant": "INV-10",
+    "condition": "Scene View hidden unless calibration/uncertainty gates pass",
+    "evidence_required": "Feature capability/disabled-state test.",
+    "status": "NOT_RUN"
+  }
+]

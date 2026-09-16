@@ -1,0 +1,50 @@
+{
+  "id": "00000000-0000-4000-8000-000000000060",
+  "case_id": "00000000-0000-4000-8000-000000000001",
+  "revision": 1,
+  "introduced_case_revision": 1,
+  "created_at": "2026-09-15T12:00:00Z",
+  "created_by": "synthetic-fixture-author",
+  "kind": "Edge",
+  "tier": "DOCUMENTED",
+  "origin": "AI_SYNTHETIC",
+  "review": "ACCEPTED",
+  "citations": [
+    {
+      "evidence": {
+        "id": "00000000-0000-4000-8000-000000000010",
+        "revision": 1
+      },
+      "evidence_sha256": "d96be30b2a77b27f133711995dc464fa2ad24bd517511ece072686ff4f4025fb",
+      "derivative": {
+        "id": "00000000-0000-4000-8000-000000000020",
+        "revision": 1
+      },
+      "derivative_sha256": "d96be30b2a77b27f133711995dc464fa2ad24bd517511ece072686ff4f4025fb",
+      "locator": {
+        "type": "text",
+        "start": 0,
+        "end": 164
+      },
+      "quote": "SYNTHETIC TRAINING MATERIAL\nAttendant Mara Vale states: I saw a red van leave before 22:10 on 2026-09-10. I often eat eggs for breakfast. I did not read its plate.\n"
+    }
+  ],
+  "support_refs": [
+    {
+      "id": "00000000-0000-4000-8000-000000000040",
+      "revision": 1
+    }
+  ],
+  "counter_refs": [],
+  "rationale": "Source assertion, not independently established.",
+  "from_ref": {
+    "id": "00000000-0000-4000-8000-000000000040",
+    "revision": 1
+  },
+  "to_ref": {
+    "id": "00000000-0000-4000-8000-000000000031",
+    "revision": 1
+  },
+  "relation": "MENTIONS",
+  "independence": "UNKNOWN"
+}

@@ -1,0 +1,2 @@
+SYNTHETIC TRAINING MATERIAL
+Calibration record: archived synchronization measurements constrain the camera offset to between minus 2 and plus 2 minutes for the incident interval. A plus 47 minute offset is excluded under this measurement.

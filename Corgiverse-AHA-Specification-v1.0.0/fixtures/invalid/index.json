@@ -1,0 +1,44 @@
+[
+  {
+    "file": "fixtures/invalid/unsupported-edge.json",
+    "definition": "Edge",
+    "category": "schema",
+    "expected": "DOCUMENTED/OBSERVED edge needs own support"
+  },
+  {
+    "file": "fixtures/invalid/probability-field.json",
+    "definition": "Scenario",
+    "category": "schema",
+    "expected": "Undeclared guilt field"
+  },
+  {
+    "file": "fixtures/invalid/synthetic-promotion.json",
+    "definition": "Edge",
+    "category": "schema",
+    "expected": "Synthetic cannot be documented"
+  },
+  {
+    "file": "fixtures/invalid/retired-without-reason.json",
+    "definition": "Hypothesis",
+    "category": "schema",
+    "expected": "Retirement requires explanation"
+  },
+  {
+    "file": "fixtures/invalid/dangling-reference.json",
+    "definition": "CaseExchange",
+    "category": "semantic",
+    "expected": "Reference does not exist"
+  },
+  {
+    "file": "fixtures/invalid/cross-case-record.json",
+    "definition": "CaseExchange",
+    "category": "semantic",
+    "expected": "Wrong case scope"
+  },
+  {
+    "file": "fixtures/invalid/reversed-time.json",
+    "definition": "CaseExchange",
+    "category": "semantic",
+    "expected": "Start after end"
+  }
+]

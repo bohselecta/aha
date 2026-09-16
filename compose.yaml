@@ -1,0 +1,45 @@
+name: corgiverse-aha-development
+services:
+  app:
+    image: corgiverse-aha:development
+    build:
+      context: .
+      dockerfile: deploy/Dockerfile
+    environment:
+      AHA_DATA_ROOT: /data/cases
+      AHA_SEED_DEMO: "1"
+    volumes:
+      - cases:/data
+    read_only: true
+    tmpfs:
+      - /tmp:size=64m,mode=1777
+    cap_drop: [ALL]
+    security_opt: [no-new-privileges:true]
+    pids_limit: 128
+    mem_limit: 1g
+    networks: [local]
+    healthcheck:
+      test: [CMD, python, -c, "import urllib.request; urllib.request.urlopen(urllib.request.Request('http://127.0.0.1:8080/api/v1/health',headers={'Host':'127.0.0.1:8080'}), timeout=3)"]
+      interval: 15s
+      timeout: 5s
+      retries: 3
+  workstation:
+    image: corgiverse-aha:development
+    command: [python, scripts/gateway.py]
+    depends_on:
+      app:
+        condition: service_healthy
+    ports:
+      - "127.0.0.1:8080:8080"
+    read_only: true
+    cap_drop: [ALL]
+    security_opt: [no-new-privileges:true]
+    pids_limit: 32
+    mem_limit: 128m
+    networks: [local, workstation]
+volumes:
+  cases:
+networks:
+  workstation:
+  local:
+    internal: true
