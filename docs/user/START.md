@@ -1,6 +1,6 @@
-# Using the current development build
+# Getting started with Aha!
 
-Pair the browser using the local short-lived secret and an operator label. This label is attributed to decisions, but it is not verified legal identity. The built-in demonstration is explicitly synthetic; none of its people or events are real.
+Pair the browser using the connection code and your name. This label is attributed to decisions, but it is not verified legal identity. The built-in demonstration is explicitly synthetic; none of its people or events are real.
 
 1. Choose the synthetic case or create a new case. Title, timezone and synthetic status are explicit.
 2. In Inbox, select a file and enter a receipt note. Originals are preserved by hash. TXT files receive an immutable UTF-8 text derivative; other formats show extraction unavailable. UNSCANNED means no antivirus scanner is configured.
@@ -13,3 +13,13 @@ Pair the browser using the local short-lived secret and an operator label. This 
 All actions have visible buttons and standard form controls. Tab moves through controls; Escape closes record detail and restores focus. Light/dark theme is saved locally. At narrow widths the navigation scrolls horizontally and tables retain labeled scroll regions.
 
 If another reviewer changes the case, stale writes return a conflict. Refresh to inspect the current state before submitting a new decision. Failed requests retain editable input. Do not blindly resubmit a changed decision. Recovery through the current command-line restore flow is documented in the operator guide.
+
+## Explore your case
+
+Open **Case Atlas** to move between the connection map, record table, timeline, questions, saved possibilities, and source library. Search for a name or detail and use **Evidence basis** to narrow the results. Search matches all the words you enter in labels, statements, and cited passages. It does not interpret natural-language questions or search files that have no reviewed text.
+
+Select a record to inspect its sources. **Why shown?** explains a search match. Source citations, named subjects, and reviewed relationships have separate line styles. Sharing a word never creates a relationship. **Clear lens** restores the full view without moving the map or changing the case.
+
+In **Questions & conflicts**, compare accounts, read their limits, and follow the source material to check. Retired explanations retain their counter-evidence. In **Possibilities**, assumptions are separated from source-backed steps. Saved sample possibilities are examples; this version does not generate new scenarios.
+
+Use Tab and Enter to select map records, or switch to **Table**. Escape closes details and returns focus to the selected control. Map and table scrolling stay inside their panels on smaller screens. For large cases, the map shows the first 80 records and the table shows up to 500 matches; narrow the search to reach additional table results.

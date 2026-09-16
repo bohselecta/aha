@@ -21,6 +21,8 @@ def main():
             "scripts",
             "tests",
             "packages/contracts",
+            "packages/workbench",
+            "apps/site/src",
         ]
         for p in (ROOT / folder).rglob("*")
         if p.is_file() and "__pycache__" not in str(p) and p.suffix not in (".pyc",)
@@ -169,6 +171,26 @@ def main():
             "tests/integration/test_integrity.py",
             "Original storage crash/retry drills pass. Disk-full, worker interruption and migration rollback unfinished.",
         ),
+        "LENS-01": (
+            "PARTIAL",
+            "packages/workbench/model.ts; tests/site/model.spec.ts; tests/site/public.spec.ts",
+            "Literal eggs search preserves records and creates no new edges. Natural-language plan and complete Lens oracle execution remain unfinished.",
+        ),
+        "LENS-02": (
+            "PARTIAL",
+            "packages/workbench/CaseExplorer.tsx; tests/site/public.spec.ts; tests/e2e/workflow.spec.ts",
+            "Keyword why-shown and version-resolved source navigation pass in public and local views. Full model-plan explanations and human audit remain open.",
+        ),
+        "LENS-04": (
+            "PARTIAL",
+            "tests/site/public.spec.ts; tests/site/model.spec.ts",
+            "Clearing text/basis filters restores stable map coordinates and preserves records. Saved lenses and complete view-state regression remain unfinished.",
+        ),
+        "UI-02": (
+            "PARTIAL",
+            "packages/workbench; tests/site/public.spec.ts; tests/e2e/workflow.spec.ts",
+            "2D map/table and keyboard source journey pass, including focus restoration, light/dark axe and mobile reflow. 3D fallback and full cross-browser/screen-reader acceptance remain open.",
+        ),
         "REL-03": (
             "PARTIAL",
             "tests/e2e/workflow.spec.ts; artifacts/browser-tests.json",
@@ -238,7 +260,7 @@ def main():
         "| M1 | Usable storage/review/recovery slice; original immutability and concurrency checks pass | Complete integrity quarantine/recovery, migration/unsupported-format behavior, bounded streaming, complete command authorization and crash matrix |",
         "| M2 | TXT original/derivative and human source review only | Sandboxed supported-format parsers, durable cancellable jobs, locator maps, AI proposal extraction and hostile-format suite |",
         "| M3 | Basic timeline and selected semantic guards | Full chronology solver, independent edge review, contradictions, hypothesis lifecycle/reopening and dependency rules |",
-        "| M4 | Not implemented | Stable 2D/3D/table Atlas, Lens compiler/executor, FTS and accessibility parity |",
+        "| M4 | Shared 2D/table Atlas, deterministic keyword search, source inspection, questions and saved possibilities | 3D renderer, full Lens compiler/executor, FTS, large-case layout worker and accessibility parity |",
         "| M5 | Not implemented | Replay and real Ollama/local-compatible adapters, frozen snapshots, full AHA validation and 100-prompt evaluation |",
         "| M6 | Backup/restore slice and workstation guards only | Briefings, redaction, portable runs, offline/LAN operations and security drills |",
         "| M7 | Not implemented | Expanded demo, performance/stress, five-person usability, screen-reader testing, SBOM/licenses, signed image release |",
@@ -251,6 +273,8 @@ def main():
         "- Automated accessibility scans cover light/dark tested pages; narrow-width screenshot is a reflow check, not full accessibility certification.",
         "- Real child-process exits exercise four original file/database boundaries, followed by reopen and idempotent retry.",
         "- Development server inspected with agent-browser: meaningful content, no error overlay, no JavaScript errors.",
+        "",
+        "- `npm run verify:site`: four model/reference/search tests and one complete public-workspace browser flow. Keyword matching, version references, no invented links, source navigation, uncertainty, saved possibilities, keyboard focus, mobile reflow and axe checks pass.",
         "",
         "## Required acceptance mapping",
         "",
@@ -271,7 +295,7 @@ def main():
         "- Unknown-format read-only opening, migration failure recovery and per-file quarantine need implementation.",
         "- HTTP error coverage, session expiry and LAN authorization require broader tests.",
         "- All currently exercised content is synthetic. No real local model run, human usability study or assistive-technology certification has been conducted.",
-        "- 35 backend tests also pass in a Linux arm64 container with network disabled and read-only root. CI workflow is authored but not executed on a remote runner. Windows commands are documented but unverified.",
+        "- 35 backend tests also pass in a Linux arm64 container with network disabled and read-only root. GitHub CI passed on the previous published version; current-run status is recorded by GitHub Actions. Windows commands are documented but unverified.",
         "- `make release` refuses incomplete gates; there is no signed accepted release.",
         "",
     ]

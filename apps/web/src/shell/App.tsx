@@ -1,3 +1,4 @@
+import { CaseExplorer } from "../../../../packages/workbench/CaseExplorer";
 import { useEffect, useRef, useState, type FormEvent } from "react";
 import {
   command,
@@ -22,12 +23,14 @@ import type {
 import { SourceReview } from "../inbox/SourceReview";
 
 type Workspace =
+  | "Case Atlas"
   | "Inbox"
   | "Review queue"
   | "Case register"
   | "Timeline"
   | "Integrity & backup";
 const workspaces: Workspace[] = [
+  "Case Atlas",
   "Inbox",
   "Review queue",
   "Case register",
@@ -159,7 +162,7 @@ export function App() {
         </div>
         <div className="header-status">
           <span className="dot" />
-          Local workstation <span className="build">Development · M1</span>
+          Local workstation <span className="build">Evaluation version</span>
         </div>
         <button
           className="quiet"
@@ -207,25 +210,24 @@ export function App() {
               every decision.
             </p>
             <p className="notice">
-              Early implementation: source storage, manual review and recovery.
-              The complete investigation workbench is still being built.
+              Use sample material while evaluating Aha! for your work.
             </p>
           </div>
           <form onSubmit={signIn} className="panel pair">
             <p className="eyebrow">CONNECT TO THIS COMPUTER</p>
             <h2>Pair your workspace</h2>
             <label>
-              Local operator label
+              Your name
               <input
                 name="operator"
                 required
                 maxLength={200}
                 autoComplete="name"
-                placeholder="Your name or operator label"
+                placeholder="Name recorded with your reviews"
               />
             </label>
             <label>
-              Pairing secret
+              Connection code
               <input
                 name="secret"
                 required
@@ -234,8 +236,8 @@ export function App() {
               />
             </label>
             <p className="muted">
-              Use the ten-minute secret in <code>.local/pairing-secret</code> on
-              this computer. Your operator label is recorded with each review.
+              Enter the connection code from your local setup. Codes expire
+              after ten minutes. Your name is recorded with each review.
             </p>
             <button disabled={busy}>
               {busy ? "Connecting…" : "Open local workspace →"}
@@ -292,7 +294,7 @@ export function App() {
                     setSelected(null);
                   }}
                 >
-                  <span>{["▤", "✓", "⊞", "◷", "◇"][i]}</span>
+                  <span>{["⌘", "▤", "✓", "⊞", "◷", "◇"][i]}</span>
                   {w}
                   {w === "Review queue" && pending.length > 0 && (
                     <b>{pending.length}</b>
@@ -328,8 +330,10 @@ export function App() {
                     : workspace === "Review queue"
                       ? "A proposal changes the case only after your deliberate review."
                       : workspace === "Integrity & backup"
-                        ? "Verify the bytes. Preserve a complete, portable copy."
-                        : "Recorded in a source; not independently established."}
+                        ? "Check your original files and save a complete backup."
+                        : workspace === "Case Atlas"
+                          ? "Follow sources, compare accounts, and find questions worth checking."
+                          : "Recorded in a source; not independently established."}
                 </p>
               </div>
               {active && (
@@ -395,6 +399,15 @@ export function App() {
                     <span>No model connected</span>
                   </div>
                 </section>
+                {workspace === "Case Atlas" && (
+                  <CaseExplorer
+                    key={active.id}
+                    records={records}
+                    caseTitle={active.title}
+                    caseRevision={active.case_revision}
+                    onOpenSource={setSelected}
+                  />
+                )}
                 {workspace === "Inbox" && (
                   <>
                     <form
@@ -421,8 +434,9 @@ export function App() {
                       <div>
                         <h2>Bring material into the case</h2>
                         <p className="muted">
-                          UTF-8 text supports source-side review. Other formats
-                          are preserved; their parsers are not implemented yet.
+                          Add a text file to review and cite its passages. You
+                          can also keep other files here and download their
+                          originals.
                         </p>
                       </div>
                       <label>
@@ -442,9 +456,7 @@ export function App() {
                     </form>
                     <div className="section-title">
                       <h2>Source library</h2>
-                      <span>
-                        {sources.length} originals · SHA-256 addressed
-                      </span>
+                      <span>{sources.length} original files</span>
                     </div>
                     <div className="source-grid">
                       {sources.map((r) => (
@@ -724,21 +736,11 @@ export function App() {
                       </section>
                     </div>
                     <section className="panel">
-                      <h2>Build status</h2>
+                      <h2>Restore a saved case</h2>
                       <p>
-                        This is a development slice, not an accepted release.
-                        PDF/OCR/Office parsers, full chronology rules, Atlas,
-                        Query Lens, model generation, briefing/redaction, LAN
-                        gateway and release certification remain unfinished.
-                        CASEMAIL and Scene View are disabled.
-                      </p>
-                      <p>
-                        Restore on a fresh volume with{" "}
-                        <code>
-                          make restore BUNDLE=/path/to/case.aha-case.zip
-                        </code>
-                        . Acceptance evidence is tracked in
-                        IMPLEMENTATION_STATUS.md.
+                        Restore a backup into a separate case folder to keep
+                        existing work intact. Your local setup guide includes
+                        the recovery steps.
                       </p>
                     </section>
                   </>

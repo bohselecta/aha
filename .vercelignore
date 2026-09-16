@@ -17,7 +17,6 @@ apps/site/dist
 apps/web/dist
 apps/web/src
 apps/web/public
-packages/contracts
 scripts
 tests
 docs

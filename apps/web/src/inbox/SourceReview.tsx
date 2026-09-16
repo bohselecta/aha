@@ -62,7 +62,7 @@ export function SourceReview({
         className="button secondary"
         href={`/api/v1/cases/${caseId}/evidence/${evidence.id}/original`}
       >
-        Download immutable original
+        Download original
       </a>
       {error && (
         <p role="alert" className="error">
@@ -72,7 +72,7 @@ export function SourceReview({
       {derivative && derivative.kind === "Derivative" ? (
         <>
           <label>
-            Immutable text derivative
+            Source text
             <textarea
               className="source-text"
               readOnly
@@ -88,8 +88,8 @@ export function SourceReview({
             />
           </label>
           <p className="muted">
-            Select an exact passage, then describe what this source reports.
-            Character offsets use Unicode code points.
+            Select an exact passage, then describe what this source reports. The
+            selected passage stays attached to your statement.
           </p>
           {entities.length ? (
             <form
@@ -176,8 +176,8 @@ export function SourceReview({
                 <input name="rationale" required />
               </label>
               <p className="notice">
-                Reported observation · time unknown · source independence
-                unknown. No automatic entity merge.
+                This statement will be marked as a reported observation. Its
+                time and source independence remain unknown until reviewed.
               </p>
               <button
                 disabled={!selection.quote || selection.quote.length > 20000}
@@ -194,8 +194,8 @@ export function SourceReview({
         </>
       ) : (
         <p className="notice">
-          Stored; extraction unavailable. The original is preserved. This build
-          extracts UTF-8 TXT only.
+          Original saved. Text preview is available for TXT files. Download this
+          file to view it in its usual application.
         </p>
       )}
     </>

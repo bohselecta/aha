@@ -10,8 +10,8 @@ test("synthetic source review, note review, history, integrity and backup", asyn
   await expect(
     page.getByRole("heading", { name: "Pair your workspace" }),
   ).toBeVisible();
-  await page.getByLabel("Local operator label").fill("Synthetic reviewer");
-  await page.getByLabel("Pairing secret").fill("synthetic-browser-test");
+  await page.getByLabel("Your name").fill("Synthetic reviewer");
+  await page.getByLabel("Connection code").fill("synthetic-browser-test");
   await page.getByRole("button", { name: "Open local workspace" }).click();
   await expect(
     page.getByRole("heading", { name: "Inbox", exact: true }),
@@ -22,12 +22,34 @@ test("synthetic source review, note review, history, integrity and backup", asyn
   await page.screenshot({ path: "artifacts/inbox-light.png", fullPage: true });
   let axe = await new AxeBuilder({ page }).analyze();
   expect(axe.violations).toEqual([]);
-  await page.getByRole("button", { name: /attendant.txt/ }).click();
-  await expect(page.getByLabel("Immutable text derivative")).toContainText(
-    "van",
+  await page.getByRole("button", { name: "Case Atlas", exact: false }).click();
+  await expect(
+    page.getByRole("heading", { name: /The Lantern Annex/ }),
+  ).toBeVisible();
+  await page.getByRole("button", { name: "Dark theme" }).click();
+  expect((await new AxeBuilder({ page }).analyze()).violations).toEqual([]);
+  await page.screenshot({
+    path: "artifacts/atlas-local-dark.png",
+    fullPage: true,
+  });
+  await page.getByRole("button", { name: "Light theme" }).click();
+  await page.getByLabel("Search this case").fill("eggs");
+  await page
+    .getByRole("button", {
+      name: "Inspect Receipt includes eggs; customer not identified.",
+    })
+    .click();
+  await page.getByRole("button", { name: "receipt.txt", exact: true }).click();
+  await page.getByRole("button", { name: "Review original source" }).click();
+  await expect(page.getByLabel("Source text")).toContainText(
+    "Customer identity is not recorded",
   );
-  await page.getByLabel("Immutable text derivative").focus();
-  await page.getByLabel("Immutable text derivative").press("ControlOrMeta+a");
+  await page.getByRole("button", { name: "Close detail" }).click();
+  await page.getByRole("button", { name: "Inbox", exact: false }).click();
+  await page.getByRole("button", { name: /attendant.txt/ }).click();
+  await expect(page.getByLabel("Source text")).toContainText("van");
+  await page.getByLabel("Source text").focus();
+  await page.getByLabel("Source text").press("ControlOrMeta+a");
   await page
     .getByLabel("Reported statement")
     .fill("The attendant source reports a red van.");

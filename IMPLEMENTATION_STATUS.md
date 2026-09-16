@@ -2,9 +2,9 @@
 
 **The full M0–M7 specification is not complete. This is a runnable development slice, not a v1 release.**
 
-Evidence date: 2026-09-16T04:52:41.042332+00:00. Operator: Codex automated synthetic verification.
-Build/source SHA-256: `533643979494dec61cca332fdc9414761db2dacb94142f9f0dc9593c43d95d01`.
-Gate outcomes: 5 PASS; 21 PARTIAL; 31 NOT_RUN. Passing a limited set of gates does not certify the app.
+Evidence date: 2026-09-16T06:09:54.825083+00:00. Operator: Codex automated synthetic verification.
+Build/source SHA-256: `acf39867988f1b56fdbccb2b8b048e6d56ac2ecee04a3fe20c8d81c801f857d6`.
+Gate outcomes: 5 PASS; 25 PARTIAL; 27 NOT_RUN. Passing a limited set of gates does not certify the app.
 
 ## Milestones
 
@@ -14,7 +14,7 @@ Gate outcomes: 5 PASS; 21 PARTIAL; 31 NOT_RUN. Passing a limited set of gates do
 | M1 | Usable storage/review/recovery slice; original immutability and concurrency checks pass | Complete integrity quarantine/recovery, migration/unsupported-format behavior, bounded streaming, complete command authorization and crash matrix |
 | M2 | TXT original/derivative and human source review only | Sandboxed supported-format parsers, durable cancellable jobs, locator maps, AI proposal extraction and hostile-format suite |
 | M3 | Basic timeline and selected semantic guards | Full chronology solver, independent edge review, contradictions, hypothesis lifecycle/reopening and dependency rules |
-| M4 | Not implemented | Stable 2D/3D/table Atlas, Lens compiler/executor, FTS and accessibility parity |
+| M4 | Shared 2D/table Atlas, deterministic keyword search, source inspection, questions and saved possibilities | 3D renderer, full Lens compiler/executor, FTS, large-case layout worker and accessibility parity |
 | M5 | Not implemented | Replay and real Ollama/local-compatible adapters, frozen snapshots, full AHA validation and 100-prompt evaluation |
 | M6 | Backup/restore slice and workstation guards only | Briefings, redaction, portable runs, offline/LAN operations and security drills |
 | M7 | Not implemented | Expanded demo, performance/stress, five-person usability, screen-reader testing, SBOM/licenses, signed image release |
@@ -27,6 +27,8 @@ Gate outcomes: 5 PASS; 21 PARTIAL; 31 NOT_RUN. Passing a limited set of gates do
 - Automated accessibility scans cover light/dark tested pages; narrow-width screenshot is a reflow check, not full accessibility certification.
 - Real child-process exits exercise four original file/database boundaries, followed by reopen and idempotent retry.
 - Development server inspected with agent-browser: meaningful content, no error overlay, no JavaScript errors.
+
+- `npm run verify:site`: four model/reference/search tests and one complete public-workspace browser flow. Keyword matching, version references, no invented links, source navigation, uncertainty, saved possibilities, keyboard focus, mobile reflow and axe checks pass.
 
 ## Required acceptance mapping
 
@@ -54,14 +56,14 @@ Gate outcomes: 5 PASS; 21 PARTIAL; 31 NOT_RUN. Passing a limited set of gates do
 | HYP-01 | M3 | PARTIAL | services/api/aha/commands/execute.py; tests/unit/test_semantics.py::test_retirement_cannot_transition | Transition rules and terminal retirement guard exist; full transition table and reviewer UI unfinished. |
 | HYP-02 | M3 | PARTIAL | services/api/aha/commands/execute.py | Exact family check exists; paraphrase hold/model evaluation unfinished. |
 | HYP-03 | M3 | NOT_RUN | — | Required implementation and acceptance evidence remain outstanding. |
-| LENS-01 | M4 | NOT_RUN | — | Required implementation and acceptance evidence remain outstanding. |
-| LENS-02 | M4 | NOT_RUN | — | Required implementation and acceptance evidence remain outstanding. |
+| LENS-01 | M4 | PARTIAL | packages/workbench/model.ts; tests/site/model.spec.ts; tests/site/public.spec.ts | Literal eggs search preserves records and creates no new edges. Natural-language plan and complete Lens oracle execution remain unfinished. |
+| LENS-02 | M4 | PARTIAL | packages/workbench/CaseExplorer.tsx; tests/site/public.spec.ts; tests/e2e/workflow.spec.ts | Keyword why-shown and version-resolved source navigation pass in public and local views. Full model-plan explanations and human audit remain open. |
 | LENS-03 | M4 | NOT_RUN | — | Required implementation and acceptance evidence remain outstanding. |
-| LENS-04 | M4 | NOT_RUN | — | Required implementation and acceptance evidence remain outstanding. |
+| LENS-04 | M4 | PARTIAL | tests/site/public.spec.ts; tests/site/model.spec.ts | Clearing text/basis filters restores stable map coordinates and preserves records. Saved lenses and complete view-state regression remain unfinished. |
 | LENS-05 | M4 | NOT_RUN | — | Required implementation and acceptance evidence remain outstanding. |
 | LENS-06 | M4 | NOT_RUN | — | Required implementation and acceptance evidence remain outstanding. |
 | UI-01 | M4 | NOT_RUN | — | Required implementation and acceptance evidence remain outstanding. |
-| UI-02 | M4 | NOT_RUN | — | Required implementation and acceptance evidence remain outstanding. |
+| UI-02 | M4 | PARTIAL | packages/workbench; tests/site/public.spec.ts; tests/e2e/workflow.spec.ts | 2D map/table and keyboard source journey pass, including focus restoration, light/dark axe and mobile reflow. 3D fallback and full cross-browser/screen-reader acceptance remain open. |
 | UI-03 | M4 | NOT_RUN | — | Required implementation and acceptance evidence remain outstanding. |
 | AHA-01 | M5 | NOT_RUN | — | Required implementation and acceptance evidence remain outstanding. |
 | AHA-02 | M5 | NOT_RUN | — | Required implementation and acceptance evidence remain outstanding. |
@@ -98,5 +100,5 @@ Gate outcomes: 5 PASS; 21 PARTIAL; 31 NOT_RUN. Passing a limited set of gates do
 - Unknown-format read-only opening, migration failure recovery and per-file quarantine need implementation.
 - HTTP error coverage, session expiry and LAN authorization require broader tests.
 - All currently exercised content is synthetic. No real local model run, human usability study or assistive-technology certification has been conducted.
-- 35 backend tests also pass in a Linux arm64 container with network disabled and read-only root. CI workflow is authored but not executed on a remote runner. Windows commands are documented but unverified.
+- 35 backend tests also pass in a Linux arm64 container with network disabled and read-only root. GitHub CI passed on the previous published version; current-run status is recorded by GitHub Actions. Windows commands are documented but unverified.
 - `make release` refuses incomplete gates; there is no signed accepted release.

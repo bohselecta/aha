@@ -4,7 +4,7 @@
 
 A local evidence workbench under active implementation. **This repository is an early development slice, not the completed v1.0 application.** The complete, unchanged specification is in [Corgiverse-AHA-Specification-v1.0.0](Corgiverse-AHA-Specification-v1.0.0/CODEX_START_HERE.md). See [IMPLEMENTATION_STATUS.md](IMPLEMENTATION_STATUS.md) for all 57 release gates.
 
-Currently runnable: local browser pairing, synthetic case loading and case creation, immutable original receipts, exact UTF-8 derivatives, manual source statement proposals, human acceptance/rejection, record history, a basic timeline table, integrity verification, and portable backup/restore. Accepted original bytes never change. No model or external account is required. No model adapter is implemented yet.
+Currently runnable: local browser pairing, synthetic case loading and case creation, immutable original receipts, exact UTF-8 derivatives, manual source statement proposals, human acceptance/rejection, record history, a source-linked Case Atlas with keyword search, timeline, questions/conflicts and saved possibilities, integrity verification, and portable backup/restore. Accepted original bytes never change. No model or external account is required. No model adapter is implemented yet.
 
 ## Run the development container
 
@@ -32,7 +32,7 @@ Run `make verify` for specification validation, Python formatting, TypeScript ch
 
 ## Current boundaries
 
-TXT extraction is implemented. Other file types are stored unchanged with an explicit extraction-unavailable warning. Semantic proposal creation currently accepts only Entity, Observation (exact text citation), and Note drafts. Unimplemented command types fail explicitly. The broader deterministic reasoning engine, parser sandbox, full Atlas/Lens/AHA/Briefing workspaces, local model adapters, redaction, LAN gateway, expanded demo, performance testing, human usability study, and signed offline release remain unfinished. CASEMAIL and Scene View are disabled. `make release` deliberately fails until acceptance and release tooling exist.
+TXT extraction is implemented. Other file types are stored unchanged with an explicit extraction-unavailable warning. Semantic proposal creation currently accepts only Entity, Observation (exact text citation), and Note drafts. Unimplemented command types fail explicitly. The broader deterministic reasoning engine, parser sandbox, 3D Atlas, natural-language Lens, AHA generation and Briefing workspaces, local model adapters, redaction, LAN gateway, expanded demo, performance testing, human usability study, and signed offline release remain unfinished. CASEMAIL and Scene View are disabled. `make release` deliberately fails until acceptance and release tooling exist.
 
 Use only synthetic material while developing and testing. No agency/compliance certification or production-readiness claim is made.
 
