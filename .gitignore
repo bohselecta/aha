@@ -10,3 +10,18 @@ playwright-report/
 *.pyc
 
 *.aha-case.zip
+.vercel/
+.env.*
+!.env.example
+*.sqlite
+*.sqlite-wal
+*.sqlite-shm
+*.db
+*.pem
+*.key
+pairing-secret
+apps/site/dist/
+.vercel
+.env*
+
+!.env.example

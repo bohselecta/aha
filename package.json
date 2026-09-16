@@ -1,1 +1,30 @@
-{"name":"corgiverse-aha","version":"0.1.0","private":true,"type":"module","workspaces":["apps/web"],"scripts":{"contracts":"node scripts/generate-contracts.mjs","build":"npm run build -w apps/web","typecheck":"npm run typecheck -w apps/web"},"devDependencies":{"@axe-core/playwright":"4.13.0","@playwright/test":"1.63.0","agent-browser":"0.37.1","json-schema-to-typescript":"16.0.0","openapi-typescript":"7.13.0","prettier":"3.9.6"}}
+{
+  "name": "corgiverse-aha",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "workspaces": [
+    "apps/web",
+    "apps/site"
+  ],
+  "scripts": {
+    "contracts": "node scripts/generate-contracts.mjs",
+    "build": "npm run build -w apps/web",
+    "typecheck": "npm run typecheck -w apps/web",
+    "build:site": "npm run build -w apps/site",
+    "verify:site": "npm run build:site && playwright test -c playwright.site.config.ts"
+  },
+  "devDependencies": {
+    "@axe-core/playwright": "4.13.0",
+    "@playwright/test": "1.63.0",
+    "agent-browser": "0.37.1",
+    "json-schema-to-typescript": "16.0.0",
+    "openapi-typescript": "7.13.0",
+    "prettier": "3.9.6"
+  },
+  "license": "Apache-2.0",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/bohselecta/aha.git"
+  }
+}

@@ -2,10 +2,10 @@
   "$schema": "http://cyclonedx.org/schema/bom-1.5.schema.json",
   "bomFormat": "CycloneDX",
   "specVersion": "1.5",
-  "serialNumber": "urn:uuid:c9a790c0-d96a-4d19-b0dc-97be1321903c",
+  "serialNumber": "urn:uuid:c6ebc321-cfb7-4c05-9d89-6e59e4987603",
   "version": 1,
   "metadata": {
-    "timestamp": "2026-09-16T04:47:22.183Z",
+    "timestamp": "2026-09-16T05:45:25.319Z",
     "lifecycles": [
       {
         "phase": "build"
@@ -31,24 +31,48 @@
           "value": "true"
         }
       ],
-      "externalReferences": []
+      "externalReferences": [
+        {
+          "type": "vcs",
+          "url": "https://github.com/bohselecta/aha.git"
+        }
+      ],
+      "licenses": [
+        {
+          "license": {
+            "id": "Apache-2.0"
+          }
+        }
+      ]
     }
   },
   "components": [
     {
-      "bom-ref": "@aha/web@0.1.0",
+      "bom-ref": "@aha/site@0.1.0",
       "type": "library",
-      "name": "web",
+      "name": "site",
       "version": "0.1.0",
       "scope": "required",
-      "purl": "pkg:npm/%40aha/web@0.1.0",
+      "purl": "pkg:npm/%40aha/site@0.1.0",
       "properties": [
         {
           "name": "cdx:npm:package:private",
           "value": "true"
         }
       ],
-      "externalReferences": []
+      "externalReferences": [
+        {
+          "type": "vcs",
+          "url": "https://github.com/bohselecta/aha.git"
+        }
+      ],
+      "licenses": [
+        {
+          "license": {
+            "id": "Apache-2.0"
+          }
+        }
+      ]
     },
     {
       "bom-ref": "typescript@7.0.2",
@@ -87,6 +111,33 @@
         {
           "alg": "SHA-512",
           "content": "f0561abbdea8dcd28e85b8ca8bfa8dbc6fd6e63873c646dd9b9b23f406d9ff94f9b16aa7de12602df1b1dbbb11299593bf2cc23fc74b4414dfe6d05349155434"
+        }
+      ],
+      "licenses": [
+        {
+          "license": {
+            "id": "Apache-2.0"
+          }
+        }
+      ]
+    },
+    {
+      "bom-ref": "@aha/web@0.1.0",
+      "type": "library",
+      "name": "web",
+      "version": "0.1.0",
+      "scope": "required",
+      "purl": "pkg:npm/%40aha/web@0.1.0",
+      "properties": [
+        {
+          "name": "cdx:npm:package:private",
+          "value": "true"
+        }
+      ],
+      "externalReferences": [
+        {
+          "type": "vcs",
+          "url": "https://github.com/bohselecta/aha.git"
         }
       ],
       "licenses": [
@@ -3287,12 +3338,30 @@
       "ref": "corgiverse-aha@0.1.0",
       "dependsOn": [
         "@aha/web@0.1.0",
+        "@aha/site@0.1.0",
         "@axe-core/playwright@4.13.0",
         "@playwright/test@1.63.0",
         "agent-browser@0.37.1",
         "json-schema-to-typescript@16.0.0",
         "openapi-typescript@7.13.0",
         "prettier@3.9.6"
+      ]
+    },
+    {
+      "ref": "@aha/site@0.1.0",
+      "dependsOn": [
+        "react@19.3.0",
+        "react-dom@19.3.0",
+        "@types/react@19.3.0",
+        "@types/react-dom@19.3.0",
+        "typescript@7.0.2",
+        "vite@8.3.0"
+      ]
+    },
+    {
+      "ref": "typescript@7.0.2",
+      "dependsOn": [
+        "@typescript/typescript-darwin-arm64@7.0.2"
       ]
     },
     {
@@ -3306,12 +3375,6 @@
         "@types/three@0.186.0",
         "typescript@7.0.2",
         "vite@8.3.0"
-      ]
-    },
-    {
-      "ref": "typescript@7.0.2",
-      "dependsOn": [
-        "@typescript/typescript-darwin-arm64@7.0.2"
       ]
     },
     {

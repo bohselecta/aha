@@ -40,3 +40,18 @@ Use only synthetic material while developing and testing. No agency/compliance c
 - [Operator and recovery guide](docs/operator/OPERATIONS.md)
 - [Developer guide](docs/developer/DEVELOPMENT.md)
 - [Implementation decisions](docs/adr/0001-foundation.md)
+
+## Public site on Vercel
+
+`apps/site` is a separate static product website and **read-only synthetic demonstration**. Confidential casework stays in the local application. No account, model, upload endpoint, database, or environment variables are required for the site.
+
+```sh
+npm ci
+npm run verify:site
+```
+
+Import `bohselecta/aha` into Vercel, leaving the Root Directory at the repository root. The committed `vercel.json` configures the Vite build and `apps/site/dist` output. Publish only that output; do not deploy the local API or case directories. See [hosting decision](docs/adr/0003-public-site.md).
+
+## License
+
+Free to use, modify, and distribute, including commercially, under [Apache-2.0](LICENSE). The license includes warranty and liability disclaimers, subject to applicable law; it cannot guarantee immunity from all liability. See [licensing notes](docs/operator/LICENSING.md), [NOTICE](NOTICE), and the third-party inventory. Model weights are not bundled.

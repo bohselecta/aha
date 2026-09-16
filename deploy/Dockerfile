@@ -2,6 +2,7 @@ FROM node:24.18.0-bookworm-slim@sha256:6f7b03f7c2c8e2e784dcf9295400527b9b1270fd3
 WORKDIR /build
 COPY package.json package-lock.json ./
 COPY apps/web/package.json apps/web/package.json
+COPY apps/site/package.json apps/site/package.json
 RUN npm ci --ignore-scripts
 COPY apps/web apps/web
 COPY packages/contracts packages/contracts

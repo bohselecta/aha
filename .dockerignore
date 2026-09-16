@@ -9,3 +9,8 @@ artifacts
 test-results
 Corgiverse-AHA-Specification-v1.0.0.zip
 Corgiverse-AHA-Specification-v1.0.0
+
+.vercel
+.env*
+apps/site/dist
+apps/site/node_modules

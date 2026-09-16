@@ -19,3 +19,4 @@ jobs:
       - run: npm ci
       - run: npx playwright install --with-deps chromium
       - run: make verify
+      - run: npm run verify:site
