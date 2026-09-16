@@ -9,10 +9,12 @@ import tempfile
 import zipfile
 from pathlib import Path, PurePosixPath
 from uuid import uuid4
-from .store import Store, canonical, digest, sync_dir
+from .store import Store, canonical, file_digest, sync_dir
 from ..domain.contracts import DomainError, validate
 
 MAX_BUNDLE_BYTES = 2 * 1024**3
+MAX_BUNDLE_MEMBERS = 10001
+MAX_MANIFEST_BYTES = 4 * 1024**2
 
 
 def backup(store, output):
@@ -42,7 +44,7 @@ def backup(store, output):
             )
         ]
         for record in records:
-            data = store.verified_blob(record)
+            source = store.verified_path(record)
             sha = record["sha256"]
             relative = (
                 f"originals/sha256/{sha[:2]}/{sha}"
@@ -53,7 +55,13 @@ def backup(store, output):
                 continue
             dest = directory / relative
             dest.parent.mkdir(parents=True, exist_ok=True)
-            dest.write_bytes(data)
+            shutil.copyfile(source, dest)
+            if file_digest(dest) != record["sha256"]:
+                raise DomainError(
+                    "INTEGRITY_FAILURE",
+                    "Content changed while copying the backup.",
+                    409,
+                )
             paths.append(relative)
         manifest = validate(
             "Manifest",
@@ -66,16 +74,27 @@ def backup(store, output):
                     dict(
                         path=p,
                         bytes=(directory / p).stat().st_size,
-                        sha256=digest((directory / p).read_bytes()),
+                        sha256=file_digest(directory / p),
                     )
                     for p in sorted(paths)
                 ],
             ),
         )
+        manifest_bytes = canonical(manifest)
+        if (
+            len(paths) + 1 > MAX_BUNDLE_MEMBERS
+            or len(manifest_bytes) > MAX_MANIFEST_BYTES
+            or sum(f["bytes"] for f in manifest["files"]) + len(manifest_bytes)
+            > MAX_BUNDLE_BYTES
+        ):
+            raise DomainError(
+                "BUNDLE_LIMIT",
+                "Case exceeds the portable backup size or file-count limit.",
+            )
         stage = output.with_name(output.name + "." + str(uuid4()) + ".tmp")
         try:
-            with zipfile.ZipFile(stage, "w", compression=zipfile.ZIP_DEFLATED) as z:
-                z.writestr("manifest.json", canonical(manifest))
+            with zipfile.ZipFile(stage, "w", compression=zipfile.ZIP_STORED) as z:
+                z.writestr("manifest.json", manifest_bytes)
                 for path in paths:
                     z.write(directory / path, path)
             with stage.open("rb") as f:
@@ -98,7 +117,7 @@ def restore(bundle, root):
                 infos = z.infolist()
                 names = [i.filename for i in infos]
                 if (
-                    len(names) > 10001
+                    len(names) > MAX_BUNDLE_MEMBERS
                     or len(set(names)) != len(names)
                     or sum(i.file_size for i in infos) > MAX_BUNDLE_BYTES
                 ):
@@ -127,7 +146,7 @@ def restore(bundle, root):
                         )
                 if "manifest.json" not in names:
                     raise DomainError("MANIFEST_MISSING", "Bundle manifest is missing.")
-                if z.getinfo("manifest.json").file_size > 4 * 1024**2:
+                if z.getinfo("manifest.json").file_size > MAX_MANIFEST_BYTES:
                     raise DomainError("BUNDLE_LIMIT", "Manifest too large.")
                 manifest = validate("Manifest", json.loads(z.read("manifest.json")))
                 declared = [f["path"] for f in manifest["files"]]
@@ -149,12 +168,24 @@ def restore(bundle, root):
                     info = z.getinfo(p)
                     if info.file_size != item["bytes"]:
                         raise DomainError("HASH_MISMATCH", "Bundle size mismatch.")
-                    data = z.read(p)
-                    if digest(data) != item["sha256"]:
-                        raise DomainError("HASH_MISMATCH", "Bundle hash mismatch.")
                     dest = target / p
                     dest.parent.mkdir(parents=True, exist_ok=True)
-                    dest.write_bytes(data)
+                    with z.open(p) as source, dest.open("xb") as out:
+                        remaining = item["bytes"]
+                        while chunk := source.read(min(1024**2, remaining + 1)):
+                            remaining -= len(chunk)
+                            if remaining < 0:
+                                raise DomainError(
+                                    "BUNDLE_LIMIT",
+                                    "Archive member exceeds its declared size.",
+                                )
+                            out.write(chunk)
+                        out.flush()
+                        os.fsync(out.fileno())
+                    if remaining or file_digest(dest) != item["sha256"]:
+                        raise DomainError("HASH_MISMATCH", "Bundle hash mismatch.")
+                    if p != "case.sqlite":
+                        dest.chmod(0o400)
             conn = sqlite3.connect(f'file:{target / "case.sqlite"}?mode=ro', uri=True)
             try:
                 conn.execute("PRAGMA trusted_schema=OFF")

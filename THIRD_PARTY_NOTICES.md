@@ -11,6 +11,8 @@ Generated from installed Python distributions. This is not a complete redistribu
 - certifi 2026.7.22: NOASSERTION; upstream https://github.com/certifi/python-certifi.
 - click 8.5.0: BSD-3-Clause; upstream see distribution metadata.
 - datamodel-code-generator 0.81.0: MIT; upstream see distribution metadata.
+- defusedxml 0.7.1: NOASSERTION; upstream https://github.com/tiran/defusedxml.
+- et_xmlfile 2.0.0: NOASSERTION; upstream https://foss.heptapod.net/openpyxl/et_xmlfile.
 - fastapi 0.141.1: MIT; upstream see distribution metadata.
 - genson 1.4.0: NOASSERTION; upstream https://github.com/wolverdude/genson/.
 - h11 0.16.0: NOASSERTION; upstream https://github.com/python-hyper/h11.
@@ -30,9 +32,11 @@ Generated from installed Python distributions. This is not a complete redistribu
 - mypy_extensions 1.1.0: MIT; upstream see distribution metadata.
 - openapi-schema-validator 0.9.0: NOASSERTION; upstream see distribution metadata.
 - openapi-spec-validator 0.9.0: Apache-2.0; upstream see distribution metadata.
+- openpyxl 3.1.5: NOASSERTION; upstream https://openpyxl.readthedocs.io.
 - packaging 26.3: Apache-2.0 OR BSD-2-Clause; upstream see distribution metadata.
 - pathable 0.6.0: NOASSERTION; upstream see distribution metadata.
 - pathspec 1.1.1: NOASSERTION; upstream see distribution metadata.
+- pillow 12.3.0: MIT-CMU; upstream see distribution metadata.
 - pip 25.2: MIT; upstream see distribution metadata.
 - platformdirs 4.11.8: MIT; upstream see distribution metadata.
 - pluggy 1.6.0: NOASSERTION; upstream see distribution metadata.
@@ -40,6 +44,7 @@ Generated from installed Python distributions. This is not a complete redistribu
 - pydantic-settings 2.15.0: MIT; upstream see distribution metadata.
 - pydantic_core 2.46.5: MIT; upstream https://github.com/pydantic/pydantic.
 - Pygments 2.21.0: BSD-2-Clause; upstream see distribution metadata.
+- pypdf 6.18.1: BSD-3-Clause; upstream see distribution metadata.
 - pytest 9.1.1: MIT; upstream see distribution metadata.
 - python-dotenv 1.2.3: NOASSERTION; upstream see distribution metadata.
 - python-multipart 0.0.32: Apache-2.0; upstream see distribution metadata.

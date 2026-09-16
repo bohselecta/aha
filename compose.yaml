@@ -8,11 +8,16 @@ services:
     environment:
       AHA_DATA_ROOT: /data/cases
       AHA_SEED_DEMO: "1"
+      AHA_PARSER_SPOOL: /spool
     volumes:
       - cases:/data
+      - parser-transfer:/spool
+    depends_on:
+      parser:
+        condition: service_healthy
     read_only: true
     tmpfs:
-      - /tmp:size=64m,mode=1777
+      - /tmp:size=512m,mode=1777
     cap_drop: [ALL]
     security_opt: [no-new-privileges:true]
     pids_limit: 128
@@ -22,6 +27,26 @@ services:
       test: [CMD, python, -c, "import urllib.request; urllib.request.urlopen(urllib.request.Request('http://127.0.0.1:8080/api/v1/health',headers={'Host':'127.0.0.1:8080'}), timeout=3)"]
       interval: 15s
       timeout: 5s
+      retries: 3
+  parser:
+    image: corgiverse-aha:development
+    command: [python, services/worker/serve.py]
+    environment:
+      AHA_DATA_ROOT: ""
+    volumes:
+      - parser-transfer:/spool
+    network_mode: none
+    read_only: true
+    tmpfs:
+      - /tmp:size=512m,mode=1777
+    cap_drop: [ALL]
+    security_opt: [no-new-privileges:true]
+    pids_limit: 32
+    mem_limit: 2g
+    healthcheck:
+      test: [CMD, python, -c, "import time,pathlib; assert time.time()-pathlib.Path('/spool/heartbeat').stat().st_mtime < 15"]
+      interval: 5s
+      timeout: 3s
       retries: 3
   workstation:
     image: corgiverse-aha:development
@@ -39,6 +64,7 @@ services:
     networks: [local, workstation]
 volumes:
   cases:
+  parser-transfer:
 networks:
   workstation:
   local:

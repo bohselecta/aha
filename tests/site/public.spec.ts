@@ -1,5 +1,12 @@
 import { test, expect } from "@playwright/test";
 import AxeBuilder from "@axe-core/playwright";
+test("follow the question opens its actual record", async ({ page }) => {
+  await page.goto("/");
+  await page.getByRole("link", { name: "Follow the question" }).click();
+  await expect(page.locator(".ex-inspector")).toContainText(
+    "Do the two red-vehicle references identify the same vehicle?",
+  );
+});
 test("investigator workspace: explore, trace sources, compare uncertainty, and clear a lens", async ({
   page,
 }) => {

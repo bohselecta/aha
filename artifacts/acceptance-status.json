@@ -1,13 +1,13 @@
 {
   "environment": {
-    "date": "2026-09-16T06:09:54.825083+00:00",
+    "date": "2026-09-16T07:47:45.425350+00:00",
     "operator": "Codex automated synthetic verification",
     "platform": "macOS-26.5.2-arm64-arm-64bit-Mach-O",
     "machine": "arm64",
     "python": "3.13.7",
     "sqlite": "3.50.4",
     "node": "v24.18.0",
-    "source_sha256": "acf39867988f1b56fdbccb2b8b048e6d56ac2ecee04a3fe20c8d81c801f857d6",
+    "source_sha256": "4d7bf8dc7c4c15aac3ad888ad8ed568eeb71c3e3c4994b4744d724c93eaf65a8",
     "source_files": "See build-evidence.json"
   },
   "gates": [
@@ -20,9 +20,9 @@
       "status": "PARTIAL",
       "paths": "packages/contracts; tests/contract/test_contracts.py",
       "note": "620 supplied assertions and generated types pass. Full 41-operation client/API conformance is not implemented.",
-      "build_sha256": "acf39867988f1b56fdbccb2b8b048e6d56ac2ecee04a3fe20c8d81c801f857d6",
+      "build_sha256": "4d7bf8dc7c4c15aac3ad888ad8ed568eeb71c3e3c4994b4744d724c93eaf65a8",
       "operator": "Codex automated synthetic verification",
-      "date": "2026-09-16T06:09:54.825083+00:00"
+      "date": "2026-09-16T07:47:45.425350+00:00"
     },
     {
       "id": "CORE-02",
@@ -33,9 +33,9 @@
       "status": "PASS",
       "paths": "tests/unit/test_semantics.py::test_source_correction_preserves_bytes_through_restore",
       "note": "Original bytes equal before source-statement correction, after correction, and after fresh-directory restore.",
-      "build_sha256": "acf39867988f1b56fdbccb2b8b048e6d56ac2ecee04a3fe20c8d81c801f857d6",
+      "build_sha256": "4d7bf8dc7c4c15aac3ad888ad8ed568eeb71c3e3c4994b4744d724c93eaf65a8",
       "operator": "Codex automated synthetic verification",
-      "date": "2026-09-16T06:09:54.825083+00:00"
+      "date": "2026-09-16T07:47:45.425350+00:00"
     },
     {
       "id": "CORE-03",
@@ -46,9 +46,9 @@
       "status": "PASS",
       "paths": "tests/integration/test_integrity.py::test_review_revision_retry_history; test_command_idempotency_binds_changed_body",
       "note": "Retry returns the original response once; changed command content conflicts; audit and revision do not duplicate.",
-      "build_sha256": "acf39867988f1b56fdbccb2b8b048e6d56ac2ecee04a3fe20c8d81c801f857d6",
+      "build_sha256": "4d7bf8dc7c4c15aac3ad888ad8ed568eeb71c3e3c4994b4744d724c93eaf65a8",
       "operator": "Codex automated synthetic verification",
-      "date": "2026-09-16T06:09:54.825083+00:00"
+      "date": "2026-09-16T07:47:45.425350+00:00"
     },
     {
       "id": "CORE-04",
@@ -59,9 +59,9 @@
       "status": "PASS",
       "paths": "tests/integration/test_integrity.py::test_concurrent_review_conflict",
       "note": "Two simultaneous reviewers at the same revision produce one commit and one conflict.",
-      "build_sha256": "acf39867988f1b56fdbccb2b8b048e6d56ac2ecee04a3fe20c8d81c801f857d6",
+      "build_sha256": "4d7bf8dc7c4c15aac3ad888ad8ed568eeb71c3e3c4994b4744d724c93eaf65a8",
       "operator": "Codex automated synthetic verification",
-      "date": "2026-09-16T06:09:54.825083+00:00"
+      "date": "2026-09-16T07:47:45.425350+00:00"
     },
     {
       "id": "CORE-05",
@@ -72,9 +72,9 @@
       "status": "PARTIAL",
       "paths": "tests/integration/test_integrity.py::test_actual_process_termination_and_replay",
       "note": "Real process-exit/reopen/retry at four durable boundaries passes. Orphans are retained/reported; full grace-period quarantine and all future parser/job crash boundaries are unfinished.",
-      "build_sha256": "acf39867988f1b56fdbccb2b8b048e6d56ac2ecee04a3fe20c8d81c801f857d6",
+      "build_sha256": "4d7bf8dc7c4c15aac3ad888ad8ed568eeb71c3e3c4994b4744d724c93eaf65a8",
       "operator": "Codex automated synthetic verification",
-      "date": "2026-09-16T06:09:54.825083+00:00"
+      "date": "2026-09-16T07:47:45.425350+00:00"
     },
     {
       "id": "CORE-06",
@@ -84,10 +84,10 @@
       "evidence_required": "Byte mutation + UI + blocked export test.",
       "status": "PARTIAL",
       "paths": "tests/e2e/workflow.spec.ts; artifacts/integrity-failure.png",
-      "note": "Tampered bytes trigger visible integrity failure and block download/backup. Persistent quarantine state and recovery workflow remain incomplete.",
-      "build_sha256": "acf39867988f1b56fdbccb2b8b048e6d56ac2ecee04a3fe20c8d81c801f857d6",
+      "note": "Tampered bytes trigger visible integrity failure and block download/backup. Persistent quarantine survives restart and rejected transactions; explicit verification clears it only after repairs. Complete repair UX and privileged-tamper certification remain open.",
+      "build_sha256": "4d7bf8dc7c4c15aac3ad888ad8ed568eeb71c3e3c4994b4744d724c93eaf65a8",
       "operator": "Codex automated synthetic verification",
-      "date": "2026-09-16T06:09:54.825083+00:00"
+      "date": "2026-09-16T07:47:45.425350+00:00"
     },
     {
       "id": "CORE-07",
@@ -98,9 +98,9 @@
       "status": "PASS",
       "paths": "tests/integration/test_integrity.py::test_review_revision_retry_history",
       "note": "Old accepted versions resolve; SQLite UPDATE/DELETE attempts against records and audit fail.",
-      "build_sha256": "acf39867988f1b56fdbccb2b8b048e6d56ac2ecee04a3fe20c8d81c801f857d6",
+      "build_sha256": "4d7bf8dc7c4c15aac3ad888ad8ed568eeb71c3e3c4994b4744d724c93eaf65a8",
       "operator": "Codex automated synthetic verification",
-      "date": "2026-09-16T06:09:54.825083+00:00"
+      "date": "2026-09-16T07:47:45.425350+00:00"
     },
     {
       "id": "ING-01",
@@ -110,10 +110,10 @@
       "evidence_required": "PDF/OCR/image/DOCX/TXT/CSV/XLSX integration fixtures.",
       "status": "PARTIAL",
       "paths": "services/api/aha/storage/intake.py",
-      "note": "Real immutable UTF-8 TXT derivatives work; PDF/OCR/image/Office/CSV parsers are unfinished.",
-      "build_sha256": "acf39867988f1b56fdbccb2b8b048e6d56ac2ecee04a3fe20c8d81c801f857d6",
+      "note": "Real TXT/CSV/DOCX/XLSX/text-PDF and English OCR for images/scanned PDFs pass isolated-container checks. Full format/locale/rotation corpus and graphical locators remain incomplete.",
+      "build_sha256": "4d7bf8dc7c4c15aac3ad888ad8ed568eeb71c3e3c4994b4744d724c93eaf65a8",
       "operator": "Codex automated synthetic verification",
-      "date": "2026-09-16T06:09:54.825083+00:00"
+      "date": "2026-09-16T07:47:45.425350+00:00"
     },
     {
       "id": "ING-02",
@@ -124,9 +124,9 @@
       "status": "PARTIAL",
       "paths": "tests/e2e/workflow.spec.ts",
       "note": "Manual source and note proposal/review flow passes. AI extraction, proposal editing and batch review are unfinished.",
-      "build_sha256": "acf39867988f1b56fdbccb2b8b048e6d56ac2ecee04a3fe20c8d81c801f857d6",
+      "build_sha256": "4d7bf8dc7c4c15aac3ad888ad8ed568eeb71c3e3c4994b4744d724c93eaf65a8",
       "operator": "Codex automated synthetic verification",
-      "date": "2026-09-16T06:09:54.825083+00:00"
+      "date": "2026-09-16T07:47:45.425350+00:00"
     },
     {
       "id": "ING-03",
@@ -136,10 +136,10 @@
       "evidence_required": "Source statement versus inferred event test.",
       "status": "PARTIAL",
       "paths": "packages/contracts/contracts.schema.json; services/api/aha/commands/execute.py",
-      "note": "Separate types preserved; only Note, Entity and Observation drafts enabled. Full interpretation workflow unfinished.",
-      "build_sha256": "acf39867988f1b56fdbccb2b8b048e6d56ac2ecee04a3fe20c8d81c801f857d6",
+      "note": "Human statement/event/interpretation/relationship/hypothesis/time drafts are enabled with pending review; empty-case backend and browser journeys pass. Full batch/editing flows remain open.",
+      "build_sha256": "4d7bf8dc7c4c15aac3ad888ad8ed568eeb71c3e3c4994b4744d724c93eaf65a8",
       "operator": "Codex automated synthetic verification",
-      "date": "2026-09-16T06:09:54.825083+00:00"
+      "date": "2026-09-16T07:47:45.425350+00:00"
     },
     {
       "id": "ING-04",
@@ -149,10 +149,10 @@
       "evidence_required": "Unicode, page, row and quote boundary tests.",
       "status": "PARTIAL",
       "paths": "tests/unit/test_semantics.py; apps/web/src/inbox/SourceReview.tsx",
-      "note": "Immutable hash, exact-quote/range rejection and browser text selection tested. Page/row/media locator maps and full Unicode corpus remain open.",
-      "build_sha256": "acf39867988f1b56fdbccb2b8b048e6d56ac2ecee04a3fe20c8d81c801f857d6",
+      "note": "Immutable hash, exact-quote/range rejection and browser text selection tested. Page/row/sheet/OCR word locator maps are preserved; current review uses exact text ranges. Full graphical locators and Unicode corpus remain open.",
+      "build_sha256": "4d7bf8dc7c4c15aac3ad888ad8ed568eeb71c3e3c4994b4744d724c93eaf65a8",
       "operator": "Codex automated synthetic verification",
-      "date": "2026-09-16T06:09:54.825083+00:00"
+      "date": "2026-09-16T07:47:45.425350+00:00"
     },
     {
       "id": "ING-05",
@@ -160,12 +160,12 @@
       "invariant": "INV-11",
       "condition": "Hostile parser inputs cannot fetch URLs or exceed resource limits",
       "evidence_required": "Sandbox/timeout/zip-bomb network tests.",
-      "status": "NOT_RUN",
-      "paths": "\u2014",
-      "note": "Required implementation and acceptance evidence remain outstanding.",
-      "build_sha256": "acf39867988f1b56fdbccb2b8b048e6d56ac2ecee04a3fe20c8d81c801f857d6",
+      "status": "PARTIAL",
+      "paths": "services/worker; scripts/verify_parsers.py; artifacts/parser-verification.json",
+      "note": "Dedicated offline container without case volume; real format/OCR, hostile XML, network-syscall denial and bounded processing checks pass. Complete hostile/disk-full/escape corpus remains open.",
+      "build_sha256": "4d7bf8dc7c4c15aac3ad888ad8ed568eeb71c3e3c4994b4744d724c93eaf65a8",
       "operator": "Codex automated synthetic verification",
-      "date": "2026-09-16T06:09:54.825083+00:00"
+      "date": "2026-09-16T07:47:45.425350+00:00"
     },
     {
       "id": "ING-06",
@@ -176,9 +176,9 @@
       "status": "PASS",
       "paths": "tests/integration/test_integrity.py::test_original_retry_and_independent_receipts",
       "note": "Same bytes under different names share content but retain distinct evidence and custody receipts.",
-      "build_sha256": "acf39867988f1b56fdbccb2b8b048e6d56ac2ecee04a3fe20c8d81c801f857d6",
+      "build_sha256": "4d7bf8dc7c4c15aac3ad888ad8ed568eeb71c3e3c4994b4744d724c93eaf65a8",
       "operator": "Codex automated synthetic verification",
-      "date": "2026-09-16T06:09:54.825083+00:00"
+      "date": "2026-09-16T07:47:45.425350+00:00"
     },
     {
       "id": "TIME-01",
@@ -188,10 +188,10 @@
       "evidence_required": "Temporal unit and UI cases.",
       "status": "PARTIAL",
       "paths": "tests/unit/test_semantics.py::test_open_and_reversed_intervals",
-      "note": "Open/empty/reversed bounds tested; basic source timeline displays raw uncertainty. DST, disputes and time editing unfinished.",
-      "build_sha256": "acf39867988f1b56fdbccb2b8b048e6d56ac2ecee04a3fe20c8d81c801f857d6",
+      "note": "Chronology compares instants across offsets; reviewed time/clock/before-constraint forms preserve raw bounds. Full DST/dispute corpus and solver remain unfinished.",
+      "build_sha256": "4d7bf8dc7c4c15aac3ad888ad8ed568eeb71c3e3c4994b4744d724c93eaf65a8",
       "operator": "Codex automated synthetic verification",
-      "date": "2026-09-16T06:09:54.825083+00:00"
+      "date": "2026-09-16T07:47:45.425350+00:00"
     },
     {
       "id": "TIME-02",
@@ -202,9 +202,9 @@
       "status": "NOT_RUN",
       "paths": "\u2014",
       "note": "Required implementation and acceptance evidence remain outstanding.",
-      "build_sha256": "acf39867988f1b56fdbccb2b8b048e6d56ac2ecee04a3fe20c8d81c801f857d6",
+      "build_sha256": "4d7bf8dc7c4c15aac3ad888ad8ed568eeb71c3e3c4994b4744d724c93eaf65a8",
       "operator": "Codex automated synthetic verification",
-      "date": "2026-09-16T06:09:54.825083+00:00"
+      "date": "2026-09-16T07:47:45.425350+00:00"
     },
     {
       "id": "EDGE-01",
@@ -214,10 +214,10 @@
       "evidence_required": "Independent edge rejection test.",
       "status": "PARTIAL",
       "paths": "tests/unit/test_semantics.py::test_unsupported_edge_and_synthetic_promotion",
-      "note": "Semantic rejection tested; full edge creation/review UI is not enabled.",
-      "build_sha256": "acf39867988f1b56fdbccb2b8b048e6d56ac2ecee04a3fe20c8d81c801f857d6",
+      "note": "Human edge creation/review is enabled, with its own support and independence guards. Full independence/dependency acceptance remains open.",
+      "build_sha256": "4d7bf8dc7c4c15aac3ad888ad8ed568eeb71c3e3c4994b4744d724c93eaf65a8",
       "operator": "Codex automated synthetic verification",
-      "date": "2026-09-16T06:09:54.825083+00:00"
+      "date": "2026-09-16T07:47:45.425350+00:00"
     },
     {
       "id": "EDGE-02",
@@ -228,9 +228,9 @@
       "status": "NOT_RUN",
       "paths": "\u2014",
       "note": "Required implementation and acceptance evidence remain outstanding.",
-      "build_sha256": "acf39867988f1b56fdbccb2b8b048e6d56ac2ecee04a3fe20c8d81c801f857d6",
+      "build_sha256": "4d7bf8dc7c4c15aac3ad888ad8ed568eeb71c3e3c4994b4744d724c93eaf65a8",
       "operator": "Codex automated synthetic verification",
-      "date": "2026-09-16T06:09:54.825083+00:00"
+      "date": "2026-09-16T07:47:45.425350+00:00"
     },
     {
       "id": "CON-01",
@@ -238,12 +238,12 @@
       "invariant": "INV-06",
       "condition": "Contradictions retain competing claims and resolution history",
       "evidence_required": "Candidate\u2192unresolved\u2192resolved + source correction.",
-      "status": "NOT_RUN",
-      "paths": "\u2014",
-      "note": "Required implementation and acceptance evidence remain outstanding.",
-      "build_sha256": "acf39867988f1b56fdbccb2b8b048e6d56ac2ecee04a3fe20c8d81c801f857d6",
+      "status": "PARTIAL",
+      "paths": "services/api/aha/commands/execute.py; apps/web/src/casework",
+      "note": "Human potential-conflict proposal and versioned resolution UI implemented; full candidate/correction/dependency acceptance not complete.",
+      "build_sha256": "4d7bf8dc7c4c15aac3ad888ad8ed568eeb71c3e3c4994b4744d724c93eaf65a8",
       "operator": "Codex automated synthetic verification",
-      "date": "2026-09-16T06:09:54.825083+00:00"
+      "date": "2026-09-16T07:47:45.425350+00:00"
     },
     {
       "id": "CON-02",
@@ -251,12 +251,12 @@
       "invariant": "INV-13",
       "condition": "Uncertain identity/time creates potential, not logical conflict",
       "evidence_required": "Red-vehicle demo assertion.",
-      "status": "NOT_RUN",
-      "paths": "\u2014",
-      "note": "Required implementation and acceptance evidence remain outstanding.",
-      "build_sha256": "acf39867988f1b56fdbccb2b8b048e6d56ac2ecee04a3fe20c8d81c801f857d6",
+      "status": "PARTIAL",
+      "paths": "services/api/aha/domain/semantics.py",
+      "note": "Logical conflict claims fail closed pending the complete solver; human differences remain potential. Full red-vehicle semantic acceptance remains open.",
+      "build_sha256": "4d7bf8dc7c4c15aac3ad888ad8ed568eeb71c3e3c4994b4744d724c93eaf65a8",
       "operator": "Codex automated synthetic verification",
-      "date": "2026-09-16T06:09:54.825083+00:00"
+      "date": "2026-09-16T07:47:45.425350+00:00"
     },
     {
       "id": "HYP-01",
@@ -266,10 +266,10 @@
       "evidence_required": "Full transition table tests.",
       "status": "PARTIAL",
       "paths": "services/api/aha/commands/execute.py; tests/unit/test_semantics.py::test_retirement_cannot_transition",
-      "note": "Transition rules and terminal retirement guard exist; full transition table and reviewer UI unfinished.",
-      "build_sha256": "acf39867988f1b56fdbccb2b8b048e6d56ac2ecee04a3fe20c8d81c801f857d6",
+      "note": "Lifecycle decisions and terminal retirement are available in review UI. Empty-case creation/retirement/restore passes; full transition table remains open.",
+      "build_sha256": "4d7bf8dc7c4c15aac3ad888ad8ed568eeb71c3e3c4994b4744d724c93eaf65a8",
       "operator": "Codex automated synthetic verification",
-      "date": "2026-09-16T06:09:54.825083+00:00"
+      "date": "2026-09-16T07:47:45.425350+00:00"
     },
     {
       "id": "HYP-02",
@@ -280,9 +280,9 @@
       "status": "PARTIAL",
       "paths": "services/api/aha/commands/execute.py",
       "note": "Exact family check exists; paraphrase hold/model evaluation unfinished.",
-      "build_sha256": "acf39867988f1b56fdbccb2b8b048e6d56ac2ecee04a3fe20c8d81c801f857d6",
+      "build_sha256": "4d7bf8dc7c4c15aac3ad888ad8ed568eeb71c3e3c4994b4744d724c93eaf65a8",
       "operator": "Codex automated synthetic verification",
-      "date": "2026-09-16T06:09:54.825083+00:00"
+      "date": "2026-09-16T07:47:45.425350+00:00"
     },
     {
       "id": "HYP-03",
@@ -290,12 +290,12 @@
       "invariant": "INV-07",
       "condition": "Relevant new evidence plus review creates successor, never un-retires old record",
       "evidence_required": "Positive/negative reopening E2E.",
-      "status": "NOT_RUN",
-      "paths": "\u2014",
-      "note": "Required implementation and acceptance evidence remain outstanding.",
-      "build_sha256": "acf39867988f1b56fdbccb2b8b048e6d56ac2ecee04a3fe20c8d81c801f857d6",
+      "status": "PARTIAL",
+      "paths": "services/api/aha/commands/execute.py",
+      "note": "Successor command preserves retirement and requires newly introduced accepted source-backed records. Full relevance and positive/negative reopening E2E remain open.",
+      "build_sha256": "4d7bf8dc7c4c15aac3ad888ad8ed568eeb71c3e3c4994b4744d724c93eaf65a8",
       "operator": "Codex automated synthetic verification",
-      "date": "2026-09-16T06:09:54.825083+00:00"
+      "date": "2026-09-16T07:47:45.425350+00:00"
     },
     {
       "id": "LENS-01",
@@ -305,10 +305,10 @@
       "evidence_required": "Oracle IDs and persistent graph hash unchanged.",
       "status": "PARTIAL",
       "paths": "packages/workbench/model.ts; tests/site/model.spec.ts; tests/site/public.spec.ts",
-      "note": "Literal eggs search preserves records and creates no new edges. Natural-language plan and complete Lens oracle execution remain unfinished.",
-      "build_sha256": "acf39867988f1b56fdbccb2b8b048e6d56ac2ecee04a3fe20c8d81c801f857d6",
+      "note": "Local FTS finds uncited exact passages and reports extraction/index coverage without changing case meaning. Natural-language plan and complete Lens oracle execution remain unfinished.",
+      "build_sha256": "4d7bf8dc7c4c15aac3ad888ad8ed568eeb71c3e3c4994b4744d724c93eaf65a8",
       "operator": "Codex automated synthetic verification",
-      "date": "2026-09-16T06:09:54.825083+00:00"
+      "date": "2026-09-16T07:47:45.425350+00:00"
     },
     {
       "id": "LENS-02",
@@ -319,9 +319,9 @@
       "status": "PARTIAL",
       "paths": "packages/workbench/CaseExplorer.tsx; tests/site/public.spec.ts; tests/e2e/workflow.spec.ts",
       "note": "Keyword why-shown and version-resolved source navigation pass in public and local views. Full model-plan explanations and human audit remain open.",
-      "build_sha256": "acf39867988f1b56fdbccb2b8b048e6d56ac2ecee04a3fe20c8d81c801f857d6",
+      "build_sha256": "4d7bf8dc7c4c15aac3ad888ad8ed568eeb71c3e3c4994b4744d724c93eaf65a8",
       "operator": "Codex automated synthetic verification",
-      "date": "2026-09-16T06:09:54.825083+00:00"
+      "date": "2026-09-16T07:47:45.425350+00:00"
     },
     {
       "id": "LENS-03",
@@ -332,9 +332,9 @@
       "status": "NOT_RUN",
       "paths": "\u2014",
       "note": "Required implementation and acceptance evidence remain outstanding.",
-      "build_sha256": "acf39867988f1b56fdbccb2b8b048e6d56ac2ecee04a3fe20c8d81c801f857d6",
+      "build_sha256": "4d7bf8dc7c4c15aac3ad888ad8ed568eeb71c3e3c4994b4744d724c93eaf65a8",
       "operator": "Codex automated synthetic verification",
-      "date": "2026-09-16T06:09:54.825083+00:00"
+      "date": "2026-09-16T07:47:45.425350+00:00"
     },
     {
       "id": "LENS-04",
@@ -345,9 +345,9 @@
       "status": "PARTIAL",
       "paths": "tests/site/public.spec.ts; tests/site/model.spec.ts",
       "note": "Clearing text/basis filters restores stable map coordinates and preserves records. Saved lenses and complete view-state regression remain unfinished.",
-      "build_sha256": "acf39867988f1b56fdbccb2b8b048e6d56ac2ecee04a3fe20c8d81c801f857d6",
+      "build_sha256": "4d7bf8dc7c4c15aac3ad888ad8ed568eeb71c3e3c4994b4744d724c93eaf65a8",
       "operator": "Codex automated synthetic verification",
-      "date": "2026-09-16T06:09:54.825083+00:00"
+      "date": "2026-09-16T07:47:45.425350+00:00"
     },
     {
       "id": "LENS-05",
@@ -358,9 +358,9 @@
       "status": "NOT_RUN",
       "paths": "\u2014",
       "note": "Required implementation and acceptance evidence remain outstanding.",
-      "build_sha256": "acf39867988f1b56fdbccb2b8b048e6d56ac2ecee04a3fe20c8d81c801f857d6",
+      "build_sha256": "4d7bf8dc7c4c15aac3ad888ad8ed568eeb71c3e3c4994b4744d724c93eaf65a8",
       "operator": "Codex automated synthetic verification",
-      "date": "2026-09-16T06:09:54.825083+00:00"
+      "date": "2026-09-16T07:47:45.425350+00:00"
     },
     {
       "id": "LENS-06",
@@ -371,9 +371,9 @@
       "status": "NOT_RUN",
       "paths": "\u2014",
       "note": "Required implementation and acceptance evidence remain outstanding.",
-      "build_sha256": "acf39867988f1b56fdbccb2b8b048e6d56ac2ecee04a3fe20c8d81c801f857d6",
+      "build_sha256": "4d7bf8dc7c4c15aac3ad888ad8ed568eeb71c3e3c4994b4744d724c93eaf65a8",
       "operator": "Codex automated synthetic verification",
-      "date": "2026-09-16T06:09:54.825083+00:00"
+      "date": "2026-09-16T07:47:45.425350+00:00"
     },
     {
       "id": "UI-01",
@@ -384,9 +384,9 @@
       "status": "NOT_RUN",
       "paths": "\u2014",
       "note": "Required implementation and acceptance evidence remain outstanding.",
-      "build_sha256": "acf39867988f1b56fdbccb2b8b048e6d56ac2ecee04a3fe20c8d81c801f857d6",
+      "build_sha256": "4d7bf8dc7c4c15aac3ad888ad8ed568eeb71c3e3c4994b4744d724c93eaf65a8",
       "operator": "Codex automated synthetic verification",
-      "date": "2026-09-16T06:09:54.825083+00:00"
+      "date": "2026-09-16T07:47:45.425350+00:00"
     },
     {
       "id": "UI-02",
@@ -397,9 +397,9 @@
       "status": "PARTIAL",
       "paths": "packages/workbench; tests/site/public.spec.ts; tests/e2e/workflow.spec.ts",
       "note": "2D map/table and keyboard source journey pass, including focus restoration, light/dark axe and mobile reflow. 3D fallback and full cross-browser/screen-reader acceptance remain open.",
-      "build_sha256": "acf39867988f1b56fdbccb2b8b048e6d56ac2ecee04a3fe20c8d81c801f857d6",
+      "build_sha256": "4d7bf8dc7c4c15aac3ad888ad8ed568eeb71c3e3c4994b4744d724c93eaf65a8",
       "operator": "Codex automated synthetic verification",
-      "date": "2026-09-16T06:09:54.825083+00:00"
+      "date": "2026-09-16T07:47:45.425350+00:00"
     },
     {
       "id": "UI-03",
@@ -410,9 +410,9 @@
       "status": "NOT_RUN",
       "paths": "\u2014",
       "note": "Required implementation and acceptance evidence remain outstanding.",
-      "build_sha256": "acf39867988f1b56fdbccb2b8b048e6d56ac2ecee04a3fe20c8d81c801f857d6",
+      "build_sha256": "4d7bf8dc7c4c15aac3ad888ad8ed568eeb71c3e3c4994b4744d724c93eaf65a8",
       "operator": "Codex automated synthetic verification",
-      "date": "2026-09-16T06:09:54.825083+00:00"
+      "date": "2026-09-16T07:47:45.425350+00:00"
     },
     {
       "id": "AHA-01",
@@ -423,9 +423,9 @@
       "status": "NOT_RUN",
       "paths": "\u2014",
       "note": "Required implementation and acceptance evidence remain outstanding.",
-      "build_sha256": "acf39867988f1b56fdbccb2b8b048e6d56ac2ecee04a3fe20c8d81c801f857d6",
+      "build_sha256": "4d7bf8dc7c4c15aac3ad888ad8ed568eeb71c3e3c4994b4744d724c93eaf65a8",
       "operator": "Codex automated synthetic verification",
-      "date": "2026-09-16T06:09:54.825083+00:00"
+      "date": "2026-09-16T07:47:45.425350+00:00"
     },
     {
       "id": "AHA-02",
@@ -436,9 +436,9 @@
       "status": "NOT_RUN",
       "paths": "\u2014",
       "note": "Required implementation and acceptance evidence remain outstanding.",
-      "build_sha256": "acf39867988f1b56fdbccb2b8b048e6d56ac2ecee04a3fe20c8d81c801f857d6",
+      "build_sha256": "4d7bf8dc7c4c15aac3ad888ad8ed568eeb71c3e3c4994b4744d724c93eaf65a8",
       "operator": "Codex automated synthetic verification",
-      "date": "2026-09-16T06:09:54.825083+00:00"
+      "date": "2026-09-16T07:47:45.425350+00:00"
     },
     {
       "id": "AHA-03",
@@ -449,9 +449,9 @@
       "status": "NOT_RUN",
       "paths": "\u2014",
       "note": "Required implementation and acceptance evidence remain outstanding.",
-      "build_sha256": "acf39867988f1b56fdbccb2b8b048e6d56ac2ecee04a3fe20c8d81c801f857d6",
+      "build_sha256": "4d7bf8dc7c4c15aac3ad888ad8ed568eeb71c3e3c4994b4744d724c93eaf65a8",
       "operator": "Codex automated synthetic verification",
-      "date": "2026-09-16T06:09:54.825083+00:00"
+      "date": "2026-09-16T07:47:45.425350+00:00"
     },
     {
       "id": "AHA-04",
@@ -462,9 +462,9 @@
       "status": "NOT_RUN",
       "paths": "\u2014",
       "note": "Required implementation and acceptance evidence remain outstanding.",
-      "build_sha256": "acf39867988f1b56fdbccb2b8b048e6d56ac2ecee04a3fe20c8d81c801f857d6",
+      "build_sha256": "4d7bf8dc7c4c15aac3ad888ad8ed568eeb71c3e3c4994b4744d724c93eaf65a8",
       "operator": "Codex automated synthetic verification",
-      "date": "2026-09-16T06:09:54.825083+00:00"
+      "date": "2026-09-16T07:47:45.425350+00:00"
     },
     {
       "id": "AHA-05",
@@ -475,9 +475,9 @@
       "status": "NOT_RUN",
       "paths": "\u2014",
       "note": "Required implementation and acceptance evidence remain outstanding.",
-      "build_sha256": "acf39867988f1b56fdbccb2b8b048e6d56ac2ecee04a3fe20c8d81c801f857d6",
+      "build_sha256": "4d7bf8dc7c4c15aac3ad888ad8ed568eeb71c3e3c4994b4744d724c93eaf65a8",
       "operator": "Codex automated synthetic verification",
-      "date": "2026-09-16T06:09:54.825083+00:00"
+      "date": "2026-09-16T07:47:45.425350+00:00"
     },
     {
       "id": "AHA-06",
@@ -488,9 +488,9 @@
       "status": "NOT_RUN",
       "paths": "\u2014",
       "note": "Required implementation and acceptance evidence remain outstanding.",
-      "build_sha256": "acf39867988f1b56fdbccb2b8b048e6d56ac2ecee04a3fe20c8d81c801f857d6",
+      "build_sha256": "4d7bf8dc7c4c15aac3ad888ad8ed568eeb71c3e3c4994b4744d724c93eaf65a8",
       "operator": "Codex automated synthetic verification",
-      "date": "2026-09-16T06:09:54.825083+00:00"
+      "date": "2026-09-16T07:47:45.425350+00:00"
     },
     {
       "id": "MODEL-01",
@@ -501,9 +501,9 @@
       "status": "NOT_RUN",
       "paths": "\u2014",
       "note": "Required implementation and acceptance evidence remain outstanding.",
-      "build_sha256": "acf39867988f1b56fdbccb2b8b048e6d56ac2ecee04a3fe20c8d81c801f857d6",
+      "build_sha256": "4d7bf8dc7c4c15aac3ad888ad8ed568eeb71c3e3c4994b4744d724c93eaf65a8",
       "operator": "Codex automated synthetic verification",
-      "date": "2026-09-16T06:09:54.825083+00:00"
+      "date": "2026-09-16T07:47:45.425350+00:00"
     },
     {
       "id": "MODEL-02",
@@ -514,9 +514,9 @@
       "status": "PARTIAL",
       "paths": "tests/e2e/workflow.spec.ts",
       "note": "Manual workflows operate without a model; model gateway/provider-down behavior is not implemented.",
-      "build_sha256": "acf39867988f1b56fdbccb2b8b048e6d56ac2ecee04a3fe20c8d81c801f857d6",
+      "build_sha256": "4d7bf8dc7c4c15aac3ad888ad8ed568eeb71c3e3c4994b4744d724c93eaf65a8",
       "operator": "Codex automated synthetic verification",
-      "date": "2026-09-16T06:09:54.825083+00:00"
+      "date": "2026-09-16T07:47:45.425350+00:00"
     },
     {
       "id": "MODEL-03",
@@ -527,9 +527,9 @@
       "status": "NOT_RUN",
       "paths": "\u2014",
       "note": "Required implementation and acceptance evidence remain outstanding.",
-      "build_sha256": "acf39867988f1b56fdbccb2b8b048e6d56ac2ecee04a3fe20c8d81c801f857d6",
+      "build_sha256": "4d7bf8dc7c4c15aac3ad888ad8ed568eeb71c3e3c4994b4744d724c93eaf65a8",
       "operator": "Codex automated synthetic verification",
-      "date": "2026-09-16T06:09:54.825083+00:00"
+      "date": "2026-09-16T07:47:45.425350+00:00"
     },
     {
       "id": "MODEL-04",
@@ -540,9 +540,9 @@
       "status": "NOT_RUN",
       "paths": "\u2014",
       "note": "Required implementation and acceptance evidence remain outstanding.",
-      "build_sha256": "acf39867988f1b56fdbccb2b8b048e6d56ac2ecee04a3fe20c8d81c801f857d6",
+      "build_sha256": "4d7bf8dc7c4c15aac3ad888ad8ed568eeb71c3e3c4994b4744d724c93eaf65a8",
       "operator": "Codex automated synthetic verification",
-      "date": "2026-09-16T06:09:54.825083+00:00"
+      "date": "2026-09-16T07:47:45.425350+00:00"
     },
     {
       "id": "EXP-01",
@@ -553,9 +553,9 @@
       "status": "NOT_RUN",
       "paths": "\u2014",
       "note": "Required implementation and acceptance evidence remain outstanding.",
-      "build_sha256": "acf39867988f1b56fdbccb2b8b048e6d56ac2ecee04a3fe20c8d81c801f857d6",
+      "build_sha256": "4d7bf8dc7c4c15aac3ad888ad8ed568eeb71c3e3c4994b4744d724c93eaf65a8",
       "operator": "Codex automated synthetic verification",
-      "date": "2026-09-16T06:09:54.825083+00:00"
+      "date": "2026-09-16T07:47:45.425350+00:00"
     },
     {
       "id": "EXP-02",
@@ -565,10 +565,10 @@
       "evidence_required": "Independent restore drill.",
       "status": "PARTIAL",
       "paths": "services/api/aha/storage/portable.py; tests/integration/test_integrity.py",
-      "note": "Fresh-directory restore and hash checks pass. Full run artifacts, independent operator drill and release-volume certification remain open.",
-      "build_sha256": "acf39867988f1b56fdbccb2b8b048e6d56ac2ecee04a3fe20c8d81c801f857d6",
+      "note": "Repetitive backups, streaming restore, shared archive bounds, real recovery rehearsal and expired-copy cleanup pass. Full run artifacts, independent operator drill and release-volume certification remain open.",
+      "build_sha256": "4d7bf8dc7c4c15aac3ad888ad8ed568eeb71c3e3c4994b4744d724c93eaf65a8",
       "operator": "Codex automated synthetic verification",
-      "date": "2026-09-16T06:09:54.825083+00:00"
+      "date": "2026-09-16T07:47:45.425350+00:00"
     },
     {
       "id": "EXP-03",
@@ -579,9 +579,9 @@
       "status": "NOT_RUN",
       "paths": "\u2014",
       "note": "Required implementation and acceptance evidence remain outstanding.",
-      "build_sha256": "acf39867988f1b56fdbccb2b8b048e6d56ac2ecee04a3fe20c8d81c801f857d6",
+      "build_sha256": "4d7bf8dc7c4c15aac3ad888ad8ed568eeb71c3e3c4994b4744d724c93eaf65a8",
       "operator": "Codex automated synthetic verification",
-      "date": "2026-09-16T06:09:54.825083+00:00"
+      "date": "2026-09-16T07:47:45.425350+00:00"
     },
     {
       "id": "EXP-04",
@@ -592,9 +592,9 @@
       "status": "NOT_RUN",
       "paths": "\u2014",
       "note": "Required implementation and acceptance evidence remain outstanding.",
-      "build_sha256": "acf39867988f1b56fdbccb2b8b048e6d56ac2ecee04a3fe20c8d81c801f857d6",
+      "build_sha256": "4d7bf8dc7c4c15aac3ad888ad8ed568eeb71c3e3c4994b4744d724c93eaf65a8",
       "operator": "Codex automated synthetic verification",
-      "date": "2026-09-16T06:09:54.825083+00:00"
+      "date": "2026-09-16T07:47:45.425350+00:00"
     },
     {
       "id": "SEC-01",
@@ -604,10 +604,10 @@
       "evidence_required": "Offline install/runtime traffic evidence.",
       "status": "PARTIAL",
       "paths": "compose.yaml; deploy/Dockerfile",
-      "note": "No runtime remote assets or telemetry code; internal container network configured. Offline install and packet-capture proof not run.",
-      "build_sha256": "acf39867988f1b56fdbccb2b8b048e6d56ac2ecee04a3fe20c8d81c801f857d6",
+      "note": "No runtime remote assets/telemetry; parser has no network or case volume and socket-syscall denial is tested. Offline install and packet-capture proof not run.",
+      "build_sha256": "4d7bf8dc7c4c15aac3ad888ad8ed568eeb71c3e3c4994b4744d724c93eaf65a8",
       "operator": "Codex automated synthetic verification",
-      "date": "2026-09-16T06:09:54.825083+00:00"
+      "date": "2026-09-16T07:47:45.425350+00:00"
     },
     {
       "id": "SEC-02",
@@ -618,9 +618,9 @@
       "status": "PARTIAL",
       "paths": "tests/security/test_http.py",
       "note": "Unauthenticated, foreign Host/Origin, CSRF and logout denial tested. Expiry, full browser negative matrix and all future routes remain open.",
-      "build_sha256": "acf39867988f1b56fdbccb2b8b048e6d56ac2ecee04a3fe20c8d81c801f857d6",
+      "build_sha256": "4d7bf8dc7c4c15aac3ad888ad8ed568eeb71c3e3c4994b4744d724c93eaf65a8",
       "operator": "Codex automated synthetic verification",
-      "date": "2026-09-16T06:09:54.825083+00:00"
+      "date": "2026-09-16T07:47:45.425350+00:00"
     },
     {
       "id": "SEC-03",
@@ -631,9 +631,9 @@
       "status": "PARTIAL",
       "paths": "tests/security/test_http.py",
       "note": "Workstation rejects gateway identity headers. Authenticated LAN gateway not implemented.",
-      "build_sha256": "acf39867988f1b56fdbccb2b8b048e6d56ac2ecee04a3fe20c8d81c801f857d6",
+      "build_sha256": "4d7bf8dc7c4c15aac3ad888ad8ed568eeb71c3e3c4994b4744d724c93eaf65a8",
       "operator": "Codex automated synthetic verification",
-      "date": "2026-09-16T06:09:54.825083+00:00"
+      "date": "2026-09-16T07:47:45.425350+00:00"
     },
     {
       "id": "SEC-04",
@@ -644,9 +644,9 @@
       "status": "NOT_RUN",
       "paths": "\u2014",
       "note": "Required implementation and acceptance evidence remain outstanding.",
-      "build_sha256": "acf39867988f1b56fdbccb2b8b048e6d56ac2ecee04a3fe20c8d81c801f857d6",
+      "build_sha256": "4d7bf8dc7c4c15aac3ad888ad8ed568eeb71c3e3c4994b4744d724c93eaf65a8",
       "operator": "Codex automated synthetic verification",
-      "date": "2026-09-16T06:09:54.825083+00:00"
+      "date": "2026-09-16T07:47:45.425350+00:00"
     },
     {
       "id": "SEC-05",
@@ -656,10 +656,10 @@
       "evidence_required": "Failure injection and rollback drill.",
       "status": "PARTIAL",
       "paths": "tests/integration/test_integrity.py",
-      "note": "Original storage crash/retry drills pass. Disk-full, worker interruption and migration rollback unfinished.",
-      "build_sha256": "acf39867988f1b56fdbccb2b8b048e6d56ac2ecee04a3fe20c8d81c801f857d6",
+      "note": "Storage crash/retry, untouched unsupported-format inspection and persistent quarantine pass. Full disk-full, worker interruption and migration rollback matrix unfinished.",
+      "build_sha256": "4d7bf8dc7c4c15aac3ad888ad8ed568eeb71c3e3c4994b4744d724c93eaf65a8",
       "operator": "Codex automated synthetic verification",
-      "date": "2026-09-16T06:09:54.825083+00:00"
+      "date": "2026-09-16T07:47:45.425350+00:00"
     },
     {
       "id": "REL-01",
@@ -670,9 +670,9 @@
       "status": "NOT_RUN",
       "paths": "\u2014",
       "note": "Required implementation and acceptance evidence remain outstanding.",
-      "build_sha256": "acf39867988f1b56fdbccb2b8b048e6d56ac2ecee04a3fe20c8d81c801f857d6",
+      "build_sha256": "4d7bf8dc7c4c15aac3ad888ad8ed568eeb71c3e3c4994b4744d724c93eaf65a8",
       "operator": "Codex automated synthetic verification",
-      "date": "2026-09-16T06:09:54.825083+00:00"
+      "date": "2026-09-16T07:47:45.425350+00:00"
     },
     {
       "id": "REL-02",
@@ -683,9 +683,9 @@
       "status": "NOT_RUN",
       "paths": "\u2014",
       "note": "Required implementation and acceptance evidence remain outstanding.",
-      "build_sha256": "acf39867988f1b56fdbccb2b8b048e6d56ac2ecee04a3fe20c8d81c801f857d6",
+      "build_sha256": "4d7bf8dc7c4c15aac3ad888ad8ed568eeb71c3e3c4994b4744d724c93eaf65a8",
       "operator": "Codex automated synthetic verification",
-      "date": "2026-09-16T06:09:54.825083+00:00"
+      "date": "2026-09-16T07:47:45.425350+00:00"
     },
     {
       "id": "REL-03",
@@ -696,9 +696,9 @@
       "status": "PARTIAL",
       "paths": "tests/e2e/workflow.spec.ts; artifacts/browser-tests.json",
       "note": "Chromium automated axe scans pass in light and dark for tested screens. Human keyboard/VoiceOver/NVDA and full WCAG conformance not established.",
-      "build_sha256": "acf39867988f1b56fdbccb2b8b048e6d56ac2ecee04a3fe20c8d81c801f857d6",
+      "build_sha256": "4d7bf8dc7c4c15aac3ad888ad8ed568eeb71c3e3c4994b4744d724c93eaf65a8",
       "operator": "Codex automated synthetic verification",
-      "date": "2026-09-16T06:09:54.825083+00:00"
+      "date": "2026-09-16T07:47:45.425350+00:00"
     },
     {
       "id": "REL-04",
@@ -709,9 +709,9 @@
       "status": "PARTIAL",
       "paths": "deploy/Dockerfile; compose.yaml; requirements.lock; package-lock.json",
       "note": "Dependency locks and image base digests pinned. Development SBOM inventories and Linux arm64 container checks exist; signed multi-architecture releases, complete license audit and offline import certification unfinished.",
-      "build_sha256": "acf39867988f1b56fdbccb2b8b048e6d56ac2ecee04a3fe20c8d81c801f857d6",
+      "build_sha256": "4d7bf8dc7c4c15aac3ad888ad8ed568eeb71c3e3c4994b4744d724c93eaf65a8",
       "operator": "Codex automated synthetic verification",
-      "date": "2026-09-16T06:09:54.825083+00:00"
+      "date": "2026-09-16T07:47:45.425350+00:00"
     },
     {
       "id": "REL-05",
@@ -722,9 +722,9 @@
       "status": "NOT_RUN",
       "paths": "\u2014",
       "note": "Required implementation and acceptance evidence remain outstanding.",
-      "build_sha256": "acf39867988f1b56fdbccb2b8b048e6d56ac2ecee04a3fe20c8d81c801f857d6",
+      "build_sha256": "4d7bf8dc7c4c15aac3ad888ad8ed568eeb71c3e3c4994b4744d724c93eaf65a8",
       "operator": "Codex automated synthetic verification",
-      "date": "2026-09-16T06:09:54.825083+00:00"
+      "date": "2026-09-16T07:47:45.425350+00:00"
     },
     {
       "id": "EXT-01",
@@ -735,9 +735,9 @@
       "status": "PARTIAL",
       "paths": "tests/security/test_http.py",
       "note": "Authenticated CASEMAIL endpoint is disabled and cannot write/send; full extension envelope fixture suite not implemented.",
-      "build_sha256": "acf39867988f1b56fdbccb2b8b048e6d56ac2ecee04a3fe20c8d81c801f857d6",
+      "build_sha256": "4d7bf8dc7c4c15aac3ad888ad8ed568eeb71c3e3c4994b4744d724c93eaf65a8",
       "operator": "Codex automated synthetic verification",
-      "date": "2026-09-16T06:09:54.825083+00:00"
+      "date": "2026-09-16T07:47:45.425350+00:00"
     },
     {
       "id": "EXT-02",
@@ -748,9 +748,9 @@
       "status": "PARTIAL",
       "paths": "apps/web/src/shell/App.tsx",
       "note": "Scene View is absent; explicit extension capability tests remain open.",
-      "build_sha256": "acf39867988f1b56fdbccb2b8b048e6d56ac2ecee04a3fe20c8d81c801f857d6",
+      "build_sha256": "4d7bf8dc7c4c15aac3ad888ad8ed568eeb71c3e3c4994b4744d724c93eaf65a8",
       "operator": "Codex automated synthetic verification",
-      "date": "2026-09-16T06:09:54.825083+00:00"
+      "date": "2026-09-16T07:47:45.425350+00:00"
     }
   ]
 }

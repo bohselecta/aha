@@ -1,9 +1,12 @@
 import base64
+import asyncio
+import threading
+from concurrent.futures import ThreadPoolExecutor
 import json
 import os
 import secrets
 import time
-from contextlib import asynccontextmanager
+from contextlib import asynccontextmanager, suppress
 from datetime import datetime, timezone, timedelta
 from pathlib import Path
 from uuid import uuid4
@@ -11,10 +14,12 @@ from fastapi import FastAPI, Request, UploadFile, File, Form, Query
 from fastapi.exceptions import RequestValidationError
 from fastapi.responses import JSONResponse, Response, FileResponse
 from fastapi.staticfiles import StaticFiles
+from starlette.concurrency import run_in_threadpool
+from starlette.formparsers import MultiPartException
 from .domain.contracts import DomainError, ROOT, validate
 from .commands.execute import execute
-from .storage.store import Registry, canonical, digest
-from .storage.intake import receive
+from .storage.store import Registry, canonical, digest, file_digest
+from .storage.intake import receive_file
 from .storage.portable import backup
 
 MAX_UPLOAD = 250 * 1024**2
@@ -27,6 +32,47 @@ def create_app(data_root=None, pairing_secret=None, allowed_origins=None):
     registry = Registry(root)
     sessions = {}
     attempts = []
+    intake_slot = asyncio.Semaphore(1)
+    workers = ThreadPoolExecutor(max_workers=1, thread_name_prefix="aha-import")
+    pending_jobs = {}
+
+    def schedule_import(store, ident):
+        if ident in pending_jobs:
+            return
+        cancelled = threading.Event()
+        pending_jobs[ident] = cancelled
+
+        def work():
+            from .storage.intake import process_job
+
+            try:
+                process_job(store, ident, cancelled)
+            except Exception:
+                with store.transaction():
+                    row = store.db.execute(
+                        "SELECT body FROM job_views WHERE id=?", (ident,)
+                    ).fetchone()
+                    job = json.loads(row[0])
+                    if job["state"] == "CANCELLED":
+                        return
+                    job.update(
+                        state="FAILED",
+                        phase="Processing interrupted; original preserved",
+                        fraction=None,
+                    )
+                    store.db.execute(
+                        "UPDATE jobs SET state='FAILED',error_code='PROCESSING_INTERRUPTED' WHERE id=?",
+                        (ident,),
+                    )
+                    store.db.execute(
+                        "UPDATE job_views SET body=? WHERE id=?",
+                        (canonical(job).decode(), ident),
+                    )
+            finally:
+                pending_jobs.pop(ident, None)
+
+        workers.submit(work)
+
     secret = pairing_secret or secrets.token_urlsafe(24)
     secret_deadline = time.monotonic() + 600
     if pairing_secret is None:
@@ -41,7 +87,44 @@ def create_app(data_root=None, pairing_secret=None, allowed_origins=None):
 
     @asynccontextmanager
     async def lifespan(app):
+        from .parsing import clear_interrupted_transfers
+
+        await run_in_threadpool(clear_interrupted_transfers)
+        for case in registry.list():
+            store = registry.get(case["id"])
+            if not store.inspection_only:
+                from .recovery import cleanup_exports
+
+                try:
+                    cleanup_exports(store)
+                except DomainError:
+                    pass  # Invalid imported export metadata is reported by backup health.
+                for row in store.db.execute(
+                    "SELECT id FROM jobs WHERE type='INGEST' AND state IN ('QUEUED','RUNNING')"
+                ).fetchall():
+                    schedule_import(store, row[0])
+
+        async def retention_sweep():
+            while True:
+                await asyncio.sleep(60)
+                for case in registry.list():
+                    try:
+                        from .recovery import cleanup_exports
+
+                        await run_in_threadpool(
+                            cleanup_exports, registry.get(case["id"])
+                        )
+                    except (OSError, DomainError):
+                        pass  # Retry next sweep; no case text enters diagnostics.
+
+        retention = asyncio.create_task(retention_sweep())
         yield
+        retention.cancel()
+        with suppress(asyncio.CancelledError):
+            await retention
+        for cancelled in list(pending_jobs.values()):
+            cancelled.set()
+        workers.shutdown(wait=True, cancel_futures=True)
         registry.close()
 
     app = FastAPI(
@@ -95,9 +178,10 @@ def create_app(data_root=None, pairing_secret=None, allowed_origins=None):
             ):
                 raise DomainError("GATEWAY_DISABLED", "LAN identity is disabled.", 403)
             path = request.url.path
-            if path.startswith("/api/") and path not in (
-                "/api/v1/health",
-                "/api/v1/session",
+            if (
+                path.startswith("/api/")
+                and path != "/api/v1/health"
+                and not (path == "/api/v1/session" and request.method == "POST")
             ):
                 token = request.cookies.get("aha_session")
                 session = sessions.get(token)
@@ -122,7 +206,39 @@ def create_app(data_root=None, pairing_secret=None, allowed_origins=None):
                     raise DomainError(
                         "CSRF_DENIED", "A valid CSRF token is required.", 403
                     )
-            response = await call_next(request)
+            if path.endswith("/ingest") and request.method == "POST":
+                declared = request.headers.get("content-length")
+                if declared and (
+                    not declared.isdigit() or int(declared) > MAX_UPLOAD + 1024**2
+                ):
+                    raise DomainError(
+                        "FILE_TOO_LARGE", "Upload exceeds the intake limit.", 413
+                    )
+                received = 0
+                exceeded = False
+                original_receive = request._receive
+
+                async def bounded_receive():
+                    nonlocal received, exceeded
+                    message = await original_receive()
+                    received += len(message.get("body", b""))
+                    if received > MAX_UPLOAD + 1024**2:
+                        exceeded = True
+                        raise MultiPartException("Upload exceeds the intake limit.")
+                    return message
+
+                request._receive = bounded_receive
+                async with intake_slot:
+                    response = await call_next(request)
+                if exceeded:
+                    response = error_response(
+                        DomainError(
+                            "FILE_TOO_LARGE", "Upload exceeds the intake limit.", 413
+                        ),
+                        request_id,
+                    )
+            else:
+                response = await call_next(request)
         except DomainError as exc:
             response = error_response(exc, request_id)
         except OSError:
@@ -206,8 +322,18 @@ def create_app(data_root=None, pairing_secret=None, allowed_origins=None):
 
     @app.post("/api/v1/session")
     async def pair(request: Request):
+        nonlocal secret, secret_deadline
         payload = await body(request, "SessionRequest")
         clock = time.monotonic()
+        if pairing_secret is None:
+            # The local pairing command rotates this file without restarting casework.
+            try:
+                candidate = secret_file.read_text().strip()
+                if candidate != secret and len(candidate) >= 24:
+                    age = max(0, time.time() - secret_file.stat().st_mtime)
+                    secret, secret_deadline = candidate, clock + max(0, 600 - age)
+            except OSError:
+                pass
         attempts[:] = [t for t in attempts if clock - t < 60]
         if len(attempts) >= 10:
             raise DomainError("RATE_LIMIT", "Wait before another pairing attempt.", 429)
@@ -243,6 +369,21 @@ def create_app(data_root=None, pairing_secret=None, allowed_origins=None):
             path="/api/",
         )
         return response
+
+    @app.get("/api/v1/session")
+    def resume(request: Request):
+        session = request.state.session
+        remaining = max(0, 43200 - (time.monotonic() - session["created"]))
+        return validate(
+            "Session",
+            dict(
+                actor=session["actor"],
+                csrf_token=session["csrf"],
+                expires_at=(
+                    datetime.now(timezone.utc) + timedelta(seconds=remaining)
+                ).isoformat(),
+            ),
+        )
 
     @app.delete("/api/v1/session")
     def logout(request: Request):
@@ -320,6 +461,96 @@ def create_app(data_root=None, pairing_secret=None, allowed_origins=None):
                 ),
             )
 
+    @app.get("/api/v1/cases/{case_id}/source-search")
+    def source_search(
+        case_id: str,
+        q: str = Query("", max_length=2000),
+        offset: int = Query(0, ge=0, le=1000000),
+        limit: int = Query(50, ge=1, le=200),
+    ):
+        from .search import search_sources
+
+        return search_sources(registry.get(case_id), q, offset, limit)
+
+    @app.post("/api/v1/cases/{case_id}/indexes/rebuild")
+    def rebuild_index(case_id: str, request: Request):
+        from .search import rebuild, coverage
+
+        store = registry.get(case_id)
+        expected, key = preconditions(request)
+        with store.lock:
+            with store.transaction():
+                replay = store.precondition(
+                    request.state.actor, "reindex", key, {}, expected
+                )
+                if replay is not None:
+                    return replay
+            rebuild(store)
+            with store.transaction():
+                value = coverage(store)
+                store.audit(
+                    request.state.actor,
+                    "rebuildIndex",
+                    [],
+                    "Rebuilt local source search without changing case meaning.",
+                )
+                store.remember(request.state.actor, "reindex", key, {}, value)
+            return value
+
+    @app.get("/api/v1/cases/{case_id}/references")
+    def reference_versions(
+        case_id: str, cursor: str | None = None, limit: int = Query(200, ge=1, le=200)
+    ):
+        store = registry.get(case_id)
+        with store.lock:
+            revision = store.case()["case_revision"]
+            offset = 0
+            if cursor:
+                try:
+                    saved = json.loads(base64.urlsafe_b64decode(cursor))
+                    if saved["revision"] != revision:
+                        raise DomainError(
+                            "STALE_PAGE", "The case changed. Refresh references.", 409
+                        )
+                    offset = int(saved["offset"])
+                    if offset < 0:
+                        raise ValueError()
+                except (ValueError, KeyError):
+                    raise DomainError(
+                        "CURSOR_INVALID", "Invalid reference cursor.", 400
+                    )
+            rows = store.db.execute(
+                """WITH RECURSIVE needed(id,revision) AS (
+                SELECT rr.target_id,rr.target_revision FROM record_refs rr
+                JOIN current_records c ON rr.source_id=c.id AND rr.source_revision=c.revision
+                UNION
+                SELECT rr.target_id,rr.target_revision FROM record_refs rr
+                JOIN needed n ON rr.source_id=n.id AND rr.source_revision=n.revision
+              ) SELECT r.body FROM records r JOIN needed n USING(id,revision)
+                JOIN current_records c ON c.id=r.id WHERE c.revision<>r.revision
+                ORDER BY r.id,r.revision LIMIT ? OFFSET ?""",
+                (limit + 1, offset),
+            ).fetchall()
+            next_cursor = (
+                base64.urlsafe_b64encode(
+                    canonical(dict(revision=revision, offset=offset + limit))
+                ).decode()
+                if len(rows) > limit
+                else None
+            )
+            return result(
+                store,
+                validate(
+                    "Page",
+                    dict(
+                        case_revision=revision,
+                        index_revision=0,
+                        items=[json.loads(r[0]) for r in rows[:limit]],
+                        next_cursor=next_cursor,
+                    ),
+                ),
+            )
+
     @app.get("/api/v1/cases/{case_id}/records/{record_id}")
     def record(case_id: str, record_id: str, revision: int | None = Query(None, ge=1)):
         store = registry.get(case_id)
@@ -373,26 +604,23 @@ def create_app(data_root=None, pairing_secret=None, allowed_origins=None):
     ):
         store = registry.get(case_id)
         expected, key = preconditions(request)
-        data = await file.read(MAX_UPLOAD + 1)
-        await file.close()
-        if len(data) > MAX_UPLOAD:
-            raise DomainError(
-                "FILE_TOO_LARGE", "File exceeds the 250 MiB intake limit.", 413
-            )
-        return result(
-            store,
-            receive(
+        try:
+            job = await run_in_threadpool(
+                receive_file,
                 store,
-                data,
+                file.file,
                 file.filename or "unnamed",
                 file.content_type or "application/octet-stream",
                 request.state.actor,
                 expected,
                 key,
                 source_note,
-            ),
-            202,
-        )
+                True,
+            )
+            schedule_import(store, job["id"])
+            return result(store, job, 202)
+        finally:
+            await file.close()
 
     @app.get("/api/v1/cases/{case_id}/evidence/{record_id}/original")
     def original(case_id: str, record_id: str):
@@ -400,12 +628,10 @@ def create_app(data_root=None, pairing_secret=None, allowed_origins=None):
         record = store.record(record_id)
         if not record or record["kind"] != "Evidence":
             raise DomainError("NOT_FOUND", "Original not found.", 404)
-        return Response(
-            store.verified_blob(record),
+        return FileResponse(
+            store.verified_path(record),
             media_type="application/octet-stream",
-            headers={
-                "Content-Disposition": f'attachment; filename="{record_id}.original"'
-            },
+            filename=record["original_filename"],
         )
 
     @app.get("/api/v1/cases/{case_id}/derivatives/{record_id}/content")
@@ -414,8 +640,8 @@ def create_app(data_root=None, pairing_secret=None, allowed_origins=None):
         record = store.record(record_id)
         if not record or record["kind"] != "Derivative":
             raise DomainError("NOT_FOUND", "Derivative not found.", 404)
-        return Response(
-            store.verified_blob(record), media_type="text/plain; charset=utf-8"
+        return FileResponse(
+            store.verified_path(record), media_type="text/plain; charset=utf-8"
         )
 
     def completed_job(store, actor, kind, value):
@@ -463,9 +689,24 @@ def create_app(data_root=None, pairing_secret=None, allowed_origins=None):
             )
             if replay is not None:
                 return result(store, replay, 202)
-            job = completed_job(store, request.state.actor, "VERIFY", store.verify())
+            job = completed_job(
+                store, request.state.actor, "VERIFY", store.verify(recheck=True)
+            )
             store.remember(request.state.actor, "verify", key, {}, job)
         return result(store, job, 202)
+
+    @app.get("/api/v1/cases/{case_id}/backup/status")
+    def backup_status(case_id: str):
+        from .recovery import health
+
+        return health(registry.get(case_id))
+
+    @app.post("/api/v1/cases/{case_id}/backup/rehearse")
+    def rehearse_backup(case_id: str, request: Request):
+        from .recovery import rehearse
+
+        expected, key = preconditions(request)
+        return rehearse(registry.get(case_id), request.state.actor, expected, key)
 
     @app.post("/api/v1/cases/{case_id}/backup")
     def backup_case(case_id: str, request: Request):
@@ -485,7 +726,7 @@ def create_app(data_root=None, pairing_secret=None, allowed_origins=None):
                 dict(
                     result_type="EXPORT",
                     export_id=ident,
-                    sha256=digest(output.read_bytes()),
+                    sha256=file_digest(output),
                     bytes=output.stat().st_size,
                     case_revision=manifest["case_revision"],
                     expires_at=(
@@ -517,7 +758,7 @@ def create_app(data_root=None, pairing_secret=None, allowed_origins=None):
         ) < datetime.now(timezone.utc):
             raise DomainError("NOT_FOUND", "Export not found or expired.", 404)
         path = store.path / "exports" / f"{export_id}.aha-case.zip"
-        if not path.is_file() or digest(path.read_bytes()) != artifact["sha256"]:
+        if not path.is_file() or file_digest(path) != artifact["sha256"]:
             raise DomainError(
                 "INTEGRITY_FAILURE", "Export integrity verification failed.", 409
             )
@@ -536,6 +777,109 @@ def create_app(data_root=None, pairing_secret=None, allowed_origins=None):
         if not row:
             raise DomainError("NOT_FOUND", "Job not found.", 404)
         return result(store, json.loads(row[0]))
+
+    @app.post("/api/v1/cases/{case_id}/jobs/{job_id}/cancel")
+    def cancel_job(case_id: str, job_id: str, request: Request):
+        store = registry.get(case_id)
+        expected, key = preconditions(request)
+        with store.transaction():
+            replay = store.precondition(
+                request.state.actor, "cancel-import", key, {"id": job_id}, expected
+            )
+            if replay is not None:
+                return result(store, replay)
+            row = store.db.execute(
+                "SELECT body FROM job_views WHERE id=?", (job_id,)
+            ).fetchone()
+            if not row:
+                raise DomainError("NOT_FOUND", "Import not found.", 404)
+            job = json.loads(row[0])
+            if job["type"] != "INGEST":
+                raise DomainError("WRONG_JOB", "Choose an import job.")
+            if job["state"] in ("QUEUED", "RUNNING"):
+                job.update(
+                    state="CANCELLED",
+                    phase="Extraction cancelled; original preserved",
+                    fraction=None,
+                )
+                store.db.execute(
+                    "UPDATE jobs SET state='CANCELLED' WHERE id=?", (job_id,)
+                )
+                store.db.execute(
+                    "UPDATE job_views SET body=? WHERE id=?",
+                    (canonical(job).decode(), job_id),
+                )
+                store.audit(
+                    request.state.actor,
+                    "cancelExtraction",
+                    [],
+                    "Operator cancelled extraction; original retained.",
+                )
+            store.remember(
+                request.state.actor, "cancel-import", key, {"id": job_id}, job
+            )
+        if job_id in pending_jobs:
+            pending_jobs[job_id].set()
+        return result(store, job)
+
+    @app.post("/api/v1/cases/{case_id}/jobs/{job_id}/retry")
+    def retry_job(case_id: str, job_id: str, request: Request):
+        store = registry.get(case_id)
+        expected, key = preconditions(request)
+        with store.transaction():
+            replay = store.precondition(
+                request.state.actor, "retry-import", key, {"id": job_id}, expected
+            )
+            if replay is not None:
+                return result(store, replay, 202)
+            row = store.db.execute(
+                "SELECT body FROM job_views WHERE id=?", (job_id,)
+            ).fetchone()
+            if not row:
+                raise DomainError("NOT_FOUND", "Import not found.", 404)
+            job = json.loads(row[0])
+            if job["type"] != "INGEST":
+                raise DomainError("WRONG_JOB", "Choose an import job.")
+            if job_id in pending_jobs or job["state"] in ("QUEUED", "RUNNING"):
+                raise DomainError(
+                    "JOB_BUSY",
+                    "Extraction is still stopping or running. Try again shortly.",
+                    409,
+                )
+            job.update(
+                state="QUEUED",
+                phase="Extraction retry queued",
+                fraction=None,
+                error=None,
+            )
+            store.db.execute("UPDATE jobs SET state='QUEUED' WHERE id=?", (job_id,))
+            store.db.execute(
+                "UPDATE job_views SET body=? WHERE id=?",
+                (canonical(job).decode(), job_id),
+            )
+            store.audit(
+                request.state.actor,
+                "retryExtraction",
+                [],
+                "Operator requested extraction retry; original retained.",
+            )
+            store.remember(
+                request.state.actor, "retry-import", key, {"id": job_id}, job
+            )
+        schedule_import(store, job_id)
+        return result(store, job, 202)
+
+    @app.get("/api/v1/cases/{case_id}/imports")
+    def import_jobs(case_id: str):
+        store = registry.get(case_id)
+        return {
+            "items": [
+                {"job": json.loads(row[0]), "summary": json.loads(row[1])}
+                for row in store.db.execute(
+                    "SELECT v.body,j.result_json FROM job_views v JOIN jobs j ON v.id=j.id WHERE j.type='INGEST' ORDER BY j.rowid DESC LIMIT 200"
+                )
+            ]
+        }
 
     @app.get("/api/v1/cases/{case_id}/jobs/{job_id}/result")
     def job_result(case_id: str, job_id: str):

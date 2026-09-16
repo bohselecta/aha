@@ -1,7 +1,9 @@
 import { defineConfig } from "@playwright/test";
 export default defineConfig({
   testDir: "tests/site",
+  outputDir: "test-results/site",
   workers: 1,
+  reporter: [["list"], ["json", { outputFile: "artifacts/site-tests.json" }]],
   use: { baseURL: "http://127.0.0.1:4174" },
   webServer: {
     command:

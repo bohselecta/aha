@@ -14,8 +14,13 @@ test("synthetic source review, note review, history, integrity and backup", asyn
   await page.getByLabel("Connection code").fill("synthetic-browser-test");
   await page.getByRole("button", { name: "Open local workspace" }).click();
   await expect(
-    page.getByRole("heading", { name: "Inbox", exact: true }),
+    page.getByRole("heading", { name: "Overview", exact: true }),
   ).toBeVisible();
+  await page.reload();
+  await expect(
+    page.getByRole("heading", { name: "Overview", exact: true }),
+  ).toBeVisible();
+  await page.getByRole("button", { name: "Inbox", exact: false }).click();
   await expect(
     page.getByRole("button", { name: /attendant.txt/ }),
   ).toBeVisible();
@@ -58,7 +63,7 @@ test("synthetic source review, note review, history, integrity and backup", asyn
     .fill("Literal source attribution; vehicle identity remains unknown.");
   await page.getByRole("button", { name: "Send statement for review" }).click();
   await expect(
-    page.getByText("Review decision saved. History retained."),
+    page.getByText("Proposal saved. Open Review queue to check and accept it."),
   ).toBeVisible();
   await page.getByRole("button", { name: "Close detail" }).click();
   await page
@@ -111,6 +116,8 @@ test("synthetic source review, note review, history, integrity and backup", asyn
   await page.getByRole("button", { name: "Create portable backup" }).click();
   const download = await downloadPromise;
   expect(download.suggestedFilename()).toContain(".aha-case.zip");
+  await page.getByRole("button", { name: "Rehearse recovery" }).click();
+  await expect(page.getByText(/Restore verified at/)).toBeVisible();
   await page.getByRole("button", { name: "Dark theme", exact: true }).click();
   axe = await new AxeBuilder({ page }).analyze();
   expect(axe.violations).toEqual([]);

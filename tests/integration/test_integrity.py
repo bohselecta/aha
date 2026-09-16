@@ -47,7 +47,7 @@ def note(text="Human note"):
 def test_original_retry_and_independent_receipts(store):
     first = ingest(store, key="same", expected=0)
     assert ingest(store, key="same", expected=0) == first
-    assert store.case()["case_revision"] == 1
+    assert store.case()["case_revision"] == 2
     assert len([r for r in store.all_records() if r["kind"] == "Evidence"]) == 1
     with pytest.raises(DomainError, match="different content"):
         ingest(store, b"changed", key="same", expected=0)
@@ -170,7 +170,7 @@ def test_crash_recovery(store, registry, point):
     recovered = registry.get(ident)
     result = ingest(recovered, key="recover", expected=0)
     assert result["state"] == "SUCCEEDED"
-    assert recovered.case()["case_revision"] == 1
+    assert recovered.case()["case_revision"] == 2
     assert len([r for r in recovered.all_records() if r["kind"] == "Evidence"]) == 1
     assert recovered.verify()["failures"] == []
 
@@ -282,7 +282,7 @@ receive(store,b'SYNTHETIC crash bytes','source.txt','text/plain','operator',0,'r
             "retry",
             "Synthetic test",
         )
-        assert store.case()["case_revision"] == 1
+        assert store.case()["case_revision"] == 2
         assert len([r for r in store.all_records() if r["kind"] == "Evidence"]) == 1
         assert store.verify()["failures"] == []
     finally:
@@ -352,3 +352,267 @@ def test_restore_rejects_modified_database_schema(store, tmp_path):
             z.writestr(name, data)
     with pytest.raises(DomainError, match="schema does not match"):
         restore(malicious, tmp_path / "restore")
+
+
+def test_repetitive_backup_roundtrip_and_writer_limits(store, tmp_path, monkeypatch):
+    from aha.storage import portable
+
+    content = b"SYNTHETIC\n" + b"A" * 200000
+    ingest(store, content)
+    bundle = tmp_path / "repetitive.zip"
+    backup(store, bundle)
+    restore(bundle, tmp_path / "fresh")
+    registry = Registry(tmp_path / "fresh")
+    try:
+        recovered = registry.get(store.case()["id"])
+        original = next(r for r in recovered.all_records() if r["kind"] == "Evidence")
+        assert recovered.verified_blob(original) == content
+    finally:
+        registry.close()
+    monkeypatch.setattr(portable, "MAX_BUNDLE_BYTES", 100)
+    rejected = tmp_path / "oversize.zip"
+    with pytest.raises(DomainError, match="limit"):
+        backup(store, rejected)
+    assert not rejected.exists()
+
+
+def test_unsupported_format_does_not_touch_case(store, registry):
+    ident, path = store.case()["id"], store.path
+    store.db.execute("PRAGMA user_version=99")
+    store.close()
+    registry.stores.pop(ident)
+    before = {
+        str(p.relative_to(path)): (p.stat().st_mtime_ns, p.read_bytes())
+        for p in path.rglob("*")
+        if p.is_file()
+    }
+    inspection = Store(path)
+    try:
+        assert inspection.inspection_only
+        assert inspection.case()["id"] == ident
+        with pytest.raises(DomainError, match="inspection-only"):
+            with inspection.transaction():
+                pass
+    finally:
+        inspection.close()
+    after = {
+        str(p.relative_to(path)): (p.stat().st_mtime_ns, p.read_bytes())
+        for p in path.rglob("*")
+        if p.is_file()
+    }
+    assert after == before
+
+
+def test_quarantine_survives_reopen_until_successful_operator_verification(
+    store, registry
+):
+    ingest(store)
+    original = next(r for r in store.all_records() if r["kind"] == "Evidence")
+    path = store.blob_path(original)
+    content = path.read_bytes()
+    path.chmod(0o600)
+    path.write_bytes(b"tampered")
+    assert store.verify()["failures"]
+    ident = store.case()["id"]
+    store.close()
+    registry.stores.pop(ident)
+    recovered = registry.get(ident)
+    with pytest.raises(DomainError, match="quarantined"):
+        cmd(recovered, note())
+    path.write_bytes(content)
+    assert recovered.verify()["failures"]
+    assert recovered.verify(recheck=True)["failures"] == []
+    assert cmd(recovered, note())["proposal_id"]
+
+
+def test_empty_case_manual_reasoning_and_historical_references(store, tmp_path):
+    def accept(draft, key):
+        proposed = cmd(
+            store,
+            {
+                "type": "proposeRecord",
+                "record": draft,
+                "reason": "Synthetic manual workflow.",
+            },
+            key=key,
+        )
+        reviewed = cmd(
+            store,
+            {
+                "type": "reviewProposal",
+                "proposal_id": proposed["proposal_id"],
+                "decision": "ACCEPT",
+                "reason": "Compared with the complete source and reviewed basis.",
+            },
+        )
+        return store.record(reviewed["changed_refs"][0]["id"])
+
+    from aha.storage.store import ref
+
+    ingest(store, b"SYNTHETIC: the crate arrived before closing.")
+    evidence = next(r for r in store.all_records() if r["kind"] == "Evidence")
+    derivative = next(
+        r
+        for r in store.all_records()
+        if r["kind"] == "Derivative" and r["derivative_type"] == "TEXT"
+    )
+    subject = accept(
+        dict(
+            kind="Entity",
+            label="Records crate",
+            entity_type="OBJECT",
+            aliases=[],
+            source_refs=[ref(evidence)],
+        ),
+        "entity",
+    )
+    time = dict(
+        raw="before closing",
+        start=None,
+        end=None,
+        start_inclusive=True,
+        end_inclusive=True,
+        timezone=None,
+        precision="UNKNOWN",
+        clock_source="Source account",
+        tolerance_seconds=None,
+        alternative_refs=[],
+    )
+    common = dict(
+        tier="OBSERVED",
+        citations=[
+            dict(
+                evidence=ref(evidence),
+                evidence_sha256=evidence["sha256"],
+                derivative=ref(derivative),
+                derivative_sha256=derivative["sha256"],
+                locator=dict(
+                    type="text",
+                    start=0,
+                    end=len("SYNTHETIC: the crate arrived before closing."),
+                ),
+                quote="SYNTHETIC: the crate arrived before closing.",
+            )
+        ],
+        support_refs=[],
+        counter_refs=[],
+        rationale="Literal report, not independently established.",
+    )
+    observation = accept(
+        dict(
+            kind="Observation",
+            **common,
+            statement="The source reports arrival before closing.",
+            subject_refs=[ref(subject)],
+            predicate="arrived",
+            object_value="before closing",
+            occurrence=time,
+            discovered_at=None,
+            recorded_at=None,
+            provenance_group=evidence["id"],
+            independence="UNKNOWN",
+        ),
+        "observation",
+    )
+    basis = dict(
+        tier="INFERRED",
+        citations=[],
+        support_refs=[ref(observation)],
+        counter_refs=[],
+        rationale="Timing inferred from the attributed account.",
+    )
+    event = accept(
+        dict(
+            kind="Event",
+            **basis,
+            label="Reported arrival",
+            occurrence=time,
+            participant_refs=[ref(subject)],
+            observation_refs=[ref(observation)],
+        ),
+        "event",
+    )
+    edge = accept(
+        dict(
+            kind="Edge",
+            **basis,
+            from_ref=ref(subject),
+            to_ref=ref(event),
+            relation="PARTICIPATED_IN",
+            independence="UNKNOWN",
+        ),
+        "edge",
+    )
+    hypothesis = accept(
+        dict(
+            kind="Hypothesis",
+            **{**basis, "tier": "SPECULATIVE"},
+            claim="The crate arrived during the normal delivery window.",
+            family_key="normal-delivery",
+            strengthen_if=["A dated receipt matches."],
+            weaken_if=["The receipt predates the arrival."],
+            retire_if=["A reliable record places arrival elsewhere."],
+            falsifiability="TESTABLE",
+        ),
+        "hypothesis",
+    )
+    cmd(
+        store,
+        dict(
+            type="transitionHypothesis",
+            hypothesis=ref(hypothesis),
+            target_state="TESTING",
+            reason="Check the receipt.",
+            evidence_refs=[],
+        ),
+    )
+    testing = store.record(hypothesis["id"])
+    cmd(
+        store,
+        dict(
+            type="transitionHypothesis",
+            hypothesis=ref(testing),
+            target_state="RETIRED",
+            reason="Synthetic disconfirmation for lifecycle test.",
+            evidence_refs=[ref(observation)],
+        ),
+    )
+    with pytest.raises(DomainError, match="after retirement"):
+        cmd(
+            store,
+            dict(
+                type="reopenHypothesis",
+                hypothesis=ref(store.record(hypothesis["id"])),
+                new_evidence_refs=[ref(observation)],
+                reason="Old evidence cannot unlock retirement.",
+            ),
+        )
+    revised = {
+        k: v
+        for k, v in subject.items()
+        if k in ("kind", "label", "entity_type", "aliases", "source_refs")
+    }
+    revised["label"] = "Records crate A"
+    p = cmd(
+        store,
+        dict(
+            type="reviseRecord",
+            target=ref(subject),
+            record=revised,
+            reason="Clarified label.",
+        ),
+    )
+    cmd(
+        store,
+        dict(
+            type="reviewProposal",
+            proposal_id=p["proposal_id"],
+            decision="ACCEPT",
+            reason="Reviewed label correction.",
+        ),
+    )
+    assert store.record(subject["id"], 1)["label"] == "Records crate"
+    assert store.record(edge["id"])["from_ref"] == ref(subject)
+    bundle = tmp_path / "manual.zip"
+    backup(store, bundle)
+    restore(bundle, tmp_path / "restored")

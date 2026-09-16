@@ -3,12 +3,12 @@
   "dataLicense": "CC0-1.0",
   "SPDXID": "SPDXRef-DOCUMENT",
   "name": "AHA development Python environment",
-  "documentNamespace": "https://spdx.org/spdxdocs/aha-development-b3d65657-7564-4836-89e0-9f101b9b04b0",
+  "documentNamespace": "https://spdx.org/spdxdocs/aha-development-fb73a3db-22b1-4a3b-9963-399f2104b24e",
   "creationInfo": {
     "creators": [
       "Tool: AHA development inventory script"
     ],
-    "created": "2026-09-16T04:47:21Z"
+    "created": "2026-09-16T07:42:02Z"
   },
   "packages": [
     {
@@ -161,6 +161,40 @@
           "referenceCategory": "PACKAGE-MANAGER",
           "referenceType": "purl",
           "referenceLocator": "pkg:pypi/datamodel-code-generator@0.81.0"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-Package-defusedxml",
+      "name": "defusedxml",
+      "versionInfo": "0.7.1",
+      "downloadLocation": "NOASSERTION",
+      "filesAnalyzed": false,
+      "licenseConcluded": "NOASSERTION",
+      "licenseDeclared": "NOASSERTION",
+      "copyrightText": "NOASSERTION",
+      "externalRefs": [
+        {
+          "referenceCategory": "PACKAGE-MANAGER",
+          "referenceType": "purl",
+          "referenceLocator": "pkg:pypi/defusedxml@0.7.1"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-Package-et-xmlfile",
+      "name": "et_xmlfile",
+      "versionInfo": "2.0.0",
+      "downloadLocation": "NOASSERTION",
+      "filesAnalyzed": false,
+      "licenseConcluded": "NOASSERTION",
+      "licenseDeclared": "NOASSERTION",
+      "copyrightText": "NOASSERTION",
+      "externalRefs": [
+        {
+          "referenceCategory": "PACKAGE-MANAGER",
+          "referenceType": "purl",
+          "referenceLocator": "pkg:pypi/et_xmlfile@2.0.0"
         }
       ]
     },
@@ -488,6 +522,23 @@
       ]
     },
     {
+      "SPDXID": "SPDXRef-Package-openpyxl",
+      "name": "openpyxl",
+      "versionInfo": "3.1.5",
+      "downloadLocation": "NOASSERTION",
+      "filesAnalyzed": false,
+      "licenseConcluded": "NOASSERTION",
+      "licenseDeclared": "NOASSERTION",
+      "copyrightText": "NOASSERTION",
+      "externalRefs": [
+        {
+          "referenceCategory": "PACKAGE-MANAGER",
+          "referenceType": "purl",
+          "referenceLocator": "pkg:pypi/openpyxl@3.1.5"
+        }
+      ]
+    },
+    {
       "SPDXID": "SPDXRef-Package-packaging",
       "name": "packaging",
       "versionInfo": "26.3",
@@ -535,6 +586,23 @@
           "referenceCategory": "PACKAGE-MANAGER",
           "referenceType": "purl",
           "referenceLocator": "pkg:pypi/pathspec@1.1.1"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-Package-pillow",
+      "name": "pillow",
+      "versionInfo": "12.3.0",
+      "downloadLocation": "NOASSERTION",
+      "filesAnalyzed": false,
+      "licenseConcluded": "NOASSERTION",
+      "licenseDeclared": "MIT-CMU",
+      "copyrightText": "NOASSERTION",
+      "externalRefs": [
+        {
+          "referenceCategory": "PACKAGE-MANAGER",
+          "referenceType": "purl",
+          "referenceLocator": "pkg:pypi/pillow@12.3.0"
         }
       ]
     },
@@ -654,6 +722,23 @@
           "referenceCategory": "PACKAGE-MANAGER",
           "referenceType": "purl",
           "referenceLocator": "pkg:pypi/pygments@2.21.0"
+        }
+      ]
+    },
+    {
+      "SPDXID": "SPDXRef-Package-pypdf",
+      "name": "pypdf",
+      "versionInfo": "6.18.1",
+      "downloadLocation": "NOASSERTION",
+      "filesAnalyzed": false,
+      "licenseConcluded": "NOASSERTION",
+      "licenseDeclared": "BSD-3-Clause",
+      "copyrightText": "NOASSERTION",
+      "externalRefs": [
+        {
+          "referenceCategory": "PACKAGE-MANAGER",
+          "referenceType": "purl",
+          "referenceLocator": "pkg:pypi/pypdf@6.18.1"
         }
       ]
     },
@@ -962,6 +1047,16 @@
     {
       "spdxElementId": "SPDXRef-DOCUMENT",
       "relationshipType": "DESCRIBES",
+      "relatedSpdxElement": "SPDXRef-Package-defusedxml"
+    },
+    {
+      "spdxElementId": "SPDXRef-DOCUMENT",
+      "relationshipType": "DESCRIBES",
+      "relatedSpdxElement": "SPDXRef-Package-et-xmlfile"
+    },
+    {
+      "spdxElementId": "SPDXRef-DOCUMENT",
+      "relationshipType": "DESCRIBES",
       "relatedSpdxElement": "SPDXRef-Package-fastapi"
     },
     {
@@ -1057,6 +1152,11 @@
     {
       "spdxElementId": "SPDXRef-DOCUMENT",
       "relationshipType": "DESCRIBES",
+      "relatedSpdxElement": "SPDXRef-Package-openpyxl"
+    },
+    {
+      "spdxElementId": "SPDXRef-DOCUMENT",
+      "relationshipType": "DESCRIBES",
       "relatedSpdxElement": "SPDXRef-Package-packaging"
     },
     {
@@ -1068,6 +1168,11 @@
       "spdxElementId": "SPDXRef-DOCUMENT",
       "relationshipType": "DESCRIBES",
       "relatedSpdxElement": "SPDXRef-Package-pathspec"
+    },
+    {
+      "spdxElementId": "SPDXRef-DOCUMENT",
+      "relationshipType": "DESCRIBES",
+      "relatedSpdxElement": "SPDXRef-Package-pillow"
     },
     {
       "spdxElementId": "SPDXRef-DOCUMENT",
@@ -1103,6 +1208,11 @@
       "spdxElementId": "SPDXRef-DOCUMENT",
       "relationshipType": "DESCRIBES",
       "relatedSpdxElement": "SPDXRef-Package-Pygments"
+    },
+    {
+      "spdxElementId": "SPDXRef-DOCUMENT",
+      "relationshipType": "DESCRIBES",
+      "relatedSpdxElement": "SPDXRef-Package-pypdf"
     },
     {
       "spdxElementId": "SPDXRef-DOCUMENT",

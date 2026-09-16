@@ -2,7 +2,7 @@
 PASS: 620 contract assertions; 89 definitions; 41 API operations; 32 synthetic records; 57 acceptance gates.
 This validates the specification artifacts only. Application acceptance remains NOT_RUN.
 All done! ✨ 🍰 ✨
-22 files would be left unchanged.
+31 files would be left unchanged.
 
 > corgiverse-aha@0.1.0 typecheck
 > npm run typecheck -w apps/web
@@ -17,11 +17,14 @@ rootdir: /Users/home/Desktop/AHA
 configfile: pyproject.toml
 testpaths: tests
 plugins: typeguard-4.6.0, anyio-4.15.1
-collected 35 items
+collected 49 items
 
-tests/contract/test_contracts.py ...                                     [  8%]
-tests/integration/test_integrity.py .........................            [ 80%]
-tests/security/test_http.py .                                            [ 82%]
+tests/contract/test_contracts.py ...                                     [  6%]
+tests/integration/test_integrity.py .............................        [ 65%]
+tests/integration/test_parsers.py ...s                                   [ 73%]
+tests/integration/test_recovery.py ...                                   [ 79%]
+tests/security/test_http.py ...                                          [ 85%]
+tests/unit/test_search.py .                                              [ 87%]
 tests/unit/test_semantics.py ......                                      [100%]
 
 =============================== warnings summary ===============================
@@ -35,7 +38,9 @@ tests/unit/test_semantics.py ......                                      [100%]
 
 -- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
 - generated xml file: /Users/home/Desktop/AHA/artifacts/application-tests.xml --
-======================== 35 passed, 2 warnings in 1.40s ========================
+=========================== short test summary info ============================
+SKIPPED [1] tests/integration/test_parsers.py:107: OCR is verified in the isolated container runtime
+================== 48 passed, 1 skipped, 2 warnings in 4.78s ===================
 
 > corgiverse-aha@0.1.0 build
 > npm run build -w apps/web
@@ -46,23 +51,26 @@ tests/unit/test_semantics.py ......                                      [100%]
 
 vite v8.3.0 building client environment for production...
 transforming...
-✓ 18 modules transformed.
+✓ 27 modules transformed.
 rendering chunks...
 computing gzip size...
-dist/index.html                   0.42 kB │ gzip:  0.30 kB
-dist/assets/index-GrWpxckU.css    9.77 kB │ gzip:  2.90 kB
-dist/assets/index-DwBbpC50.js   242.76 kB │ gzip: 75.70 kB
+dist/index.html                   0.53 kB │ gzip:  0.33 kB
+dist/assets/index-BkEcQp2h.css   19.87 kB │ gzip:  5.05 kB
+dist/assets/index-BHBz8gcT.js   304.73 kB │ gzip: 91.27 kB
 
-✓ built in 104ms
-[WebServer] INFO:     Started server process [69820]
+✓ built in 116ms
+[WebServer] INFO:     Started server process [91007]
 [WebServer] INFO:     Waiting for application startup.
 [WebServer] INFO:     Application startup complete.
 [WebServer] INFO:     Uvicorn running on http://127.0.0.1:8081 (Press CTRL+C to quit)
 
-Running 1 test using 1 worker
+Running 4 tests using 1 worker
 
-(node:69821) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(node:91008) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
 (Use `node --trace-warnings ...` to show where the warning was created)
-  ✓  1 tests/e2e/workflow.spec.ts:4:1 › synthetic source review, note review, history, integrity and backup (2.1s)
+  ✓  1 tests/e2e/manual.spec.ts:4:1 › build a sourced event from an empty case and find uncited source text (4.4s)
+  ✓  2 tests/e2e/reliability.spec.ts:20:1 › late upload completion cannot reopen the previous case (362ms)
+  ✓  3 tests/e2e/reliability.spec.ts:66:1 › retry after a lost proposal response creates exactly one proposal (376ms)
+  ✓  4 tests/e2e/workflow.spec.ts:4:1 › synthetic source review, note review, history, integrity and backup (2.9s)
 
-  1 passed (3.0s)
+  4 passed (9.0s)

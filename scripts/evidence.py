@@ -89,7 +89,7 @@ def main():
         "CORE-06": (
             "PARTIAL",
             "tests/e2e/workflow.spec.ts; artifacts/integrity-failure.png",
-            "Tampered bytes trigger visible integrity failure and block download/backup. Persistent quarantine state and recovery workflow remain incomplete.",
+            "Tampered bytes trigger visible integrity failure and block download/backup. Persistent quarantine survives restart and rejected transactions; explicit verification clears it only after repairs. Complete repair UX and privileged-tamper certification remain open.",
         ),
         "CORE-07": (
             "PASS",
@@ -99,7 +99,7 @@ def main():
         "ING-01": (
             "PARTIAL",
             "services/api/aha/storage/intake.py",
-            "Real immutable UTF-8 TXT derivatives work; PDF/OCR/image/Office/CSV parsers are unfinished.",
+            "Real TXT/CSV/DOCX/XLSX/text-PDF and English OCR for images/scanned PDFs pass isolated-container checks. Full format/locale/rotation corpus and graphical locators remain incomplete.",
         ),
         "ING-02": (
             "PARTIAL",
@@ -109,12 +109,12 @@ def main():
         "ING-03": (
             "PARTIAL",
             "packages/contracts/contracts.schema.json; services/api/aha/commands/execute.py",
-            "Separate types preserved; only Note, Entity and Observation drafts enabled. Full interpretation workflow unfinished.",
+            "Human statement/event/interpretation/relationship/hypothesis/time drafts are enabled with pending review; empty-case backend and browser journeys pass. Full batch/editing flows remain open.",
         ),
         "ING-04": (
             "PARTIAL",
             "tests/unit/test_semantics.py; apps/web/src/inbox/SourceReview.tsx",
-            "Immutable hash, exact-quote/range rejection and browser text selection tested. Page/row/media locator maps and full Unicode corpus remain open.",
+            "Immutable hash, exact-quote/range rejection and browser text selection tested. Page/row/sheet/OCR word locator maps are preserved; current review uses exact text ranges. Full graphical locators and Unicode corpus remain open.",
         ),
         "ING-06": (
             "PASS",
@@ -124,17 +124,17 @@ def main():
         "TIME-01": (
             "PARTIAL",
             "tests/unit/test_semantics.py::test_open_and_reversed_intervals",
-            "Open/empty/reversed bounds tested; basic source timeline displays raw uncertainty. DST, disputes and time editing unfinished.",
+            "Chronology compares instants across offsets; reviewed time/clock/before-constraint forms preserve raw bounds. Full DST/dispute corpus and solver remain unfinished.",
         ),
         "EDGE-01": (
             "PARTIAL",
             "tests/unit/test_semantics.py::test_unsupported_edge_and_synthetic_promotion",
-            "Semantic rejection tested; full edge creation/review UI is not enabled.",
+            "Human edge creation/review is enabled, with its own support and independence guards. Full independence/dependency acceptance remains open.",
         ),
         "HYP-01": (
             "PARTIAL",
             "services/api/aha/commands/execute.py; tests/unit/test_semantics.py::test_retirement_cannot_transition",
-            "Transition rules and terminal retirement guard exist; full transition table and reviewer UI unfinished.",
+            "Lifecycle decisions and terminal retirement are available in review UI. Empty-case creation/retirement/restore passes; full transition table remains open.",
         ),
         "HYP-02": (
             "PARTIAL",
@@ -149,12 +149,12 @@ def main():
         "EXP-02": (
             "PARTIAL",
             "services/api/aha/storage/portable.py; tests/integration/test_integrity.py",
-            "Fresh-directory restore and hash checks pass. Full run artifacts, independent operator drill and release-volume certification remain open.",
+            "Repetitive backups, streaming restore, shared archive bounds, real recovery rehearsal and expired-copy cleanup pass. Full run artifacts, independent operator drill and release-volume certification remain open.",
         ),
         "SEC-01": (
             "PARTIAL",
             "compose.yaml; deploy/Dockerfile",
-            "No runtime remote assets or telemetry code; internal container network configured. Offline install and packet-capture proof not run.",
+            "No runtime remote assets/telemetry; parser has no network or case volume and socket-syscall denial is tested. Offline install and packet-capture proof not run.",
         ),
         "SEC-02": (
             "PARTIAL",
@@ -169,12 +169,12 @@ def main():
         "SEC-05": (
             "PARTIAL",
             "tests/integration/test_integrity.py",
-            "Original storage crash/retry drills pass. Disk-full, worker interruption and migration rollback unfinished.",
+            "Storage crash/retry, untouched unsupported-format inspection and persistent quarantine pass. Full disk-full, worker interruption and migration rollback matrix unfinished.",
         ),
         "LENS-01": (
             "PARTIAL",
             "packages/workbench/model.ts; tests/site/model.spec.ts; tests/site/public.spec.ts",
-            "Literal eggs search preserves records and creates no new edges. Natural-language plan and complete Lens oracle execution remain unfinished.",
+            "Local FTS finds uncited exact passages and reports extraction/index coverage without changing case meaning. Natural-language plan and complete Lens oracle execution remain unfinished.",
         ),
         "LENS-02": (
             "PARTIAL",
@@ -212,6 +212,30 @@ def main():
             "Scene View is absent; explicit extension capability tests remain open.",
         ),
     }
+    evidence.update(
+        {
+            "ING-05": (
+                "PARTIAL",
+                "services/worker; scripts/verify_parsers.py; artifacts/parser-verification.json",
+                "Dedicated offline container without case volume; real format/OCR, hostile XML, network-syscall denial and bounded processing checks pass. Complete hostile/disk-full/escape corpus remains open.",
+            ),
+            "CON-01": (
+                "PARTIAL",
+                "services/api/aha/commands/execute.py; apps/web/src/casework",
+                "Human potential-conflict proposal and versioned resolution UI implemented; full candidate/correction/dependency acceptance not complete.",
+            ),
+            "CON-02": (
+                "PARTIAL",
+                "services/api/aha/domain/semantics.py",
+                "Logical conflict claims fail closed pending the complete solver; human differences remain potential. Full red-vehicle semantic acceptance remains open.",
+            ),
+            "HYP-03": (
+                "PARTIAL",
+                "services/api/aha/commands/execute.py",
+                "Successor command preserves retirement and requires newly introduced accepted source-backed records. Full relevance and positive/negative reopening E2E remain open.",
+            ),
+        }
+    )
     for gate in gates:
         status, paths, note = evidence.get(
             gate["id"],
@@ -257,10 +281,10 @@ def main():
         "| Milestone | Current outcome | Next required work |",
         "|---|---|---|",
         "| M0 | Partial foundation: repo, exact dependency locks, generated contracts, CI definition, development shell, pinned container recipe | Full client conformance, clean-platform bootstrap evidence and accepted release tooling |",
-        "| M1 | Usable storage/review/recovery slice; original immutability and concurrency checks pass | Complete integrity quarantine/recovery, migration/unsupported-format behavior, bounded streaming, complete command authorization and crash matrix |",
-        "| M2 | TXT original/derivative and human source review only | Sandboxed supported-format parsers, durable cancellable jobs, locator maps, AI proposal extraction and hostile-format suite |",
-        "| M3 | Basic timeline and selected semantic guards | Full chronology solver, independent edge review, contradictions, hypothesis lifecycle/reopening and dependency rules |",
-        "| M4 | Shared 2D/table Atlas, deterministic keyword search, source inspection, questions and saved possibilities | 3D renderer, full Lens compiler/executor, FTS, large-case layout worker and accessibility parity |",
+        "| M1 | Usable storage/review/recovery slice; original immutability and concurrency checks pass | Complete migration rollback, orphan reconciliation, command authorization and crash/disk-full matrix |",
+        "| M2 | Real bounded parsers/OCR, separate persisted import jobs, human source review and source-search coverage | Full format/locale/graphical-locator and hostile-file suite; AI proposal extraction; complete cancellation/restart acceptance |",
+        "| M3 | Reviewed reasoning/time forms, conflict decisions and hypothesis lifecycle | Full chronology solver, dependency semantics, contradiction detection and new-evidence relevance acceptance |",
+        "| M4 | Shared 2D/table Atlas, deterministic keyword search, source inspection, questions and saved possibilities | 3D renderer, full Lens compiler/executor, saved views, large-case layout worker and accessibility parity |",
         "| M5 | Not implemented | Replay and real Ollama/local-compatible adapters, frozen snapshots, full AHA validation and 100-prompt evaluation |",
         "| M6 | Backup/restore slice and workstation guards only | Briefings, redaction, portable runs, offline/LAN operations and security drills |",
         "| M7 | Not implemented | Expanded demo, performance/stress, five-person usability, screen-reader testing, SBOM/licenses, signed image release |",
@@ -268,13 +292,14 @@ def main():
         "## Tests actually run",
         "",
         "- Supplied validator: 620 assertions across 89 definitions, 41 API operations, 32 synthetic records and 57 gates. This validates the specification package only.",
-        "- `make verify`: Python formatting, TypeScript checking, frontend build, 35 application tests, and one Chromium end-to-end flow. See `artifacts/application-tests.xml` and `artifacts/browser-tests.json`.",
-        "- Browser flow: source text selection → human statement review → investigator note review → integrity verification → backup download → actual original tamper → visible failure and blocked backup.",
+        "- `make verify`: Python formatting, TypeScript checking, frontend build, 48 passing native application tests (one OCR test runs in the container), and four Chromium end-to-end flows. See `artifacts/application-tests.xml` and `artifacts/browser-tests.json`.",
+        "- Empty-case browser flow: CSV receipt/extraction → find an uncited passage → review a subject and source statement → review an event, with no model. Delayed-case and lost-response regressions also pass.",
+        "- Browser flow: source text selection → human statement review → investigator note review → integrity verification → backup download → actual restore rehearsal → original tamper → visible failure and blocked backup.",
         "- Automated accessibility scans cover light/dark tested pages; narrow-width screenshot is a reflow check, not full accessibility certification.",
         "- Real child-process exits exercise four original file/database boundaries, followed by reopen and idempotent retry.",
         "- Development server inspected with agent-browser: meaningful content, no error overlay, no JavaScript errors.",
         "",
-        "- `npm run verify:site`: four model/reference/search tests and one complete public-workspace browser flow. Keyword matching, version references, no invented links, source navigation, uncertainty, saved possibilities, keyboard focus, mobile reflow and axe checks pass.",
+        "- `npm run verify:site`: six model/reference/search tests and two public-workspace browser flows. Keyword matching, version references, no invented links, source navigation, uncertainty, saved possibilities, keyboard focus, mobile reflow and axe checks pass.",
         "",
         "## Required acceptance mapping",
         "",
@@ -290,12 +315,12 @@ def main():
         "## Known limitations and risks",
         "",
         "- No acceptance claim for real case use; later milestones are substantial unfinished work, not only missing tests.",
-        "- Intake reads a bounded file into memory and executes TXT extraction synchronously; streaming receipt and durable cancellable worker jobs are unfinished.",
+        "- Intake streams immutable receipts and persists extraction jobs. Full import/report/model job orchestration, disk-full and hostile-native-parser acceptance remain incomplete.",
         "- Large case paging, backup size, latency and memory have not been qualified. No 8-hour stress test or reference-hardware performance results exist.",
-        "- Unknown-format read-only opening, migration failure recovery and per-file quarantine need implementation.",
+        "- Unsupported formats are inspected without case writes and quarantine persists. Migration rollback, orphan reconciliation and full restoration workflows remain incomplete.",
         "- HTTP error coverage, session expiry and LAN authorization require broader tests.",
         "- All currently exercised content is synthetic. No real local model run, human usability study or assistive-technology certification has been conducted.",
-        "- 35 backend tests also pass in a Linux arm64 container with network disabled and read-only root. GitHub CI passed on the previous published version; current-run status is recorded by GitHub Actions. Windows commands are documented but unverified.",
+        "- 49 backend tests also pass against the real isolated Linux arm64 parser service, including OCR, with network disabled and read-only root. GitHub CI passed on the previous published version; current-run status is recorded by GitHub Actions. Windows commands are documented but unverified.",
         "- `make release` refuses incomplete gates; there is no signed accepted release.",
         "",
     ]

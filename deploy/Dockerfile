@@ -13,7 +13,8 @@ FROM python:3.13.7-slim-bookworm@sha256:adafcc17694d715c905b4c7bebd96907a1fd5cf1
 ENV PYTHONDONTWRITEBYTECODE=1 PYTHONUNBUFFERED=1 PYTHONPATH=/app/services/api AHA_DATA_ROOT=/data/cases
 WORKDIR /app
 COPY requirements.lock ./
-RUN pip install --no-cache-dir -r requirements.lock && useradd --uid 10001 --create-home aha && mkdir /data && chown aha:aha /data
+RUN apt-get update && apt-get install -y --no-install-recommends tesseract-ocr tesseract-ocr-eng poppler-utils libseccomp2 && rm -rf /var/lib/apt/lists/*
+RUN pip install --no-cache-dir -r requirements.lock && useradd --uid 10001 --create-home aha && mkdir /data /spool && chown aha:aha /data /spool
 COPY services services
 COPY packages packages
 COPY scripts scripts

@@ -20,3 +20,5 @@ jobs:
       - run: npx playwright install --with-deps chromium
       - run: make verify
       - run: npm run verify:site
+      - run: docker compose config --quiet
+      - run: .venv/bin/python scripts/verify_parsers.py

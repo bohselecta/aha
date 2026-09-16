@@ -42,6 +42,10 @@ test("references resolve exact versions, and unaccepted relationships are never 
     r.id === from.id ? { ...r, revision: 2 } : r,
   ) as CaseRecord[];
   expect(atlasLinks(changed).filter((l) => l.recordId)).toHaveLength(0);
+  const recovered = atlasLinks(changed, [from]).filter((l) => l.recordId);
+  expect(recovered).toHaveLength(1);
+  expect(recovered[0].from).toBe(refKey(from));
+  expect(recovered[0].from).not.toBe(`${from.id}:2`);
   expect(
     atlasLinks(
       records.map((r) => (r.kind === "Edge" ? { ...r, review: "PENDING" } : r)),
@@ -72,4 +76,29 @@ test("source search includes accepted quoted passages at the exact source versio
   expect(matchesText(searchIndex(changed).get(`${source.id}:2`)!, "eggs")).toBe(
     false,
   );
+});
+
+test("chronology compares instants across UTC offsets without changing source values", () => {
+  const source = records.find((r) => r.kind === "Observation")!;
+  if (!("occurrence" in source)) throw Error("Missing time fixture");
+  const times = ["2026-09-11T04:00:00Z", "2026-09-11T05:00:00+02:00"];
+  const inputs = times.map((start, i) => ({
+    ...source,
+    id: String(i),
+    occurrence: { ...source.occurrence, start, end: start, timezone: "UTC" },
+  }));
+  const before = JSON.stringify(inputs);
+  expect(chronology(inputs).map((r) => r.id)).toEqual(["1", "0"]);
+  expect(JSON.stringify(inputs)).toBe(before);
+});
+
+test("map budget includes a matching record beyond the initial 80 nodes", async () => {
+  const { atlasSubset } = await import("../../packages/workbench/model");
+  const source = records.find((r) => r.kind === "Entity")!;
+  const rows = Array.from({ length: 501 }, (_, i) => ({
+    ...source,
+    id: String(i).padStart(4, "0"),
+  }));
+  expect(atlasSubset(rows, [rows[500]])[0].id).toBe("0500");
+  expect(atlasSubset(rows, rows)).toHaveLength(80);
 });

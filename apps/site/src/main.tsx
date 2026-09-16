@@ -13,10 +13,11 @@ const sourceTexts = Object.fromEntries(
 );
 const repo = "https://github.com/bohselecta/aha";
 function App() {
-  const [demo, setDemo] = useState(location.hash === "#demo");
+  const [route, setRoute] = useState(location.hash);
+  const demo = route.startsWith("#demo");
   useEffect(() => {
     const onHash = () => {
-      setDemo(location.hash === "#demo");
+      setRoute(location.hash);
       window.scrollTo(0, 0);
     };
     addEventListener("hashchange", onHash);
@@ -47,6 +48,13 @@ function App() {
             <span>Sample case · Fictional people and events · Read only</span>
           </div>
           <CaseExplorer
+            key={route}
+            initialSelected={
+              route === "#demo-question"
+                ? "00000000-0000-4000-8000-000000000090"
+                : null
+            }
+            initialView={route === "#demo-question" ? "Questions" : "Atlas"}
             records={fixture.records as CaseRecord[]}
             caseTitle="The Lantern Annex"
             headingLevel={1}
@@ -165,7 +173,7 @@ function App() {
                 Color alone cannot establish identity. The original images and
                 identification notes may help distinguish the possibilities.
               </p>
-              <a href="#demo">Follow the question →</a>
+              <a href="#demo-question">Follow the question →</a>
             </div>
           </section>
           <section className="local" id="local">

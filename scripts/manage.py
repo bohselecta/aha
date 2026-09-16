@@ -31,7 +31,16 @@ def main():
     parser = argparse.ArgumentParser()
     parser.add_argument(
         "command",
-        choices=["bootstrap", "dev", "verify", "demo", "backup", "restore", "release"],
+        choices=[
+            "bootstrap",
+            "dev",
+            "verify",
+            "demo",
+            "backup",
+            "restore",
+            "release",
+            "pairing",
+        ],
     )
     parser.add_argument("--case")
     parser.add_argument("--bundle")
@@ -88,6 +97,18 @@ def main():
         from aha.storage.portable import restore
 
         print(json.dumps(restore(args.bundle, args.root), indent=2))
+    elif args.command == "pairing":
+        import secrets
+
+        target = Path(args.root).resolve().parent / "pairing-secret"
+        target.parent.mkdir(parents=True, exist_ok=True)
+        fd = os.open(target, os.O_CREAT | os.O_TRUNC | os.O_WRONLY, 0o600)
+        with os.fdopen(fd, "w") as out:
+            out.write(secrets.token_urlsafe(24) + "\n")
+        target.chmod(0o600)
+        print(
+            f"New connection code saved to {target}. Valid for ten minutes. Read it locally to pair your browser."
+        )
     elif args.command == "release":
         evidence = json.loads((ROOT / "artifacts/acceptance-status.json").read_text())
         remaining = [x["id"] for x in evidence["gates"] if x["status"] != "PASS"]

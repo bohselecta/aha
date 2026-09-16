@@ -5,6 +5,8 @@ import json
 import os
 import sqlite3
 import threading
+import shutil
+import tempfile
 from contextlib import contextmanager
 from datetime import datetime, timezone, timedelta
 from pathlib import Path
@@ -19,6 +21,11 @@ def now():
 
 def digest(data):
     return hashlib.sha256(data).hexdigest()
+
+
+def file_digest(path):
+    with Path(path).open("rb") as stream:
+        return hashlib.file_digest(stream, "sha256").hexdigest()
 
 
 def canonical(value):
@@ -41,9 +48,42 @@ def sync_dir(path):
 class Store:
     def __init__(self, path, new_case=None, fault=None):
         self.path = Path(path)
-        self.path.mkdir(parents=True, exist_ok=True, mode=0o700)
         self.lock = threading.RLock()
         self.fault = fault or (lambda point: None)
+        self.lock_file = None
+        self.inspection_only = False
+        self.inspection_snapshot = None
+        # Inspect the format before creating lock files, directories, or WALs.
+        if new_case is None:
+            probe = self.path / "case.sqlite"
+            wal = self.path / "case.sqlite-wal"
+            if wal.exists() and wal.stat().st_size:
+                # Read WAL state on a disposable copy: SQLite must not create shared-memory
+                # or journal files in an unsupported case during format detection.
+                self.inspection_snapshot = tempfile.TemporaryDirectory(
+                    prefix="aha-inspect-"
+                )
+                probe = Path(self.inspection_snapshot.name) / "case.sqlite"
+                shutil.copyfile(self.path / "case.sqlite", probe)
+                shutil.copyfile(wal, str(probe) + "-wal")
+                uri = probe.resolve().as_uri() + "?mode=ro"
+            else:
+                uri = probe.resolve().as_uri() + "?mode=ro&immutable=1"
+            self.db = sqlite3.connect(
+                uri, uri=True, check_same_thread=False, isolation_level=None
+            )
+            self.db.row_factory = sqlite3.Row
+            self.db.execute("PRAGMA trusted_schema=OFF")
+            self.inspection_only = (
+                self.db.execute("PRAGMA user_version").fetchone()[0] != 1
+            )
+            if self.inspection_only:
+                return
+            self.db.close()
+            if self.inspection_snapshot:
+                self.inspection_snapshot.cleanup()
+                self.inspection_snapshot = None
+        self.path.mkdir(parents=True, exist_ok=True, mode=0o700)
         self.lock_file = (self.path / ".writer.lock").open("a+b")
         try:
             if os.name == "nt":
@@ -108,7 +148,36 @@ class Store:
 
     def close(self):
         self.db.close()
-        self.lock_file.close()
+        if self.lock_file is not None:
+            self.lock_file.close()
+        if self.inspection_snapshot:
+            self.inspection_snapshot.cleanup()
+
+    def quarantine(self, failure):
+        with self.lock:
+            if self.inspection_only:
+                return
+            row = self.db.execute(
+                "SELECT value FROM metadata WHERE key='integrity_quarantine'"
+            ).fetchone()
+            failures = set(json.loads(row[0]) if row else [])
+            failures.add(failure)
+            self.db.execute(
+                "INSERT INTO metadata VALUES('integrity_quarantine',?) ON CONFLICT(key) DO UPDATE SET value=excluded.value",
+                (json.dumps(sorted(failures)),),
+            )
+
+    def require_healthy(self):
+        with self.lock:
+            row = self.db.execute(
+                "SELECT value FROM metadata WHERE key='integrity_quarantine'"
+            ).fetchone()
+            if row:
+                raise DomainError(
+                    "INTEGRITY_QUARANTINE",
+                    "This case is quarantined. Restore verified content, then run integrity verification before changing or exporting it.",
+                    409,
+                )
 
     def case(self):
         with self.lock:
@@ -131,8 +200,15 @@ class Store:
                 self.db.execute("COMMIT")
                 self.fault("after_db_commit")
             except BaseException:
+                # Integrity failures discovered inside a rejected write must survive rollback.
+                found = self.db.execute(
+                    "SELECT value FROM metadata WHERE key='integrity_quarantine'"
+                ).fetchone()
                 if self.db.in_transaction:
                     self.db.execute("ROLLBACK")
+                if found:
+                    for failure in json.loads(found[0]):
+                        self.quarantine(failure)
                 raise
             finally:
                 if not self.db.in_transaction:
@@ -304,65 +380,93 @@ class Store:
         return None
 
     def write_blob(self, data, role="ORIGINAL", derivative_id=None):
-        sha = digest(data)
-        relative = (
-            f"originals/sha256/{sha[:2]}/{sha}"
-            if role == "ORIGINAL"
-            else f"derivatives/{derivative_id}/{sha}"
-        )
-        dest = self.path / relative
-        dest.parent.mkdir(parents=True, exist_ok=True)
-        stage = self.path / "staging" / str(uuid4())
-        with stage.open("xb") as out:
-            out.write(data)
-            out.flush()
-            os.fsync(out.fileno())
-        self.fault("after_file_fsync")
-        if dest.exists():
-            if dest.is_symlink() or digest(dest.read_bytes()) != sha:
-                stage.unlink()
-                raise DomainError(
-                    "INTEGRITY_FAILURE", "Stored content failed verification.", 409
-                )
-            stage.unlink()
-        else:
-            # Exclusive hard-link publication prevents accidental replacement.
-            os.link(stage, dest)
-            stage.unlink()
-            dest.chmod(0o400)
-            sync_dir(dest.parent)
-        self.fault("after_blob_publish")
+        from io import BytesIO
+
+        sha, relative, _ = self.write_stream(BytesIO(data), role, derivative_id)
         return sha, relative
 
-    def verified_blob(self, record):
+    def write_stream(
+        self, stream, role="ORIGINAL", derivative_id=None, limit=250 * 1024**2
+    ):
+        stage = self.path / "staging" / str(uuid4())
+        digestor, size = hashlib.sha256(), 0
+        try:
+            stream.seek(0)
+            with stage.open("xb") as out:
+                while chunk := stream.read(1024**2):
+                    size += len(chunk)
+                    if size > limit:
+                        raise DomainError(
+                            "FILE_TOO_LARGE",
+                            "File exceeds the 250 MiB intake limit.",
+                            413,
+                        )
+                    digestor.update(chunk)
+                    out.write(chunk)
+                out.flush()
+                os.fsync(out.fileno())
+            self.fault("after_file_fsync")
+            sha = digestor.hexdigest()
+            relative = (
+                f"originals/sha256/{sha[:2]}/{sha}"
+                if role == "ORIGINAL"
+                else f"derivatives/{derivative_id}/{sha}"
+            )
+            dest = self.path / relative
+            dest.parent.mkdir(parents=True, exist_ok=True)
+            if dest.exists():
+                if dest.is_symlink() or file_digest(dest) != sha:
+                    raise DomainError(
+                        "INTEGRITY_FAILURE", "Stored content failed verification.", 409
+                    )
+            else:
+                os.link(stage, dest)
+                dest.chmod(0o400)
+                sync_dir(dest.parent)
+            self.fault("after_blob_publish")
+            return sha, relative, size
+        finally:
+            stage.unlink(missing_ok=True)
+
+    def blob_path(self, record):
         sha = record["sha256"]
-        path = self.path / (
+        return self.path / (
             f"originals/sha256/{sha[:2]}/{sha}"
             if record["kind"] == "Evidence"
             else f"derivatives/{record['id']}/{sha}"
         )
-        if path.is_symlink() or not path.is_file():
-            raise DomainError(
-                "INTEGRITY_FAILURE", "Stored content is missing or unsafe.", 409
-            )
-        data = path.read_bytes()
-        if digest(data) != sha or len(data) != record["bytes"]:
+
+    def verified_path(self, record):
+        path = self.blob_path(record)
+        if (
+            path.is_symlink()
+            or not path.is_file()
+            or path.stat().st_size != record["bytes"]
+            or file_digest(path) != record["sha256"]
+        ):
+            self.quarantine(f"INTEGRITY_FAILURE:{record['id']}")
             raise DomainError(
                 "INTEGRITY_FAILURE",
-                "Stored bytes no longer match the accepted hash.",
+                "Stored content is missing, unsafe, or changed.",
                 409,
             )
-        return data
+        return path
 
-    def verify(self):
+    def verified_blob(self, record):
+        return self.verified_path(record).read_bytes()
+
+    def verify(self, recheck=False):
         failures = []
         count = 0
         previous = None
-        for record in self.all_records():
+        for row in self.db.execute(
+            "SELECT body FROM records WHERE kind IN ('Evidence','Derivative')"
+        ):
+            record = json.loads(row[0])
             if record["kind"] in ("Evidence", "Derivative"):
                 count += 1
                 try:
-                    self.verified_blob(record)
+                    self.verified_path(record)
                 except DomainError:
                     failures.append(f"INTEGRITY_FAILURE:{record['id']}")
         for row in self.db.execute("SELECT payload FROM audit ORDER BY sequence"):
@@ -378,6 +482,17 @@ class Store:
             for p in (self.path / "originals").rglob("*")
             if p.is_file() and str(p.relative_to(self.path)) not in known
         ]
+        if not self.inspection_only:
+            if failures:
+                for failure in failures:
+                    self.quarantine(failure)
+            elif recheck:
+                self.db.execute("DELETE FROM metadata WHERE key='integrity_quarantine'")
+            prior = self.db.execute(
+                "SELECT value FROM metadata WHERE key='integrity_quarantine'"
+            ).fetchone()
+            if prior:
+                failures = sorted(set(failures) | set(json.loads(prior[0])))
         return validate(
             "VerificationResult",
             dict(

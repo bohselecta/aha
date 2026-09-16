@@ -36,9 +36,17 @@ export function matchesText(text: string, query: string) {
   const terms = normalize(query).trim().split(/\s+/).filter(Boolean);
   return terms.every((t) => normalize(text).includes(t));
 }
-export function searchIndex(records: CaseRecord[]) {
+export function searchIndex(
+  records: CaseRecord[],
+  sourceTexts?: Record<string, string>,
+) {
   const index = new Map(records.map((r) => [refKey(r), searchableText(r)]));
   for (const r of records) {
+    if (r.kind === "Evidence" && sourceTexts?.[r.original_filename])
+      index.set(
+        refKey(r),
+        (index.get(refKey(r)) ?? "") + " " + sourceTexts[r.original_filename],
+      );
     if ("citations" in r && r.review === "ACCEPTED")
       for (const c of r.citations) {
         const key = refKey(c.evidence);
@@ -58,12 +66,17 @@ export type Link = {
   recordId?: string;
   tier?: string;
 };
-export function atlasLinks(records: CaseRecord[]): Link[] {
-  const available = new Map(records.map((r) => [refKey(r), r]));
+export function atlasLinks(
+  records: CaseRecord[],
+  historical: CaseRecord[] = [],
+): Link[] {
+  const available = new Map(
+    [...records, ...historical].map((r) => [refKey(r), r]),
+  );
   const links: Link[] = [];
   const add = (from: CaseRecord, to: Ref, label: string) => {
     if (available.has(refKey(to)))
-      links.push({ from: from.id, to: to.id, label });
+      links.push({ from: refKey(from), to: refKey(to), label });
   };
   for (const r of records) {
     if ("citations" in r)
@@ -79,8 +92,8 @@ export function atlasLinks(records: CaseRecord[]): Link[] {
       available.has(refKey(r.to_ref))
     )
       links.push({
-        from: r.from_ref.id,
-        to: r.to_ref.id,
+        from: refKey(r.from_ref),
+        to: refKey(r.to_ref),
         label: human(r.relation),
         recordId: r.id,
         tier: r.tier,
@@ -120,12 +133,28 @@ export function chronology(records: CaseRecord[]) {
           : null;
       const at = time(a),
         bt = time(b);
-      return at && bt
-        ? at.localeCompare(bt) || a.id.localeCompare(b.id)
+      const ai = at ? Date.parse(at) : NaN;
+      const bi = bt ? Date.parse(bt) : NaN;
+      return Number.isFinite(ai) && Number.isFinite(bi)
+        ? ai - bi || a.id.localeCompare(b.id)
         : at
           ? -1
           : bt
             ? 1
             : a.id.localeCompare(b.id);
     });
+}
+
+/** Select matches before applying the rendering budget; never hide the only match. */
+export function atlasSubset(
+  records: CaseRecord[],
+  shown: CaseRecord[],
+  limit = 80,
+) {
+  const nodes = atlasNodes(records).filter((r) => r.kind !== "Edge");
+  const visible = new Set(shown.map(refKey));
+  return [
+    ...nodes.filter((r) => visible.has(refKey(r))),
+    ...nodes.filter((r) => !visible.has(refKey(r))),
+  ].slice(0, limit);
 }

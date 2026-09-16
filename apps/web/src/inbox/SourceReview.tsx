@@ -15,9 +15,14 @@ export function SourceReview({
   caseId: string;
   propose: (c: Command) => Promise<void>;
 }) {
-  const derivative = records.find(
-    (r) => r.kind === "Derivative" && r.evidence.id === evidence.id,
-  );
+  const derivative = records
+    .filter(
+      (r) =>
+        r.kind === "Derivative" &&
+        r.evidence.id === evidence.id &&
+        ["TEXT", "OCR"].includes(r.derivative_type),
+    )
+    .sort((a, b) => b.created_at.localeCompare(a.created_at))[0];
   const entities = records.filter(
     (r) => r.kind === "Entity" && r.review === "ACCEPTED",
   );
@@ -194,8 +199,8 @@ export function SourceReview({
         </>
       ) : (
         <p className="notice">
-          Original saved. Text preview is available for TXT files. Download this
-          file to view it in its usual application.
+          Original saved. No readable text is available yet. Check import
+          progress in Inbox, or download the original to inspect it.
         </p>
       )}
     </>

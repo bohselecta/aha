@@ -783,3 +783,110 @@ code {
     height: 48px;
   }
 }
+
+fieldset {
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  margin: 18px 0;
+  padding: 16px;
+  min-width: 0;
+}
+legend {
+  padding: 0 6px;
+  font-weight: 650;
+}
+.reference-picker {
+  max-height: 260px;
+  overflow: auto;
+}
+.reference-picker .check {
+  align-items: start;
+  padding: 8px 0;
+  border-bottom: 1px solid var(--line);
+}
+.reference-picker small,
+.coverage-row small,
+.overview-actions span {
+  display: block;
+  color: var(--muted);
+  font-weight: normal;
+}
+.overview-actions {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+.overview-actions button {
+  display: block;
+  text-align: left;
+  padding: 20px;
+}
+.coverage-row {
+  display: grid;
+  grid-template-columns: minmax(160px, 1fr) 1fr 1fr;
+  align-items: center;
+  gap: 16px;
+  border-top: 1px solid var(--line);
+  padding: 10px 0;
+}
+.question-board {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 12px;
+}
+.question-board article {
+  background: var(--bg);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 14px;
+  margin: 12px 0;
+}
+.question-board h4 {
+  margin-top: 0;
+}
+.record-editor {
+  max-width: 850px;
+}
+@media (max-width: 950px) {
+  .question-board {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .coverage-row {
+    grid-template-columns: 1fr;
+    gap: 0;
+  }
+}
+@media (max-width: 550px) {
+  .overview-actions,
+  .question-board {
+    grid-template-columns: 1fr;
+  }
+}
+.search-hit {
+  margin: 24px 0;
+  border-top: 1px solid var(--line);
+  padding: 16px 0;
+}
+.search-hit blockquote {
+  white-space: pre-wrap;
+  max-height: 260px;
+  overflow: auto;
+  overflow-wrap: anywhere;
+}
+.import-row {
+  border-top: 1px solid var(--line);
+  padding: 16px 0;
+}
+
+.history-diff {
+  overflow-x: auto;
+}
+.history-diff td {
+  max-width: 260px;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+.reference-link {
+  display: block;
+  text-align: left;
+}

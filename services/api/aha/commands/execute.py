@@ -5,7 +5,18 @@ from ..domain.contracts import DomainError, SCHEMA, validate, refs
 from ..domain.semantics import semantic
 from ..storage.store import ref, now, canonical
 
-SUPPORTED_DRAFTS = {"Note", "Entity", "Observation"}
+SUPPORTED_DRAFTS = {
+    "Note",
+    "Entity",
+    "Observation",
+    "Interpretation",
+    "Event",
+    "Edge",
+    "Hypothesis",
+    "TemporalConstraint",
+    "ClockCorrection",
+    "EntityMerge",
+}
 TRANSITIONS = {
     "PROPOSED": {"TESTING", "RETIRED"},
     "TESTING": {"SUPPORTED", "WEAKENED", "RETIRED"},
@@ -84,7 +95,9 @@ def execute(store, command, actor, expected, key):
     validate("Command", command)
     if not command["reason"].strip():
         raise DomainError("REASON_REQUIRED", "Enter a review reason.")
+    store.require_healthy()
     with store.transaction():
+        store.require_healthy()
         replay = store.precondition(actor, "commands", key, command, expected)
         if replay is not None:
             return replay
@@ -93,7 +106,7 @@ def execute(store, command, actor, expected, key):
         proposal_id = None
         accepted = []
         bump = False
-        if kind in ("proposeRecord", "reviseRecord"):
+        if kind in ("proposeRecord", "reviseRecord", "proposeContradiction"):
             prior = None
             if kind == "reviseRecord":
                 prior = current(store, command["target"], command["record"]["kind"])
@@ -102,7 +115,43 @@ def execute(store, command, actor, expected, key):
                         "TERMINAL_RETIREMENT",
                         "A retired explanation requires a new successor.",
                     )
-            record = draft_record(store, command["record"], actor, prior)
+            if kind == "proposeContradiction":
+                record = {
+                    **store.base("Contradiction", actor),
+                    **command["proposal"],
+                    "status": "CANDIDATE",
+                    "resolution_refs": [],
+                    "decision_reason": None,
+                    "predecessor_id": None,
+                }
+                semantic(record, store)
+                signature = (
+                    record["rule"],
+                    record["rule_version"],
+                    sorted(
+                        (r["id"], r["revision"]) for r in record["proposition_refs"]
+                    ),
+                )
+                for old in store.all_records():
+                    if (
+                        old["kind"] == "Contradiction"
+                        and (
+                            old["rule"],
+                            old["rule_version"],
+                            sorted(
+                                (r["id"], r["revision"])
+                                for r in old["proposition_refs"]
+                            ),
+                        )
+                        == signature
+                    ):
+                        raise DomainError(
+                            "DUPLICATE_CONFLICT",
+                            "This difference already has a case record.",
+                            409,
+                        )
+            else:
+                record = draft_record(store, command["record"], actor, prior)
             proposal_id = str(uuid4())
             proposal = dict(
                 id=proposal_id,
@@ -148,7 +197,8 @@ def execute(store, command, actor, expected, key):
                 # All prerequisite versions must still be current at human acceptance.
                 for _, reference in refs(record):
                     current(store, reference)
-                record["review"] = "ACCEPTED"
+                if "review" in record:
+                    record["review"] = "ACCEPTED"
                 record["introduced_case_revision"] = store.case()["case_revision"] + 1
                 semantic(record, store, accepted=True)
                 accepted.append(record)
@@ -191,6 +241,86 @@ def execute(store, command, actor, expected, key):
                     retirement_reason=command["reason"],
                     retired_at_case_revision=store.case()["case_revision"] + 1,
                 )
+            semantic(record, store, True)
+            accepted.append(record)
+            bump = True
+        elif kind == "reopenHypothesis":
+            old = current(store, command["hypothesis"], "Hypothesis")
+            if old["state"] != "RETIRED":
+                raise DomainError(
+                    "NOT_RETIRED", "Only a retired explanation can have a successor."
+                )
+            evidence = [current(store, r) for r in command["new_evidence_refs"]]
+            if any(
+                r["kind"] not in ("Observation", "Event")
+                or r.get("review") != "ACCEPTED"
+                or r.get("origin") == "AI_SYNTHETIC"
+                or r.get("tier") not in ("DOCUMENTED", "OBSERVED")
+                or r["introduced_case_revision"] <= old["retired_at_case_revision"]
+                for r in evidence
+            ):
+                raise DomainError(
+                    "NEW_EVIDENCE_REQUIRED",
+                    "Cite accepted source-backed statements or events introduced after retirement. A newly uploaded file alone is insufficient.",
+                )
+            record = {
+                **deepcopy(old),
+                **store.base("Hypothesis", actor),
+                "state": "PROPOSED",
+                "review": "ACCEPTED",
+                "predecessor_id": old["id"],
+                "retirement_reason": None,
+                "retired_at_case_revision": None,
+                "reopening_evidence": command["new_evidence_refs"],
+                "rationale": command["reason"],
+            }
+            semantic(record, store, True)
+            accepted.append(record)
+            bump = True
+        elif kind == "decideContradiction":
+            old = current(store, command["contradiction"], "Contradiction")
+            evidence = [current(store, r) for r in command["evidence_refs"]]
+            if command["decision"] == "RESOLVED" and not evidence:
+                raise DomainError(
+                    "BASIS_REQUIRED", "Cite the material that resolves this difference."
+                )
+            if any(
+                r.get("origin") == "AI_SYNTHETIC"
+                or r.get("review") not in (None, "ACCEPTED")
+                for r in evidence
+            ):
+                raise DomainError(
+                    "INVALID_BASIS", "Choose accepted nonsynthetic material."
+                )
+            record = {
+                **version(store, old, actor),
+                "status": command["decision"],
+                "resolution_refs": command["evidence_refs"],
+                "decision_reason": command["reason"],
+            }
+            semantic(record, store, True)
+            accepted.append(record)
+            bump = True
+        elif kind == "answerQuestion":
+            old = current(store, command["question"], "Question")
+            evidence = [current(store, r) for r in command["answer_refs"]]
+            if command["status"] == "ANSWERED" and not evidence:
+                raise DomainError(
+                    "ANSWER_REQUIRED", "Link the records that answer this question."
+                )
+            if any(
+                r.get("origin") == "AI_SYNTHETIC"
+                or r.get("review") not in (None, "ACCEPTED")
+                for r in evidence
+            ):
+                raise DomainError(
+                    "INVALID_BASIS", "An answer needs accepted nonsynthetic material."
+                )
+            record = {
+                **version(store, old, actor),
+                "status": command["status"],
+                "answer_refs": command["answer_refs"],
+            }
             semantic(record, store, True)
             accepted.append(record)
             bump = True

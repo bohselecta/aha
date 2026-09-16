@@ -1,3 +1,5 @@
+import { BackupHealth } from "../casework/BackupHealth";
+import { RecordFacts } from "../casework/RecordFacts";
 import { CaseExplorer } from "../../../../packages/workbench/CaseExplorer";
 import { useEffect, useRef, useState, type FormEvent } from "react";
 import {
@@ -5,8 +7,11 @@ import {
   label,
   loadProposals,
   loadRecords,
+  loadReferenceVersions,
   logout,
   pair,
+  resumeSession,
+  ApiError,
   request,
   type Case,
   type CaseRecord,
@@ -19,10 +24,28 @@ import type {
   Command,
   Citation,
   Entity,
+  IngestSummary,
+  HumanRecordDraft,
 } from "../../../../packages/contracts/contracts";
+import { chronology } from "../../../../packages/workbench/model";
+import { ImportQueue } from "../inbox/ImportQueue";
 import { SourceReview } from "../inbox/SourceReview";
 
+import { RecordEditor, draftOf, referenceOf } from "../casework/RecordEditor";
+import {
+  CaseOverview,
+  QuestionBoard,
+  Comparison,
+  DecisionForm,
+  RecordHistory,
+} from "../casework/CaseTools";
+
+import { SourceSearch } from "../casework/SourceSearch";
+
 type Workspace =
+  | "Search sources"
+  | "Overview"
+  | "Questions & comparisons"
   | "Case Atlas"
   | "Inbox"
   | "Review queue"
@@ -30,6 +53,9 @@ type Workspace =
   | "Timeline"
   | "Integrity & backup";
 const workspaces: Workspace[] = [
+  "Overview",
+  "Search sources",
+  "Questions & comparisons",
   "Case Atlas",
   "Inbox",
   "Review queue",
@@ -53,8 +79,9 @@ export function App() {
     [cases, setCases] = useState<Case[]>([]),
     [active, setActive] = useState<Case | null>(null),
     [records, setRecords] = useState<CaseRecord[]>([]),
+    [historical, setHistorical] = useState<CaseRecord[]>([]),
     [proposals, setProposals] = useState<Proposal[]>([]);
-  const [workspace, setWorkspace] = useState<Workspace>("Inbox"),
+  const [workspace, setWorkspace] = useState<Workspace>("Overview"),
     [selected, setSelected] = useState<CaseRecord | null>(null),
     [error, setError] = useState(""),
     [message, setMessage] = useState(""),
@@ -66,43 +93,112 @@ export function App() {
       localStorage.getItem("aha-theme") ||
       (matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light"),
   );
+  const [editing, setEditing] = useState<CaseRecord | null>(null);
   const epoch = useRef(0);
+  const actionId = useRef(0);
+  const refreshId = useRef(0);
+  const [restoring, setRestoring] = useState(true);
+  useEffect(() => {
+    let cancelled = false;
+    resumeSession()
+      .then(async (session) => {
+        if (cancelled) return;
+        setOperator(session.actor);
+        const result = await request<{ items: Case[] }>("/cases");
+        if (cancelled) return;
+        setCases(result.items);
+        if (result.items[0]) await open(result.items[0]);
+      })
+      .catch((error) => {
+        if (
+          !cancelled &&
+          !(error instanceof ApiError && error.code === "UNAUTHENTICATED")
+        )
+          setError(
+            "Could not reconnect to the local service. Check that Aha! is running.",
+          );
+      })
+      .finally(() => {
+        if (!cancelled) setRestoring(false);
+      });
+    return () => {
+      cancelled = true;
+      epoch.current++;
+    };
+  }, []);
   useEffect(() => {
     document.documentElement.dataset.theme = theme;
     localStorage.setItem("aha-theme", theme);
   }, [theme]);
-  async function refresh(c: Case) {
-    const version = epoch.current;
-    const [fresh, rows, pending] = await Promise.all([
-      request<Case>(`/cases/${c.id}`),
-      loadRecords(c.id),
-      loadProposals(c.id),
-    ]);
-    if (version !== epoch.current) return;
-    setActive(fresh);
-    setRecords(rows);
-    setProposals(pending);
+  async function refresh(c: Case, version = epoch.current) {
+    const refreshOperation = ++refreshId.current;
+    for (let attempt = 0; attempt < 4; attempt++) {
+      if (version !== epoch.current) return;
+      try {
+        const before = await request<Case>(`/cases/${c.id}`);
+        const [rows, pending, older] = await Promise.all([
+          loadRecords(c.id),
+          loadProposals(c.id),
+          loadReferenceVersions(c.id),
+        ]);
+        const fresh = await request<Case>(`/cases/${c.id}`);
+        if (version !== epoch.current || refreshOperation !== refreshId.current)
+          return;
+        if (before.case_revision !== fresh.case_revision) continue;
+        setActive(fresh);
+        setRecords(rows);
+        setHistorical(older);
+        setProposals(pending);
+        setSelected((selected) =>
+          selected
+            ? (rows.find(
+                (r) => r.id === selected.id && r.revision === selected.revision,
+              ) ??
+              older.find(
+                (r) => r.id === selected.id && r.revision === selected.revision,
+              ) ??
+              selected)
+            : null,
+        );
+        return;
+      } catch (error) {
+        if (!(error instanceof ApiError && error.code === "STALE_PAGE"))
+          throw error;
+      }
+    }
+    if (version === epoch.current)
+      throw new Error(
+        "Sources are still being processed. Refresh the case in a moment.",
+      );
   }
+
   async function act(fn: () => Promise<void>) {
+    const operation = ++actionId.current;
     setError("");
     setMessage("");
     setBusy(true);
     try {
       await fn();
     } catch (e) {
+      if (operation !== actionId.current) return;
       setError(
         e instanceof Error
           ? e.message
           : "The operation failed. Your input has been retained.",
       );
     } finally {
-      setBusy(false);
+      if (operation === actionId.current) setBusy(false);
     }
   }
   async function open(c: Case) {
     epoch.current++;
+    setActive(c);
+    setError("");
+    setMessage("");
     setSelected(null);
     setRecords([]);
+    setHistorical([]);
+    setEditing(null);
     setProposals([]);
     setVerification(null);
     setFilter("");
@@ -110,9 +206,41 @@ export function App() {
   }
   async function mutate(body: Command) {
     if (!active) return;
+    const version = epoch.current;
     await command(active, body);
-    await refresh(active);
-    setMessage("Review decision saved. History retained.");
+    await refresh(active, version);
+    if (version === epoch.current)
+      setMessage(
+        body.type === "proposeRecord" || body.type === "reviseRecord"
+          ? "Proposal saved. Open Review queue to check and accept it."
+          : "Review decision saved. History retained.",
+      );
+  }
+  async function submitCommand(body: Command): Promise<boolean> {
+    let saved = false;
+    const version = epoch.current;
+    await act(async () => {
+      await mutate(body);
+      saved = version === epoch.current;
+    });
+    return saved;
+  }
+  async function submitDraft(draft: HumanRecordDraft, reason: string) {
+    const success = await submitCommand(
+      editing
+        ? {
+            type: "reviseRecord",
+            target: referenceOf(editing),
+            record: draft,
+            reason,
+          }
+        : { type: "proposeRecord", record: draft, reason },
+    );
+    if (success) {
+      setEditing(null);
+      setWorkspace("Review queue");
+    }
+    return success;
   }
   async function signIn(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -133,14 +261,7 @@ export function App() {
   const shown = records.filter((r) =>
     label(r).toLowerCase().includes(filter.toLowerCase()),
   );
-  const timeline = shown
-    .filter((r) => "occurrence" in r)
-    .sort(
-      (a, b) =>
-        ("occurrence" in a ? a.occurrence.start : null)?.localeCompare(
-          "occurrence" in b ? b.occurrence.start || "" : "",
-        ) || 0,
-    );
+  const timeline = chronology(shown);
   return (
     <>
       <a className="skip" href="#main">
@@ -175,8 +296,8 @@ export function App() {
             className="quiet"
             onClick={() =>
               act(async () => {
-                await logout();
                 epoch.current++;
+                await logout();
                 setOperator("");
                 setActive(null);
                 setRecords([]);
@@ -189,7 +310,11 @@ export function App() {
           </button>
         )}
       </header>
-      {!operator ? (
+      {restoring ? (
+        <main id="main">
+          <p role="status">Reconnecting to your workspace…</p>
+        </main>
+      ) : !operator ? (
         <main id="main" className="onboarding">
           <div className="intro">
             <img
@@ -294,7 +419,7 @@ export function App() {
                     setSelected(null);
                   }}
                 >
-                  <span>{["⌘", "▤", "✓", "⊞", "◷", "◇"][i]}</span>
+                  <span>{["⌂", "?", "⌘", "▤", "✓", "⊞", "◷", "◇"][i]}</span>
                   {w}
                   {w === "Review queue" && pending.length > 0 && (
                     <b>{pending.length}</b>
@@ -363,8 +488,10 @@ export function App() {
                 <CreateCase
                   onCreate={async (data) => {
                     await act(async () => {
+                      const version = epoch.current;
                       const c = await request<Case>("/cases", "POST", data);
-                      setCases([...cases, c]);
+                      if (version !== epoch.current) return;
+                      setCases((cases) => [...cases, c]);
                       await open(c);
                     });
                   }}
@@ -399,10 +526,37 @@ export function App() {
                     <span>No model connected</span>
                   </div>
                 </section>
+                {workspace === "Search sources" && (
+                  <SourceSearch
+                    key={active.id}
+                    active={active}
+                    inspect={setSelected}
+                  />
+                )}
+                {workspace === "Overview" && (
+                  <CaseOverview
+                    records={records}
+                    proposals={proposals}
+                    navigate={(view) => setWorkspace(view as Workspace)}
+                    inspect={setSelected}
+                  />
+                )}
+                {workspace === "Questions & comparisons" && (
+                  <>
+                    <QuestionBoard records={records} inspect={setSelected} />
+                    <Comparison records={records} inspect={setSelected} />
+                    <ConflictForm
+                      records={records}
+                      busy={busy}
+                      submit={submitCommand}
+                    />
+                  </>
+                )}
                 {workspace === "Case Atlas" && (
                   <CaseExplorer
                     key={active.id}
                     records={records}
+                    historical={historical}
                     caseTitle={active.title}
                     caseRevision={active.case_revision}
                     onOpenSource={setSelected}
@@ -416,17 +570,20 @@ export function App() {
                         e.preventDefault();
                         const form = e.currentTarget;
                         const data = new FormData(form);
+                        const version = epoch.current;
                         act(async () => {
-                          await request<Job>(
+                          const job = await request<Job>(
                             `/cases/${active.id}/ingest`,
                             "POST",
                             data,
                             active.case_revision,
                           );
-                          await refresh(active);
+                          await refresh(active, version);
+                          if (version !== epoch.current) return;
                           form.reset();
                           setMessage(
-                            "Original preserved. UTF-8 text is extracted; other formats are stored without extraction.",
+                            job.phase +
+                              ". Follow extraction progress below; you can continue working.",
                           );
                         });
                       }}
@@ -434,9 +591,9 @@ export function App() {
                       <div>
                         <h2>Bring material into the case</h2>
                         <p className="muted">
-                          Add a text file to review and cite its passages. You
-                          can also keep other files here and download their
-                          originals.
+                          Add documents, images, spreadsheets or text. Originals
+                          stay unchanged; extracted passages become available
+                          for source review.
                         </p>
                       </div>
                       <label>
@@ -454,6 +611,10 @@ export function App() {
                       </label>
                       <button disabled={busy}>Preserve original</button>
                     </form>
+                    <ImportQueue
+                      active={active}
+                      onChanged={() => refresh(active, epoch.current)}
+                    />
                     <div className="section-title">
                       <h2>Source library</h2>
                       <span>{sources.length} original files</span>
@@ -465,7 +626,13 @@ export function App() {
                           key={r.id}
                           onClick={() => setSelected(r)}
                         >
-                          <span className="file-icon">TXT</span>
+                          <span className="file-icon">
+                            {r.kind === "Evidence"
+                              ? (r.original_filename.split(".").pop() || "FILE")
+                                  .slice(0, 6)
+                                  .toUpperCase()
+                              : "FILE"}
+                          </span>
                           <strong>{label(r)}</strong>
                           <small>
                             {r.kind === "Evidence"
@@ -508,7 +675,7 @@ export function App() {
                         key={p.id}
                         proposal={p}
                         busy={busy}
-                        sources={records}
+                        sources={[...records, ...historical]}
                         onSource={setSelected}
                         decide={(decision, reason) =>
                           act(() =>
@@ -612,12 +779,32 @@ export function App() {
                       </table>
                     </div>
                     {workspace === "Case register" && (
+                      <section className="panel">
+                        <h2>
+                          {editing ? "Propose a correction" : "Add to the case"}
+                        </h2>
+                        <RecordEditor
+                          key={
+                            editing
+                              ? `${editing.id}:${editing.revision}`
+                              : "new"
+                          }
+                          records={records}
+                          initial={editing ? draftOf(editing) : undefined}
+                          busy={busy}
+                          onSubmit={submitDraft}
+                          onClose={editing ? () => setEditing(null) : undefined}
+                        />
+                      </section>
+                    )}
+                    {workspace === "Case register" && (
                       <form
                         className="panel"
                         onSubmit={(e) => {
                           e.preventDefault();
                           const form = e.currentTarget;
                           const data = new FormData(form);
+                          const version = epoch.current;
                           act(async () => {
                             await mutate({
                               type: "proposeRecord",
@@ -629,6 +816,7 @@ export function App() {
                               },
                               reason: "Human authored investigator note.",
                             });
+                            if (version !== epoch.current) return;
                             form.reset();
                             setWorkspace("Review queue");
                           });
@@ -659,17 +847,18 @@ export function App() {
                           disabled={busy}
                           onClick={() =>
                             act(async () => {
+                              const version = epoch.current;
                               const job = await request<Job>(
                                 `/cases/${active.id}/integrity/verify`,
                                 "POST",
                                 {},
                                 active.case_revision,
                               );
-                              setVerification(
-                                await request<VerificationResult>(
-                                  job.result_path!.replace("/api/v1", ""),
-                                ),
+                              const result = await request<VerificationResult>(
+                                job.result_path!.replace("/api/v1", ""),
                               );
+                              if (version !== epoch.current) return;
+                              setVerification(result);
                               setMessage("Integrity verification completed.");
                             })
                           }
@@ -712,6 +901,7 @@ export function App() {
                           disabled={busy}
                           onClick={() =>
                             act(async () => {
+                              const version = epoch.current;
                               const job = await request<Job>(
                                 `/cases/${active.id}/backup`,
                                 "POST",
@@ -721,6 +911,7 @@ export function App() {
                               const artifact = await request<ExportArtifact>(
                                 job.result_path!.replace("/api/v1", ""),
                               );
+                              if (version !== epoch.current) return;
                               const a = document.createElement("a");
                               a.href = `/api/v1/cases/${active.id}/exports/${artifact.export_id}/download`;
                               a.download = "";
@@ -735,6 +926,11 @@ export function App() {
                         </button>
                       </section>
                     </div>
+                    <BackupHealth
+                      key={active.id}
+                      active={active}
+                      refreshKey={message}
+                    />
                     <section className="panel">
                       <h2>Restore a saved case</h2>
                       <p>
@@ -750,8 +946,16 @@ export function App() {
           </main>
           {selected && active && (
             <Detail
+              key={`${active.id}:${selected.id}:${selected.revision}`}
               record={selected}
-              records={records}
+              records={[...records, ...historical]}
+              busy={busy}
+              decide={submitCommand}
+              onEdit={(r) => {
+                setEditing(r);
+                setSelected(null);
+                setWorkspace("Case register");
+              }}
               caseId={active.id}
               onClose={() => setSelected(null)}
               onSelect={setSelected}
@@ -881,6 +1085,7 @@ function ProposalReview({
             </blockquote>
           );
         })}
+      <RecordFacts record={record} records={sources} inspect={onSource} />
       <label>
         Reason for your decision
         <input
@@ -914,7 +1119,13 @@ function Detail({
   onClose,
   onSelect,
   propose,
+  busy,
+  decide,
+  onEdit,
 }: {
+  busy: boolean;
+  decide: (c: Command) => Promise<boolean>;
+  onEdit: (r: CaseRecord) => void;
   record: CaseRecord;
   records: CaseRecord[];
   caseId: string;
@@ -945,6 +1156,47 @@ function Detail({
         Version {record.revision} · introduced at case revision{" "}
         {record.introduced_case_revision}
       </p>
+      <RecordHistory
+        record={record}
+        caseId={caseId}
+        records={records}
+        select={onSelect}
+      />
+      {[
+        "Entity",
+        "Observation",
+        "Event",
+        "Interpretation",
+        "Edge",
+        "Hypothesis",
+        "Note",
+        "ClockCorrection",
+        "TemporalConstraint",
+      ].includes(record.kind) &&
+        !(record.kind === "Hypothesis" && record.state === "RETIRED") &&
+        !(
+          record.kind === "TemporalConstraint" &&
+          record.constraint_type !== "BEFORE"
+        ) && (
+          <button
+            className="secondary"
+            disabled={busy}
+            onClick={() => onEdit(record)}
+          >
+            Propose correction
+          </button>
+        )}
+      <DecisionForm
+        record={record}
+        records={records.filter(
+          (r) =>
+            !records.some(
+              (other) => other.id === r.id && other.revision > r.revision,
+            ),
+        )}
+        busy={busy}
+        submit={decide}
+      />
       {record.kind === "Evidence" ? (
         <SourceReview
           evidence={record}
@@ -969,6 +1221,7 @@ function Detail({
                 </blockquote>
               );
             })}
+          <RecordFacts record={record} records={records} inspect={onSelect} />
           {"state" in record && (
             <p>
               Lifecycle: <strong>{record.state}</strong>
@@ -986,5 +1239,79 @@ function Detail({
         {record.created_at}
       </p>
     </aside>
+  );
+}
+
+function ConflictForm({
+  records,
+  busy,
+  submit,
+}: {
+  records: CaseRecord[];
+  busy: boolean;
+  submit: (c: Command) => Promise<boolean>;
+}) {
+  const [error, setError] = useState("");
+  return (
+    <section className="panel">
+      <h2>Record a difference that needs checking</h2>
+      <form
+        onSubmit={async (e) => {
+          e.preventDefault();
+          const form = e.currentTarget,
+            d = new FormData(form);
+          const chosen = new Set(d.getAll("claims").map(String));
+          const refs = records.filter((r) => chosen.has(r.id)).map(referenceOf);
+          if (refs.length < 2) {
+            setError("Select at least two competing statements or events.");
+            return;
+          }
+          const saved = await submit({
+            type: "proposeContradiction",
+            reason: String(d.get("reason")),
+            proposal: {
+              proposition_refs: refs,
+              rule: "human-review",
+              rule_version: "1",
+              strength: "POTENTIAL",
+              qualifications: [String(d.get("qualification"))],
+              resolution_targets: [String(d.get("check"))],
+            },
+          });
+          if (saved) {
+            form.reset();
+            setError("Difference proposed. Review it in Review queue.");
+          }
+        }}
+      >
+        <fieldset>
+          <legend>Competing claims</legend>
+          {records
+            .filter((r) =>
+              ["Observation", "Event", "Interpretation"].includes(r.kind),
+            )
+            .map((r) => (
+              <label className="check" key={r.id}>
+                <input type="checkbox" name="claims" value={r.id} />
+                {label(r)}
+              </label>
+            ))}
+        </fieldset>
+        <label>
+          What differs, and what is uncertain?
+          <textarea name="qualification" required />
+        </label>
+        <label>
+          What would help resolve it?
+          <textarea name="check" required />
+        </label>
+        <label>
+          Reason for this proposal
+          <input name="reason" required />
+        </label>
+        <button disabled={busy}>Propose conflict for review</button>
+        {error && <p role="status">{error}</p>}
+      </form>
+    </section>
   );
 }

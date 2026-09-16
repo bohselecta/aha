@@ -3,6 +3,7 @@ import type { Evidence, Ref } from "../contracts/contracts";
 import {
   atlasLinks,
   atlasNodes,
+  atlasSubset,
   chronology,
   human,
   matchesText,
@@ -34,26 +35,31 @@ const descriptiveKinds = [
 ];
 export function CaseExplorer({
   records,
+  historical = [],
   caseTitle,
   caseRevision,
   sourceTexts,
   onOpenSource,
   initialView = "Atlas",
+  initialSelected = null,
   headingLevel = 2,
 }: {
   records: CaseRecord[];
+  historical?: CaseRecord[];
   caseTitle: string;
   caseRevision: number;
   sourceTexts?: Record<string, string>;
   onOpenSource?: (r: Evidence) => void;
   initialView?: View;
+  initialSelected?: string | null;
   headingLevel?: 1 | 2;
 }) {
   const [view, setView] = useState<View>(initialView),
     [query, setQuery] = useState(""),
     [basis, setBasis] = useState("All"),
     [mode, setMode] = useState<"Map" | "Table">("Map"),
-    [selected, setSelected] = useState<string | null>(null);
+    [selected, setSelected] = useState<string | null>(initialSelected);
+  const [page, setPage] = useState(0);
   const Heading = headingLevel === 1 ? "h1" : "h2";
   const detail = useRef<HTMLDivElement>(null);
   const trigger = useRef<Element | null>(null);
@@ -65,8 +71,18 @@ export function CaseExplorer({
     )
       trigger.current.focus();
   };
-  const textIndex = useMemo(() => searchIndex(records), [records]);
-  const connections = useMemo(() => atlasLinks(records), [records]);
+  const textIndex = useMemo(
+    () => searchIndex(records, sourceTexts),
+    [records, sourceTexts],
+  );
+  const graphRecords = useMemo(
+    () => [...records, ...historical],
+    [records, historical],
+  );
+  const connections = useMemo(
+    () => atlasLinks(records, historical),
+    [records, historical],
+  );
   const visible = useMemo(
     () =>
       records.filter(
@@ -78,10 +94,13 @@ export function CaseExplorer({
     [records, query, basis, textIndex],
   );
   const byRef = useMemo(
-    () => new Map(records.map((r) => [refKey(r), r])),
-    [records],
+    () => new Map(graphRecords.map((r) => [refKey(r), r])),
+    [graphRecords],
   );
-  const chosen = records.find((r) => r.id === selected);
+  const chosen = selected
+    ? (byRef.get(selected) ??
+      records.find((r) => r.id === selected || refKey(r) === selected))
+    : undefined;
   const select = (id: string) => {
     if (!detail.current?.contains(document.activeElement))
       trigger.current = document.activeElement;
@@ -93,10 +112,15 @@ export function CaseExplorer({
     return r ? (
       <button
         className="ex-link"
-        onClick={() => select(r.id)}
+        onClick={() => select(refKey(r))}
         key={refKey(ref)}
       >
         {recordTitle(r)}
+        {records.some(
+          (current) => current.id === r.id && current.revision !== r.revision,
+        )
+          ? ` · cited version ${r.revision}`
+          : ""}
       </button>
     ) : (
       <span key={refKey(ref)}>
@@ -106,6 +130,7 @@ export function CaseExplorer({
     );
   };
   const clear = () => {
+    setPage(0);
     setQuery("");
     setBasis("All");
   };
@@ -121,6 +146,11 @@ export function CaseExplorer({
                 ? ["Question", "Contradiction", "Hypothesis"].includes(r.kind)
                 : r.kind === "Scenario",
           );
+  const currentPage = Math.min(
+    page,
+    Math.max(0, Math.ceil(results.length / 100) - 1),
+  );
+  const pageResults = results.slice(currentPage * 100, (currentPage + 1) * 100);
   return (
     <section className="explorer" aria-label="Case explorer">
       <div className="ex-top">
@@ -136,6 +166,7 @@ export function CaseExplorer({
             key={v}
             aria-pressed={view === v}
             onClick={() => {
+              setPage(0);
               setView(v);
               setSelected(null);
             }}
@@ -151,13 +182,22 @@ export function CaseExplorer({
             type="search"
             value={query}
             maxLength={2000}
-            onChange={(e) => setQuery(e.target.value)}
+            onChange={(e) => {
+              setPage(0);
+              setQuery(e.target.value);
+            }}
             placeholder="Search words, names or details…"
           />
         </label>
         <label>
           Evidence basis
-          <select value={basis} onChange={(e) => setBasis(e.target.value)}>
+          <select
+            value={basis}
+            onChange={(e) => {
+              setPage(0);
+              setBasis(e.target.value);
+            }}
+          >
             {["All", "DOCUMENTED", "OBSERVED", "INFERRED", "SPECULATIVE"].map(
               (t) => (
                 <option key={t} value={t}>
@@ -176,7 +216,12 @@ export function CaseExplorer({
           {results.length} {results.length === 1 ? "record" : "records"} ·{" "}
           {query ? "Matching all search words" : "All records in this view"}
         </p>
-        <span>Keyword search · labels, statements and cited text</span>
+        <span>
+          Keyword search ·{" "}
+          {sourceTexts
+            ? "records and full sample sources"
+            : "labels, statements and cited text"}
+        </span>
       </div>
       <div className={`ex-layout ${chosen ? "" : "no-selection"}`}>
         <div className="ex-content">
@@ -242,8 +287,11 @@ export function CaseExplorer({
             </div>
           ) : view === "Atlas" && mode === "Map" ? (
             <Atlas
-              records={records}
-              shown={results}
+              records={graphRecords}
+              shown={[
+                ...results,
+                ...historical.filter((r) => !query && basis === "All"),
+              ]}
               selected={selected}
               select={select}
             />
@@ -268,7 +316,7 @@ export function CaseExplorer({
                   </tr>
                 </thead>
                 <tbody>
-                  {results.slice(0, 500).map((r) => (
+                  {pageResults.map((r) => (
                     <tr key={r.id}>
                       <td>
                         {recordTitle(r)}
@@ -309,7 +357,7 @@ export function CaseExplorer({
             </div>
           ) : (
             <div className="ex-cards">
-              {results.slice(0, 500).map((r) => (
+              {pageResults.map((r) => (
                 <article key={r.id}>
                   <div className="ex-card-meta">
                     <Basis r={r} />
@@ -351,11 +399,25 @@ export function CaseExplorer({
               ))}
             </div>
           )}
-          {results.length > 500 && (
-            <p className="ex-callout">
-              Showing 500 of {results.length} records. Narrow your search to see
-              the remaining records.
-            </p>
+          {results.length > 100 && !(view === "Atlas" && mode === "Map") && (
+            <nav className="ex-view-options" aria-label="Result pages">
+              <button
+                disabled={currentPage === 0}
+                onClick={() => setPage(currentPage - 1)}
+              >
+                Previous page
+              </button>
+              <span>
+                Page {currentPage + 1} of {Math.ceil(results.length / 100)} ·{" "}
+                {results.length} records
+              </span>
+              <button
+                disabled={(currentPage + 1) * 100 >= results.length}
+                onClick={() => setPage(currentPage + 1)}
+              >
+                Next page
+              </button>
+            </nav>
           )}
         </div>
         <div
@@ -640,7 +702,8 @@ export function CaseExplorer({
               )}
               {connections.some(
                 (l) =>
-                  l.to === chosen.id || (l.recordId && l.from === chosen.id),
+                  l.to === refKey(chosen) ||
+                  (l.recordId && l.from === refKey(chosen)),
               ) && (
                 <>
                   <h4>Follow recorded connections</h4>
@@ -648,20 +711,21 @@ export function CaseExplorer({
                     {connections
                       .filter(
                         (l) =>
-                          l.to === chosen.id ||
-                          (l.recordId && l.from === chosen.id),
+                          l.to === refKey(chosen) ||
+                          (l.recordId && l.from === refKey(chosen)),
                       )
                       .slice(0, 50)
                       .map((l, i) => {
-                        const other = records.find(
+                        const other = graphRecords.find(
                           (r) =>
-                            r.id === (l.from === chosen.id ? l.to : l.from),
+                            refKey(r) ===
+                            (l.from === refKey(chosen) ? l.to : l.from),
                         );
                         return (
                           other && (
                             <div key={i}>
                               <small>
-                                {l.from === chosen.id
+                                {l.from === refKey(chosen)
                                   ? l.label
                                   : l.label === "Cites source"
                                     ? "Cited by"
@@ -673,7 +737,9 @@ export function CaseExplorer({
                               <button
                                 className="ex-link"
                                 aria-label={`Follow ${recordTitle(other)}`}
-                                onClick={() => select(l.recordId ?? other.id)}
+                                onClick={() =>
+                                  select(l.recordId ?? refKey(other))
+                                }
                               >
                                 {recordTitle(other)}
                               </button>
@@ -684,8 +750,8 @@ export function CaseExplorer({
                   </div>
                   {connections.filter(
                     (l) =>
-                      l.to === chosen.id ||
-                      (l.recordId && l.from === chosen.id),
+                      l.to === refKey(chosen) ||
+                      (l.recordId && l.from === refKey(chosen)),
                   ).length > 50 && (
                     <p className="ex-help">
                       Showing the first 50 recorded connections.
@@ -743,8 +809,11 @@ function Atlas({
   select: (id: string) => void;
 }) {
   const all = atlasNodes(records).filter((r) => r.kind !== "Edge");
-  const capped = all.slice(0, 80);
-  const visible = new Set(shown.map((r) => r.id));
+  const [limit, setLimit] = useState(80);
+  const capped = atlasSubset(records, shown, limit).sort((a, b) =>
+    refKey(a).localeCompare(refKey(b)),
+  );
+  const visible = new Set(shown.map(refKey));
   const lanes = [
     capped.filter((r) => r.kind === "Evidence"),
     capped.filter((r) => r.kind !== "Evidence" && r.kind !== "Entity"),
@@ -754,7 +823,7 @@ function Atlas({
     lanes.flatMap((list, lane) =>
       list.map(
         (r, index) =>
-          [r.id, { x: 20 + lane * 315, y: 60 + index * 100 }] as const,
+          [refKey(r), { x: 20 + lane * 315, y: 60 + index * 100 }] as const,
       ),
     ),
   );
@@ -803,27 +872,27 @@ function Atlas({
             );
           })}
           {capped.map((r) => {
-            const p = positions.get(r.id)!;
+            const p = positions.get(refKey(r))!;
             return (
               <g
-                key={r.id}
+                key={refKey(r)}
                 role="button"
                 tabIndex={0}
                 aria-label={`Inspect ${recordTitle(r)}`}
-                aria-pressed={r.id === selected}
-                onClick={() => select(r.id)}
+                aria-pressed={r.id === selected || refKey(r) === selected}
+                onClick={() => select(refKey(r))}
                 onKeyDown={(e) => {
                   if (e.key === "Enter" || e.key === " ") {
                     e.preventDefault();
-                    select(r.id);
+                    select(refKey(r));
                   }
                 }}
                 transform={`translate(${p.x},${p.y})`}
-                className={`ex-node ${visible.has(r.id) ? "" : "dim"} ${r.id === selected ? "selected" : ""}`}
+                className={`ex-node ${visible.has(refKey(r)) ? "" : "dim"} ${r.id === selected || refKey(r) === selected ? "selected" : ""}`}
               >
                 <rect width="265" height="69" rx="9" />
                 <text x="12" y="22" className="ex-node-kind">
-                  {human(r.kind)}
+                  {human(r.kind)} · v{r.revision}
                   {"tier" in r ? ` · ${human(r.tier)}` : ""}
                 </text>
                 <text x="12" y="46">
@@ -837,11 +906,18 @@ function Atlas({
           })}
         </svg>
       </div>
-      {all.length > 80 && (
-        <p className="ex-callout">
-          Map overview: 80 of {all.length} records. Use Table to inspect search
-          results.
-        </p>
+      {all.length > capped.length && (
+        <div className="ex-callout">
+          <p>
+            Map overview: {capped.length} of {all.length} records. Search
+            matches appear first. All results are available in Table.
+          </p>
+          {limit < 500 && (
+            <button onClick={() => setLimit(Math.min(500, limit + 80))}>
+              Show more records
+            </button>
+          )}
+        </div>
       )}
       {availableLinks.length > links.length && (
         <p className="ex-callout">
@@ -853,12 +929,12 @@ function Atlas({
         <summary>Recorded connections · {links.length}</summary>
         {links.map((l, i) => (
           <p key={i}>
-            {recordTitle(records.find((r) => r.id === l.from)!)} —{" "}
+            {recordTitle(records.find((r) => refKey(r) === l.from)!)} —{" "}
             <strong>
               {l.label}
               {l.tier ? ` (${human(l.tier)})` : ""}
             </strong>{" "}
-            — {recordTitle(records.find((r) => r.id === l.to)!)}
+            — {recordTitle(records.find((r) => refKey(r) === l.to)!)}
             {l.recordId && (
               <button onClick={() => select(l.recordId!)}>
                 Inspect relationship
