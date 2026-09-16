@@ -1,5 +1,5 @@
 {
-  "image_id": "sha256:608857850080c2f75a1ba5c13e99ade1f115bfba245a9afeeb6f7b8293d7f811",
+  "image_id": "sha256:19f5ba602fcb66cceb35db073743c93e23378fd2ddebc6f281675ccbe7091b12",
   "architecture": "arm64",
   "health": "healthy",
   "non_root": true,
