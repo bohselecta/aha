@@ -215,6 +215,12 @@ def extract(path, suffix, work):
             "Text and tables extracted in document order; embedded objects and external links are not opened."
         )
     elif suffix == ".xlsx":
+        # openpyxl initializes Python's MIME database. Use built-in mappings so
+        # extraction does not depend on (or need access to) host MIME config.
+        import mimetypes
+
+        mimetypes.knownfiles = []
+        mimetypes.init(files=[])
         import openpyxl
 
         archive_check(path)

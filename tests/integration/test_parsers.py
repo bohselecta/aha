@@ -31,6 +31,7 @@ def test_real_csv_docx_and_workbook_extraction(tmp_path):
     xlsx = tmp_path / "sample.xlsx"
     workbook.save(xlsx)
     result = extract_file(xlsx, "sample.xlsx")
+    assert "text" in result, result
     assert "=1+1" in result["text"]
     assert result["locations"][0]["sheet"] == "Sheet"
 

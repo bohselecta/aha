@@ -2,8 +2,8 @@
 
 **The full M0–M7 specification is not complete. This is a runnable development slice, not a v1 release.**
 
-Evidence date: 2026-09-16T07:47:45.425350+00:00. Operator: Codex automated synthetic verification.
-Build/source SHA-256: `4d7bf8dc7c4c15aac3ad888ad8ed568eeb71c3e3c4994b4744d724c93eaf65a8`.
+Evidence date: 2026-09-16T07:52:57.469324+00:00. Operator: Codex automated synthetic verification.
+Build/source SHA-256: `16341dd25b5f4ce5214333e7708083ae35ac970d2596f2190818bc248ea476d6`.
 Gate outcomes: 5 PASS; 29 PARTIAL; 23 NOT_RUN. Passing a limited set of gates does not certify the app.
 
 ## Milestones

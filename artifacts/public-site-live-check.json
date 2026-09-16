@@ -1,12 +1,13 @@
 {
-  "url": "https://aha-nine-omega.vercel.app/#demo",
+  "source_commit": "04111e8a77ee2a0e8d5a6c15996b0fb6675bd83c",
+  "verified_at": "2026-09-16T07:51:16.685Z",
+  "url": "https://aha-nine-omega.vercel.app",
   "status": 200,
+  "deployment": "dpl_CzAHpSJQothPPgS7G2gvLETYgZmK",
   "csp": "default-src 'none'; script-src 'self'; style-src 'self'; img-src 'self'; connect-src 'none'; font-src 'self'; base-uri 'none'; form-action 'none'; frame-ancestors 'none'; object-src 'none'",
+  "deep_question": "PASS",
+  "exact_source_navigation": "PASS",
+  "upload_controls": 0,
   "errors": [],
-  "accessibilityViolations": 0,
-  "sourceNavigation": "passed",
-  "conflictInspection": "passed",
-  "scenarioAssumptions": "passed",
-  "outboundRequests": 0,
-  "note": "CSP enforced for functional check; bypassed only for axe script injection."
+  "external_requests": 0
 }
