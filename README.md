@@ -1,5 +1,7 @@
 # Aha! · Open Investigations
 
+[Public site & fictional demo](https://aha-nine-omega.vercel.app) · [GitHub](https://github.com/bohselecta/aha)
+
 A local evidence workbench under active implementation. **This repository is an early development slice, not the completed v1.0 application.** The complete, unchanged specification is in [Corgiverse-AHA-Specification-v1.0.0](Corgiverse-AHA-Specification-v1.0.0/CODEX_START_HERE.md). See [IMPLEMENTATION_STATUS.md](IMPLEMENTATION_STATUS.md) for all 57 release gates.
 
 Currently runnable: local browser pairing, synthetic case loading and case creation, immutable original receipts, exact UTF-8 derivatives, manual source statement proposals, human acceptance/rejection, record history, a basic timeline table, integrity verification, and portable backup/restore. Accepted original bytes never change. No model or external account is required. No model adapter is implemented yet.

@@ -1,0 +1,9 @@
+{
+  "url": "https://aha-nine-omega.vercel.app/",
+  "status": 200,
+  "csp": "default-src 'none'; script-src 'self'; style-src 'self'; img-src 'self'; connect-src 'none'; font-src 'self'; base-uri 'none'; form-action 'none'; frame-ancestors 'none'; object-src 'none'",
+  "errors": [],
+  "accessibilityViolations": 0,
+  "sourceNavigation": "passed",
+  "note": "CSP enforced for functional check; bypassed only for axe script injection."
+}
